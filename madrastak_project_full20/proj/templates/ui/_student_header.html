@@ -1,0 +1,39 @@
+{% load static %}{% comment %}الهيدر الموحّد لصفحات الطالب — نسخة طبق الأصل من هيدر الصفحة الرئيسية /student/ .
+المتغيرات الاختيارية عند التضمين: sidebar_toggle (زر القائمة الجانبية للجوال)، hstyle/hcss (ضبط الهوامش الخارجية فقط بحسب حاوية الصفحة؛ المعيار الموحّد: 16px أعلى، 24px أسفل، 24px من جانبي الحاوية).{% endcomment %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>.num-font{font-family:'Plus Jakarta Sans','Tajawal',sans-serif;letter-spacing:.01em}{% if hstyle %}
+#student-top-header{ {{ hstyle }} }{% endif %}{% if hcss %}
+{{ hcss|safe }}{% endif %}</style>
+<header id="student-top-header" class="h-20 bg-white border border-blue-100/70 rounded-2xl mx-6 mt-4 px-6 flex items-center justify-between gap-4 sticky top-4 z-30 shadow-md backdrop-blur-md" data-purpose="top-header" style="box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); border-radius: 20px;"><!-- Right Side (RTL Start): Semester Badge & School Logo/Cap (Swapped) -->
+    <div class="flex items-center gap-3">
+      {% if sidebar_toggle and not ui_hide_sidebar %}<button type="button" data-toggle-sidebar class="lg:hidden w-10 h-10 rounded-full bg-[#f4f7fc] border border-blue-100/80 text-blue-600" aria-label="القائمة"><i class="fa-solid fa-bars"></i></button>{% endif %}
+      <a href="{% url 'student:home' %}" aria-label="الرئيسية" title="الرئيسية" class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20 hover:bg-blue-600 transition-colors">
+        <i class="fa-solid fa-graduation-cap text-lg"></i>
+      </a>
+    </div>
+
+    <!-- Center: Search Bar -->
+    <form action="{% url 'uikit:student_search' %}" method="get" class="flex-1 max-w-xl mx-4" data-purpose="search-bar-container">
+      <div class="relative w-full">
+        <input name="q" value="{{ request.GET.q|default:'' }}" class="w-full h-11 pr-11 pl-10 rounded-full bg-[#f4f7fc] border border-blue-100 focus:bg-white focus:border-brandBlue focus:ring-2 focus:ring-blue-100 text-sm placeholder-slate-400 text-right transition-all outline-none" placeholder="ابحث عن درس أو اختبار..." type="text">
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none text-sm">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+        <button type="submit" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 text-xs" aria-label="بحث">
+          <i class="fa-solid fa-sliders"></i>
+        </button>
+      </div>
+    </form>
+
+    <!-- Left Side: Student Profile & Switch Teacher & Notification Bell (Swapped) -->
+    <div class="flex items-center gap-3">
+      <!-- Student Avatar & Name with Plus Jakarta Sans -->
+      <a href="{% url 'student:profile' %}" class="h-10 flex items-center gap-3 bg-[#f4f7fc] border border-blue-100/80 px-3 rounded-full shadow-sm">
+        {% if ui_student_profile and ui_student_profile.avatar %}<img src="{{ ui_student_profile.avatar.url }}" alt="" class="w-7 h-7 rounded-full object-cover flex-shrink-0">
+        {% else %}<img src="{% static 'ui/user-icon.png' %}" alt="" class="w-8 h-8 object-contain flex-shrink-0">{% endif %}
+        <div class="text-right leading-tight">
+          <div class="text-xs font-bold text-slate-800" style="font-family: 'Plus Jakarta Sans', sans-serif;">{{ user.full_name }}</div>
+          <div class="text-[10px] text-slate-500 font-medium">طالب{% if ui_student_profile %} - {{ ui_student_profile.get_grade_display }}{% endif %}</div>
+        </div>
+      </a>
+    </div></header>

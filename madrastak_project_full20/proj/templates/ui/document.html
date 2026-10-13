@@ -1,0 +1,36 @@
+{% load static %}<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}{{ site.platform_name }}{% endblock %} | {{ site.platform_name }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { sans: ['Tajawal','sans-serif'], cairo: ['Cairo','Tajawal','sans-serif'], num: ['"Plus Jakarta Sans"','Tajawal','sans-serif'] },
+    colors: { brandBlue: '#0085ff', brand: {50:'#f0f7ff',100:'#e0effe',500:'#1d77ff',600:'#0066ff',700:'#0052cc',navy:'#122241'} }
+  } }
+}
+</script>
+<link rel="stylesheet" href="{% static 'ui/ui.css' %}">
+<link rel="stylesheet" href="{% static 'ui/legacy.css' %}">
+{% block head %}{% endblock %}
+{% if user.is_authenticated and user.role == 'student' %}<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>body,.legacy,.font-tajawal,.font-sans,.font-cairo{font-family:"Plus Jakarta Sans","Tajawal",sans-serif !important}</style>{% endif %}
+</head>
+<body class="{% block body_class %}bg-slate-50 text-slate-800{% endblock %}">
+{% if messages %}
+<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">
+  {% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}
+</div>
+{% endif %}
+{% block body %}{% endblock %}
+<script src="{% static 'js/app.js' %}"></script>
+<script src="{% static 'ui/ui.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

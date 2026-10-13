@@ -1,0 +1,48 @@
+{% extends "ui/document.html" %}
+{% block body_class %}bg-[#f4f7fb] text-slate-800 min-h-screen{% endblock %}
+{% block body %}
+<div class="flex min-h-screen">
+{% if not ui_hide_sidebar %}<div id="ui-overlay" class="hidden fixed inset-0 bg-black/40 z-30 lg:hidden"></div>
+<!-- الشريط الجانبي -->
+<aside id="ui-sidebar" class="w-64 shrink-0 flex flex-col justify-between py-6 px-4 shadow-sm border-l border-emerald-200/70 z-40 fixed lg:sticky top-0 right-0 h-screen overflow-y-auto translate-x-full lg:translate-x-0 transition-transform duration-200" style="background-color:#eef7f2">
+  <div>
+    <a href="{% url 'student:home' %}" class="flex items-center justify-center gap-3 mb-6 pt-2 no-underline">
+      <div class="text-right">
+        <h1 class="text-2xl font-black text-slate-900 tracking-wide leading-tight">{{ site.platform_name }}</h1>
+        <p class="text-[11px] text-slate-500 font-medium -mt-1">منصة التعليم الذكية</p>
+      </div>
+      <div class="w-10 h-10 rounded-xl bg-emerald-100 border border-emerald-200/70 flex items-center justify-center text-emerald-700 shadow-sm"><i class="fa-solid fa-graduation-cap text-lg"></i></div>
+    </a>
+    <nav class="space-y-1.5 font-semibold text-sm">
+      {% for i in ui_nav %}
+      <a href="{{ i.url }}" class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all {% if i.active %}bg-emerald-600 text-white shadow-md font-bold{% else %}text-slate-700 hover:text-emerald-700 hover:bg-emerald-100/60{% endif %}">
+        <i class="fa-solid {{ i.icon }} w-5 text-center"></i><span>{{ i.label }}</span>
+        {% if i.badge %}<span class="mr-auto bg-rose-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center num-font">{{ i.badge }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    </nav>
+    {% if workspace_nav %}
+    <div class="mt-5 pt-4 border-t border-emerald-200/60">
+      <p class="text-[11px] font-bold text-emerald-800/70 px-3 mb-2">مساحة {{ current_teacher.display_label }} — {{ current_teacher.subject }}</p>
+      <nav class="space-y-1 text-[13px] font-semibold">
+        {% for i in workspace_nav %}
+        <a href="{{ i.url }}" class="flex items-center gap-2.5 px-3 py-2 rounded-lg transition {% if i.active %}bg-white text-emerald-700 shadow-sm font-bold{% else %}text-slate-600 hover:bg-emerald-100/60{% endif %}"><span class="w-5 text-center">{{ i.icon }}</span>{{ i.label }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+  <form method="post" action="{% url 'logout' %}" class="pt-6 mt-6 border-t border-emerald-200/50">{% csrf_token %}
+    <button type="submit" class="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-rose-500 hover:text-rose-600 hover:bg-rose-50 transition-all font-bold text-sm"><i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i><span>تسجيل الخروج</span></button>
+  </form>
+</aside>
+{% endif %}
+
+<!-- المحتوى -->
+<main class="flex-1 min-w-0 flex flex-col pb-10 px-4 sm:px-6 lg:px-8 max-w-[1600px] mx-auto w-full">
+  {% include "ui/_student_header.html" with sidebar_toggle=True hstyle="margin-left:.5rem;margin-right:.5rem;margin-bottom:1.5rem" hcss="@media (min-width:640px){#student-top-header{margin-left:0;margin-right:0}}@media (min-width:1024px){#student-top-header{margin-left:-.5rem;margin-right:-.5rem}}" %}
+  {% if impersonating %}<div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 mb-4 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div>{% endif %}
+  {% block page %}<div class="legacy">{% block content %}{% endblock %}</div>{% endblock %}
+</main>
+</div>
+{% endblock %}
