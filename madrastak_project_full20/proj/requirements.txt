@@ -1,0 +1,7 @@
+Django==5.2
+Pillow
+pdfplumber
+pdf2image
+pytesseract
+groq
+anthropic
