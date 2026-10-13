@@ -1,0 +1,6 @@
+{% extends "owner/base.html" %}
+{% block title %}إضافة عضو فريق{% endblock %}
+{% block topbar_title %}إضافة عضو فريق{% endblock %}
+{% block content %}
+<div class="card" style="max-width:520px"><form method="post" data-once>{% csrf_token %}{% include "partials/form.html" %}<button class="btn" type="submit">إنشاء الحساب</button></form></div>
+{% endblock %}

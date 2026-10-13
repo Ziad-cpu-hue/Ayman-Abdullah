@@ -1,0 +1,16 @@
+{% extends "site/public_base.html" %}
+{% block title %}{{ t.display_label }} — {{ t.subject }}{% endblock %}
+{% block main %}
+<section class="teacher-hero" {% if t.cover %}style="background-image:linear-gradient(rgba(14,34,69,.7),rgba(14,34,69,.7)),url('{{ t.cover.url }}')"{% endif %}><div class="wrap row" style="gap:22px">
+  {% if t.photo %}<img class="avatar lg" src="{{ t.photo.url }}" alt="">{% else %}<span class="avatar lg">{{ t.display_label|slice:":1" }}</span>{% endif %}
+  <div class="grow"><h1 style="margin:0">{{ t.display_label }}</h1><p style="margin:4px 0;color:#d5e4fb">مدرّس {{ t.subject }}{% if t.grades %} — {{ t.grades }}{% endif %}</p></div>
+  <div>{% if user.is_authenticated and user.is_student %}<a class="btn gold lg" href="{% url 'student:workspace' t.teacher_code %}">فتح مساحة المدرّس</a>
+    {% elif not user.is_authenticated %}<a class="btn gold lg" href="{% url 'register' %}?t={{ t.teacher_code }}">سجّل مع هذا المدرّس</a>{% endif %}</div>
+</div></section>
+<section class="section"><div class="wrap">
+  {% if t.bio %}<div class="card mb"><h3>نبذة</h3><p style="margin:0">{{ t.bio }}</p></div>{% endif %}
+  <div class="row spread mb"><h2 style="text-align:start;margin:0">الدورات المتاحة</h2><span class="badge">{{ lessons_count }} درس منشور • اشتراك {{ t.monthly_price|floatformat:"-2" }} ج / شهر</span></div>
+  {% if courses %}<div class="grid gauto">{% for c in courses %}<div class="card"><span class="badge {% if c.is_free %}green{% else %}purple{% endif %}">{{ c.get_course_type_display }}</span><h3 class="mt">{{ c.title }}</h3><p class="muted small">{{ c.description|truncatechars:120 }}</p></div>{% endfor %}</div>
+  {% else %}<div class="empty">لم ينشر المدرّس دورات بعد.</div>{% endif %}
+</div></section>
+{% endblock %}

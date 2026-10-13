@@ -1,0 +1,27 @@
+{% extends "owner/base.html" %}
+{% block title %}نظرة عامة{% endblock %}
+{% block topbar_title %}نظرة عامة{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>نظرة عامة على المنصة</h1></div>
+{% if alerts %}<div class="banner mb">{% for a in alerts %}⚠️ {{ a }}<br>{% endfor %}</div>{% endif %}
+<div class="grid g4 mb">
+  <div class="card stat"><span>إجمالي الطلاب</span><b>{{ stats.students }}</b><span class="small">+{{ stats.new_students_week }} هذا الأسبوع</span></div>
+  <div class="card stat teal"><span>المدرّسون</span><b>{{ stats.teachers }}</b><span class="small">{{ stats.active_teachers }} نشط</span></div>
+  <div class="card stat purple"><span>اشتراكات نشطة</span><b>{{ stats.active_enr }}</b><span class="small">+{{ stats.new_enr_month }} آخر 30 يوم</span></div>
+  <div class="card stat gold"><span>إيراد الشهر</span><b>{{ stats.revenue_month|floatformat:0 }} ج</b><span class="small">اليوم {{ stats.revenue_today|floatformat:0 }} ج</span></div>
+</div>
+<div class="grid g4 mb">
+  <div class="card stat"><span>الدروس المنشورة</span><b>{{ stats.lessons }}</b></div>
+  <div class="card stat"><span>الاختبارات المنشورة</span><b>{{ stats.quizzes }}</b></div>
+  <div class="card stat red"><span>بانتظار المراجعة</span><b>{{ stats.pending_payments }}</b><span class="small"><a href="{% url 'owner:payments' %}">مراجعة الآن</a></span></div>
+  <div class="card stat red"><span>تذاكر مفتوحة</span><b>{{ stats.open_tickets }}</b><span class="small"><a href="{% url 'owner:tickets' %}">فتح الدعم</a></span></div>
+</div>
+
+<div class="card mb"><h3>تسجيلات الطلاب — آخر 7 أيام</h3><div class="bars">{% for s in signups %}<div class="bar"><em>{{ s.p }}</em><i style="height:{{ s.p|add:1 }}0%"></i><span>{{ s.l }}</span></div>{% endfor %}</div></div>
+
+<div class="split">
+  <div class="card"><div class="row spread"><h3 style="margin:0">طلبات تفعيل بانتظار المراجعة</h3><a class="btn sm ghost" href="{% url 'owner:payments' %}">عرض الكل</a></div>
+    {% for p in pending %}<div class="row spread small" style="padding:8px 0;border-bottom:1px dashed var(--line)"><span>{{ p.enrollment.student.full_name }} ← {{ p.enrollment.teacher.name }}</span><a class="btn sm" href="{% url 'owner:payments' %}?status=pending">مراجعة</a></div>{% empty %}<p class="muted small">لا توجد طلبات معلّقة.</p>{% endfor %}</div>
+  <div class="card"><h3>آخر المدفوعات المفعّلة</h3>{% for p in recent_payments %}<div class="row spread small" style="padding:8px 0;border-bottom:1px dashed var(--line)"><span>{{ p.enrollment.student.full_name }}</span><span class="pct">{{ p.amount }} ج</span></div>{% empty %}<p class="muted small">لا يوجد بعد.</p>{% endfor %}</div>
+</div>
+{% endblock %}

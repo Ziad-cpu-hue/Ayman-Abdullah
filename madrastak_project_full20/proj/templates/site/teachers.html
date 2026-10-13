@@ -1,0 +1,14 @@
+{% extends "site/public_base.html" %}
+{% block title %}المدرّسون{% endblock %}
+{% block main %}
+<section class="section"><div class="wrap">
+  <h2>مدرّسو المنصة</h2><p class="sub">ابحث بالاسم أو المادة أو رقم المدرّس.</p>
+  <form class="row mb" style="max-width:520px;margin-inline:auto"><input class="input grow" name="q" value="{{ q }}" placeholder="ابحث عن مدرّس…"><button class="btn">بحث</button></form>
+  {% if teachers %}<div class="grid gauto">{% for t in teachers %}
+    <a class="card tcard" href="{% url 'teacher_public' t.slug %}" style="color:inherit;text-decoration:none">
+      <div class="top">{% if t.photo %}<img class="avatar" src="{{ t.photo.url }}" alt="">{% else %}<span class="avatar">{{ t.display_label|slice:":1" }}</span>{% endif %}
+      <div><h3 style="margin:0">{{ t.display_label }}</h3><div class="meta">{{ t.subject }}{% if t.grades %} — {{ t.grades }}{% endif %}</div></div></div>
+      <p class="muted small">{{ t.bio|truncatechars:120 }}</p><span class="badge">{{ t.monthly_price|floatformat:"-2" }} ج / شهر</span></a>{% endfor %}</div>
+  {% else %}<div class="empty"><span class="big">🔎</span>لا يوجد مدرّسون مطابقون.</div>{% endif %}
+</div></section>
+{% endblock %}

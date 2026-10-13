@@ -1,0 +1,121 @@
+{% load ui_extras static %}<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>{{ l.title }}</title>
+<!-- Tailwind CSS CDN with Forms and Container Queries Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Tajawal (Arabic) and Plus Jakarta Sans (English) -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Tajawal:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif'],
+            en: ['Plus Jakarta Sans', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              bg: '#f1f5fa',
+              primary: '#1d4ed8',
+              navy: '#0f2942',
+              navyDark: '#133554',
+              softBlue: '#f0f6ff',
+              borderBlue: '#dbeafe',
+              teal: '#10b981',
+              tealSoft: '#f0fdf9',
+              tealBorder: '#ccfbf1'
+            }
+          }
+        }
+      }
+    };
+  </script>
+<style data-purpose="custom-typography">
+    body {
+      font-family: "Plus Jakarta Sans", 'Tajawal', sans-serif;
+      background-color: #f3f6fa;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-english {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      direction: ltr;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-12 flex flex-col items-center">
+{% if messages %}
+<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">
+  {% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}
+</div>
+<script>setTimeout(function(){document.querySelectorAll('.toast').forEach(function(t){t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(function(){t.remove()},600)})},5200);</script>
+{% endif %}
+{% if not preview %}{% lesson_info l user as LI %}{% endif %}
+<div class="w-full max-w-6xl mx-auto space-y-6">
+{% if preview %}<div class="rounded-2xl border border-violet-200 bg-violet-50 text-violet-900 text-sm font-bold px-5 py-3">👁️ وضع المعاينة كطالب — هذا ما سيراه الطالب.</div>{% endif %}
+<!-- BEGIN: TopBar -->
+<header class="flex flex-col-reverse md:flex-row md:items-center justify-between gap-4 pt-2" data-purpose="top-navigation-header">
+<!-- Left side button: Return to unit (RTL start / left visually) -->
+<div><a class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-2xl border-2 border-violet-200 bg-white/95 text-violet-700 hover:bg-violet-50 transition-all shadow-sm font-bold text-sm group" data-purpose="back-navigation-button" href="{% if preview %}{% url 'teacher:lesson_detail' l.pk %}{% else %}{% url 'student:unit' t.teacher_code l.unit.pk %}{% endif %}"><svg class="w-4 h-4 stroke-current stroke-2 fill-none group-hover:-translate-x-0.5 transition-transform" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg><span>العودة للقائمة</span></a></div>
+<!-- Right side: Breadcrumbs and Lesson Title -->
+<div class="text-right"><nav aria-label="مسار التصفح" class="flex items-center justify-end gap-2 text-xs sm:text-sm font-medium mb-2.5"><div class="h-6 px-3 bg-violet-100 text-violet-700 rounded-full flex items-center font-bold">الوحدة <span>{{ l.unit.title }}</span></div><span class="text-slate-300">›</span><div class="h-6 px-3 bg-amber-100 text-amber-800 rounded-full flex items-center font-semibold">الدرس <span>{{ position }}</span></div></nav><div class="flex items-center justify-end gap-3"><h1 class="text-xl sm:text-2xl font-bold text-slate-800 m-0">{{ l.title }}</h1></div></div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: ProgressBar -->
+<section aria-label="تقدم الدرس" class="w-full pt-1 pb-2" data-purpose="lesson-progress-indicator"><div class="flex items-center gap-4 bg-white/60 p-2.5 rounded-2xl border border-slate-200/80 shadow-2xs backdrop-blur-xs"><div class="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-3 py-1 rounded-xl text-xs font-bold shadow-xs"><span class="material-symbols-outlined text-sm font-normal">trending_up</span><span>نسبة الإنجاز</span><span class="tabular-nums mr-0.5 bg-white/20 px-1.5 py-0.5 rounded-md">{{ LI.percent|default:0 }}%</span></div><div class="relative flex-1 h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200/60"><div class="h-full bg-gradient-to-l from-violet-500 via-pink-500 to-amber-400 rounded-full transition-all duration-500 shadow-xs" style="width:{{ LI.percent|default:0 }}%"></div></div></div></section>
+<!-- END: ProgressBar -->
+<!-- BEGIN: MainContentCard -->
+<main class="w-full bg-white rounded-3xl border border-slate-200/70 shadow-sm p-6 sm:p-10 lg:p-12 space-y-9" data-purpose="main-lesson-content">
+<!-- Primary Card Header Title -->
+<div class="text-right border-b border-transparent pb-1"><div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-100"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-violet-200 shrink-0"><svg class="w-5 h-5 fill-none stroke-current stroke-2" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><div class="space-y-1.5"><div class="min-h-7 bg-slate-100 border-2 border-dashed border-violet-200 rounded-xl flex items-center px-3 py-1"><span class="text-sm font-bold text-violet-700">{{ l.title }}</span></div><p class="text-xs text-slate-400 font-medium">الدرس <span>{{ position }}</span> من <span>{{ total }}</span>{% if l.reading_minutes %} — <span>{{ l.reading_minutes }}</span> دقيقة قراءة{% endif %}</p></div></div>{% if prog.completed %}<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200/80"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>مكتمل ✓</span>{% else %}<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200/80"><span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>{% if preview %}معاينة{% else %}{{ LI.status_label }}{% endif %}</span>{% endif %}</div></div>
+{% if l.summary %}<p class="text-sm sm:text-base text-slate-600 leading-loose text-right m-0">{{ l.summary }}</p>{% endif %}
+{% if not preview %}{% if LI.has_video or LI.vocab or LI.tests or LI.exercises %}
+<div class="flex flex-wrap items-center gap-2.5" data-purpose="lesson-quick-links">
+  {% if LI.has_video %}<a href="{% url 'uikit:lesson_video' t.teacher_code l.pk %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-50 border border-violet-100 text-violet-700 hover:bg-violet-100 transition-colors text-xs font-bold no-underline">▶ فيديو الدرس</a>{% endif %}
+  {% if LI.vocab %}<a href="{% url 'student:vocabulary' t.teacher_code %}?lesson={{ l.pk }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 hover:bg-emerald-100 transition-colors text-xs font-bold no-underline">المفردات (<span>{{ LI.vocab }}</span>)</a>{% endif %}
+  {% if LI.tests %}<a href="{% url 'uikit:lesson_tests' t.teacher_code l.pk %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 hover:bg-indigo-100 transition-colors text-xs font-bold no-underline">الاختبارات (<span>{{ LI.tests }}</span>)</a>{% endif %}
+  {% if LI.exercises %}<a href="{% url 'uikit:lesson_exercises' t.teacher_code l.pk %}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 hover:bg-amber-100 transition-colors text-xs font-bold no-underline">التدريبات (<span>{{ LI.exercises }}</span>)</a>{% endif %}
+</div>{% endif %}{% endif %}
+{% if preview %}{% if l.video_file %}<div class="rounded-2xl overflow-hidden bg-black"><video controls preload="metadata" class="w-full" src="{% url 'teacher:preview_video' l.pk %}"></video></div>
+{% elif l.embed_url %}<div class="rounded-2xl overflow-hidden bg-black aspect-video"><iframe class="w-full h-full" src="{{ l.embed_url }}" allowfullscreen></iframe></div>{% endif %}{% endif %}
+
+{% for s in sections %}
+{% if s.kind == 'rule' %}
+<!-- Section: نص القاعدة (Grammar Rule) -->
+<section id="section-{{ s.pk }}" class="rounded-2xl bg-gradient-to-br from-amber-50/70 via-orange-50/40 to-amber-50/20 border border-amber-200/90 p-6 sm:p-7 space-y-4 shadow-xs" data-purpose="lesson-section-rule"><div class="flex items-center justify-between text-amber-900 mb-2"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-xs"><svg class="w-4.5 h-4.5 stroke-2 fill-none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><h3 class="text-lg font-bold text-amber-950">{{ s.title }}</h3></div><span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800">{{ s.get_kind_display }}</span></div>{% with lns=s.content|lines %}<div class="rounded-xl bg-white/90 border-2 border-dashed border-amber-300 p-6 space-y-4 shadow-2xs"><div class="flex flex-col items-center justify-center text-center p-4 bg-amber-50/60 rounded-xl border border-amber-100"><div class="text-base sm:text-lg font-bold text-amber-900 mb-1.5" dir="auto">« {{ lns.0|clean_bullet }} »</div></div>{% if lns|length > 1 %}<div class="pt-2 px-2 text-sm text-slate-600 font-medium border-t border-dashed border-amber-200/80 space-y-1.5">{% for ln in lns|slice:"1:" %}<p class="m-0 leading-loose">{{ ln }}</p>{% endfor %}</div>{% endif %}</div>{% endwith %}</section>
+{% elif s.kind == 'method' or s.kind == 'mistakes' or s.kind == 'review' %}
+<!-- Section: شرح مبسط (Simplified Explanation / points) -->
+<section id="section-{{ s.pk }}" class="space-y-4" data-purpose="lesson-section-explanation"><div class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50/50 to-white border border-emerald-100 text-emerald-900 shadow-2xs"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs"><svg class="w-4.5 h-4.5 stroke-2 fill-none" stroke="currentColor" viewbox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><h3 class="text-lg font-bold text-emerald-950">{{ s.title }}</h3></div><span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800">{{ s.get_kind_display }}</span></div><div class="space-y-3 px-1 sm:px-2">{% for ln in s.content|lines %}<div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/70"><span class="w-3 h-3 rounded-full bg-emerald-500 shrink-0 shadow-2xs"></span><div class="flex-1 min-h-[1.25rem] py-0.5 bg-white border border-dashed border-slate-300 rounded-md flex items-center px-3"><span class="text-sm font-semibold text-slate-700 leading-relaxed">{{ ln|clean_bullet }}</span></div><span class="text-xs font-bold text-slate-400 px-2">{{ forloop.counter }}</span></div>{% endfor %}</div></section>
+{% elif s.kind == 'example' %}
+<!-- Section: أمثلة توضيحية (Examples) -->
+<section id="section-{{ s.pk }}" class="rounded-2xl bg-gradient-to-br from-indigo-50/60 via-purple-50/30 to-violet-50/50 border border-indigo-100 p-6 sm:p-7 space-y-4 shadow-xs" data-purpose="lesson-section-examples"><div class="flex items-center justify-between text-indigo-900 mb-2"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs"><svg class="w-4.5 h-4.5 stroke-2 fill-none" stroke="currentColor" viewbox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><circle cx="12" cy="12" r="5"></circle><circle cx="12" cy="12" r="1.5"></circle></svg></div><h3 class="text-lg font-bold text-indigo-950">{{ s.title }}</h3></div><span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-100 text-indigo-800">{{ s.get_kind_display }}</span></div><div class="space-y-3">{% for ln in s.content|lines %}{% with ex=ln|split_example %}<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-xl bg-white border border-indigo-100 shadow-2xs hover:border-indigo-300 transition-colors"><div class="flex items-center gap-3"><span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-700 text-xs font-bold flex items-center justify-center">{{ forloop.counter }}</span><div class="px-3.5 py-1.5 rounded-lg bg-indigo-50/80 border border-dashed border-indigo-200 text-xs font-bold text-indigo-700"><span class="font-english">{{ ex.0 }}</span></div></div>{% if ex.1 %}<div class="flex items-center gap-2 text-xs text-slate-400 font-medium px-2"><span class="text-slate-300">—</span><span>{{ ex.1 }}</span></div>{% endif %}</div>{% endwith %}{% endfor %}</div></section>
+{% else %}
+<!-- Section: مقدمة (Introduction / text) -->
+<section id="section-{{ s.pk }}" class="space-y-4" data-purpose="lesson-section-intro"><div class="flex items-center justify-between px-5 py-3.5 rounded-2xl bg-gradient-to-r from-violet-50 via-indigo-50/50 to-white border border-violet-100 text-violet-900 shadow-2xs"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-xl bg-violet-600 text-white flex items-center justify-center shadow-xs"><svg class="w-4.5 h-4.5 stroke-2 fill-none" stroke="currentColor" viewbox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><h3 class="text-lg font-bold text-violet-950">{{ s.title }}</h3></div><span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-violet-100/80 text-violet-700">{{ s.get_kind_display }}</span></div><div class="p-6 rounded-2xl border-2 border-dashed border-slate-200/90 bg-gradient-to-b from-slate-50/50 to-white flex flex-col items-center justify-center text-center gap-3 min-h-[110px]"><div class="w-full text-right text-sm sm:text-base text-slate-700 leading-loose">{{ s.content|linebreaks }}</div></div></section>
+{% endif %}
+{% empty %}
+<div class="p-6 rounded-2xl border-2 border-dashed border-slate-200/90 bg-gradient-to-b from-slate-50/50 to-white flex flex-col items-center justify-center text-center gap-3 min-h-[110px]"><p class="text-sm font-semibold text-slate-500 m-0">لم يضف المدرّس شرحًا لهذا الدرس بعد.</p></div>
+{% endfor %}
+
+{% if files %}
+<section class="rounded-2xl bg-white border border-slate-200/70 p-6 sm:p-7 space-y-3 shadow-xs" data-purpose="lesson-files"><h3 class="text-lg font-bold text-slate-800 m-0">📎 الملفات المرفقة</h3>{% for f in files %}<div class="flex items-center justify-between gap-3 p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/70"><span class="text-sm font-semibold text-slate-700">📄 {{ f.title }}</span><a class="px-4 py-1.5 rounded-lg bg-violet-100 hover:bg-violet-200/80 text-xs font-bold text-violet-800 transition-colors no-underline" href="{% if preview %}{% url 'teacher:preview_file' f.pk %}{% else %}{% url 'student:lesson_file' f.pk %}{% endif %}" target="_blank">تحميل</a></div>{% endfor %}</section>
+{% endif %}
+</main>
+<!-- END: MainContentCard -->
+
+<!-- BEGIN: Lesson navigation -->
+<div class="flex flex-wrap items-center justify-between gap-3" data-purpose="lesson-navigation">
+  {% if prev_l %}<a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border-2 border-violet-200 bg-white/95 text-violet-700 hover:bg-violet-50 transition-all shadow-sm font-bold text-sm no-underline" href="{% url 'student:lesson' t.teacher_code prev_l.pk %}">→ الدرس السابق</a>{% else %}<span></span>{% endif %}
+  {% if not preview %}<form method="post" action="{% url 'student:lesson_complete' t.teacher_code l.pk %}" class="m-0">{% csrf_token %}<button class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border-2 border-violet-200 bg-white/95 text-violet-700 hover:bg-violet-50 transition-all shadow-sm font-bold text-sm no-underline cursor-pointer" type="submit">{% if prog.completed %}تحديث كمكتمل{% else %}تمييز الدرس كمكتمل{% endif %}<img src="{% static 'student/icons/stamp.png' %}" alt="" class="w-4 h-4 shrink-0"></button></form>{% endif %}
+  {% if next_l %}<a class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl border-2 border-violet-200 bg-white/95 text-violet-700 hover:bg-violet-50 transition-all shadow-sm font-bold text-sm no-underline" href="{% url 'student:lesson' t.teacher_code next_l.pk %}">الدرس التالي<img src="{% static 'student/icons/arrow.png' %}" alt="" class="w-4 h-4 shrink-0" style="transform:scaleX(-1)"></a>{% else %}<span></span>{% endif %}
+</div>
+<!-- END: Lesson navigation -->
+
+</div>
+</body></html>

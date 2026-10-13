@@ -1,0 +1,15 @@
+{% extends "student/base.html" %}
+{% block title %}الرسائل{% endblock %}
+{% block topbar_title %}التواصل مع {{ t.display_label }}{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>التواصل مع {{ t.display_label }}</h1></div>
+{% if not active %}<div class="banner blue">التواصل مع المدرّس متاح للمشتركين اشتراكًا نشطًا. <a href="{% url 'student:subscribe' t.teacher_code %}">اشترك الآن ←</a></div>{% endif %}
+<div class="card">
+  <div class="chat mb">
+    {% for m in msgs %}<div class="msg {% if m.sender == request.user %}me{% else %}them{% endif %}">{% if m.text %}{{ m.text }}{% endif %}{% if m.image %}<img src="{{ m.image.url }}" alt="">{% endif %}<small>{{ m.created_at|date:"d/m H:i" }}</small></div>{% empty %}<p class="muted center">ابدأ محادثتك مع مدرّسك.</p>{% endfor %}
+  </div>
+  {% if active %}
+  <form method="post" enctype="multipart/form-data">{% csrf_token %}{% include "partials/form.html" %}<button class="btn" type="submit">إرسال</button></form>
+  {% endif %}
+</div>
+{% endblock %}

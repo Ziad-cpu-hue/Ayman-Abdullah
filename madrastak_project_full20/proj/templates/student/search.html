@@ -1,0 +1,9 @@
+{% extends "student/base.html" %}
+{% block title %}بحث{% endblock %}
+{% block page %}
+<h1 class="text-2xl font-black text-[#173A73] mb-1">نتائج البحث</h1><p class="text-sm text-slate-500 mb-5">{% if q %}عن «{{ q }}»{% else %}اكتب كلمة في شريط البحث أعلاه.{% endif %}</p>
+{% if q and not lessons and not quizzes and not courses %}<div class="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-10 text-center text-slate-500">لا توجد نتائج مطابقة.</div>{% endif %}
+{% if courses %}<h3 class="font-black mb-2">الدورات</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">{% for c in courses %}<a class="bg-white rounded-2xl border border-[#DCE8F8] p-4 no-underline text-slate-800 card-hover" href="{% url 'student:course' c.teacher.teacher_code c.pk %}"><b>{{ c.title }}</b><p class="text-xs text-slate-500 m-0">{{ c.teacher.display_label }}</p></a>{% endfor %}</div>{% endif %}
+{% if lessons %}<h3 class="font-black mb-2">الدروس</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">{% for l in lessons %}<a class="bg-white rounded-2xl border border-[#DCE8F8] p-4 no-underline text-slate-800 card-hover" href="{% url 'student:lesson' l.unit.course.teacher.teacher_code l.pk %}"><b>{{ l.title }}</b><p class="text-xs text-slate-500 m-0">{{ l.unit.course.teacher.display_label }} — {{ l.unit.title }}</p></a>{% endfor %}</div>{% endif %}
+{% if quizzes %}<h3 class="font-black mb-2">الاختبارات والواجبات</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">{% for z in quizzes %}<a class="bg-white rounded-2xl border border-[#DCE8F8] p-4 no-underline text-slate-800 card-hover" href="{% url 'student:quiz' z.course.teacher.teacher_code z.pk %}"><b>{{ z.title }}</b><p class="text-xs text-slate-500 m-0">{{ z.get_kind_display }} — {{ z.course.teacher.display_label }}</p></a>{% endfor %}</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "owner/base.html" %}
+{% block title %}الأمان{% endblock %}
+{% block topbar_title %}الأمان{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>الأمان</h1></div>
+<h3>آخر محاولات الدخول الفاشلة</h3>
+<div class="tablewrap"><table class="t"><thead><tr><th>الوقت</th><th>الهاتف</th><th>عنوان IP</th></tr></thead><tbody>
+{% for f in fails %}<tr><td class="small">{{ f.created_at|date:"Y-m-d H:i" }}</td><td class="ltr">{{ f.phone }}</td><td class="ltr small">{{ f.ip|default:"—" }}</td></tr>{% empty %}<tr><td colspan="3" class="center muted">لا توجد محاولات فاشلة مسجّلة.</td></tr>{% endfor %}
+</tbody></table></div>
+<p class="muted small mt">يُقفل الحساب مؤقتًا تلقائيًا بعد عدة محاولات فاشلة متتالية لحماية حسابات الطلاب والمدرّسين.</p>
+{% endblock %}

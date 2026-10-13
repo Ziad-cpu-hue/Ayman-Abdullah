@@ -1,0 +1,28 @@
+{% extends "owner/base.html" %}
+{% block title %}المدفوعات{% endblock %}
+{% block topbar_title %}المدفوعات والتفعيل{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>المدفوعات والتفعيل</h1></div>
+<div class="tabs mb">
+  <a href="?status=pending" class="{% if status == 'pending' %}on{% endif %}">بانتظار المراجعة ({{ counts.pending }})</a>
+  <a href="?status=approved" class="{% if status == 'approved' %}on{% endif %}">مقبولة ({{ counts.approved }})</a>
+  <a href="?status=rejected" class="{% if status == 'rejected' %}on{% endif %}">مرفوضة ({{ counts.rejected }})</a>
+</div>
+{% for p in page %}
+<div class="card mb">
+  <div class="row spread">
+    <div><b>{{ p.enrollment.student.full_name }}</b> ← {{ p.enrollment.teacher.name }} ({{ p.enrollment.teacher.subject }})
+      <div class="small muted">{{ p.created_at|date:"Y-m-d H:i" }} — {{ p.get_method_display }} — من رقم <span class="ltr">{{ p.sender_phone|default:"—" }}</span>{% if p.reference %} — مرجع: {{ p.reference }}{% endif %}</div></div>
+    <div class="row"><span class="badge gold">{{ p.amount }} ج</span>
+      {% if p.receipt %}<a class="btn sm ghost" href="{% url 'owner:payment_receipt' p.pk %}" target="_blank">📎 عرض الإيصال</a>{% endif %}</div>
+  </div>
+  {% if p.status == 'pending' %}
+  <div class="row mt">
+    <form method="post" action="{% url 'owner:payment_approve' p.pk %}" data-once><input type="hidden" name="days" value="30">{% csrf_token %}<button class="btn sm teal">✓ تفعيل الاشتراك (30 يومًا)</button></form>
+    <form method="post" action="{% url 'owner:payment_reject' p.pk %}" data-once>{% csrf_token %}<input class="input" style="width:220px;display:inline-block" name="note" placeholder="سبب الرفض (اختياري)"><button class="btn sm danger">رفض</button></form>
+  </div>
+  {% else %}<span class="badge {% if p.status == 'approved' %}green{% else %}red{% endif %} mt">{{ p.get_status_display }}{% if p.note %} — {{ p.note }}{% endif %}</span>{% endif %}
+</div>
+{% empty %}<div class="empty"><span class="big">💳</span>لا توجد طلبات هنا.</div>{% endfor %}
+{% include "partials/pager.html" with page=page qs=qs %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "owner/base.html" %}
+{% block title %}{{ s.full_name }}{% endblock %}
+{% block topbar_title %}{{ s.full_name }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'owner:students' %}">الطلاب</a> ← {{ s.full_name }}</div>
+<div class="pagehead"><div><h1>{{ s.full_name }} <span class="badge {% if s.is_active %}green{% else %}red{% endif %}">{% if s.is_active %}نشط{% else %}موقوف{% endif %}</span></h1>
+<p class="muted ltr">{{ s.phone }} — ولي الأمر: {{ s.student_profile.parent_phone }} — {{ s.student_profile.get_grade_display }}</p>
+<p class="small muted">{% if s.name_ar %}الاسم العربي عند التسجيل: <b>{{ s.name_ar }}</b> — {% endif %}رقم الطالب (ID): <b>{{ s.student_profile.student_number|default:"—" }}</b> — تاريخ التسجيل: {{ s.date_joined|date:"Y-m-d" }} — آخر دخول: {{ s.last_login|date:"Y-m-d H:i"|default:"لم يسجّل دخولًا بعد" }}</p></div>
+<form method="post" action="{% url 'owner:student_toggle' s.pk %}" data-confirm="تأكيد؟">{% csrf_token %}<button class="btn sm {% if s.is_active %}danger{% else %}teal{% endif %}">{% if s.is_active %}إيقاف{% else %}تفعيل{% endif %}</button></form></div>
+{% if new_password %}
+<div class="card mb" style="border:2px solid #16a34a;background:#f0fdf4">
+  <h3 style="margin-top:0">✅ كلمة المرور المؤقتة الجديدة</h3>
+  <div class="row" style="align-items:center;gap:12px;flex-wrap:wrap">
+    <code id="new-pass" class="ltr" style="font-size:1.6rem;font-weight:800;letter-spacing:2px;direction:ltr;user-select:all">{{ new_password }}</code>
+    <button type="button" class="btn sm" onclick="navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('new-pass').textContent.trim());this.textContent='تم النسخ ✓'">نسخ</button>
+  </div>
+  <p class="small muted" style="margin-bottom:0">تظهر هذه الكلمة <b>مرة واحدة فقط</b> ولا تُحفظ في أي مكان — سلّمها للطالب الآن (رقم دخوله: <span class="ltr">{{ s.phone }}</span>) ونبّهه لتغييرها من «الملف الشخصي». تم أيضًا فك أي إيقاف مؤقت للدخول.</p>
+</div>
+{% endif %}
+{% if staff_can.student_passwords %}
+<div class="card mb"><h3>كلمة مرور الطالب</h3>
+<p class="small muted">كلمات المرور محفوظة <b>مشفّرة</b> ولا يمكن لأحد قراءة كلمة الطالب الحالية (وهذا لحمايته)، لكن يمكنك هنا تعيين كلمة جديدة له فورًا ليتمكن من الدخول.</p>
+<div class="row" style="gap:16px;flex-wrap:wrap;align-items:flex-end">
+<form method="post" action="{% url 'owner:student_reset_password' s.pk %}" data-confirm="سيتم توليد كلمة مرور جديدة وإبطال القديمة. متابعة؟">{% csrf_token %}<input type="hidden" name="action" value="generate"><button class="btn">🔑 توليد كلمة مرور مؤقتة وعرضها</button></form>
+<form method="post" action="{% url 'owner:student_reset_password' s.pk %}" class="row" data-once>{% csrf_token %}<input class="input" type="password" name="password" placeholder="أو اكتب كلمة مرور جديدة (6 أحرف فأكثر)" required minlength="6"><button class="btn ghost">تغيير</button></form>
+</div></div>
+{% endif %}
+<h3>المدرّسون والاشتراكات</h3>
+<div class="tablewrap"><table class="t"><thead><tr><th>المدرّس</th><th>المادة</th><th>الحالة</th><th>الانتهاء</th></tr></thead><tbody>
+{% for e in enr %}<tr><td>{{ e.teacher.name }}</td><td>{{ e.teacher.subject }}</td><td><span class="badge {% if e.display_status == 'active' %}green{% elif e.display_status == 'under_review' %}amber{% else %}red{% endif %}">{{ e.display_label }}</span></td><td>{{ e.expires_at|date:"Y-m-d"|default:"—" }}</td></tr>{% empty %}<tr><td colspan="4" class="center muted">لا يوجد اشتراكات.</td></tr>{% endfor %}
+</tbody></table></div>
+{% if tickets %}<h3 class="mt">تذاكر الدعم</h3>{% for tk in tickets %}<div class="card mb"><b>{{ tk.subject }}</b> <span class="badge">{{ tk.get_status_display }}</span></div>{% endfor %}{% endif %}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "owner/base.html" %}
+{% block title %}صلاحيات الفريق{% endblock %}
+{% block topbar_title %}صلاحيات فريق الإدارة{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'owner:settings' %}">إعدادات المنصة</a> ← صلاحيات الفريق</div>
+<div class="pagehead"><div><h1>صلاحيات فريق الإدارة</h1>
+<p class="muted">فعّل أي صلاحية لدور معيّن فيسمح لكل أعضاء هذا الدور بها فورًا، وأوقفها فيُمنعون منها (القسم يختفي من قائمتهم ولا يفتح لهم حتى برابط مباشر). المالك يملك كل شيء دائمًا، والإعدادات وسجل التدقيق والأمان وإدارة الفريق للمالك فقط.</p></div></div>
+<form method="post" data-once>{% csrf_token %}
+{% for g in groups %}
+<h3 class="mt">{{ g.title }}</h3>
+<div class="tablewrap"><table class="t"><thead><tr><th>الصلاحية</th>{% for r, label, n in roles %}<th class="center">{{ label }}<div class="small muted">{{ n }} عضو</div></th>{% endfor %}<th class="center">الكل</th></tr></thead><tbody>
+{% for row in g.rows %}<tr>
+<td>{{ row.label }}</td>
+{% for c in row.cells %}<td class="center"><input type="checkbox" class="check perm-cell" name="perm__{{ c.role }}__{{ row.key }}" value="1" {% if c.on %}checked{% endif %}></td>{% endfor %}
+<td class="center"><input type="checkbox" class="check perm-row" title="تحديد/إلغاء الصف كله"></td>
+</tr>{% endfor %}
+</tbody></table></div>
+{% endfor %}
+<div class="row mt" style="gap:10px;flex-wrap:wrap">
+  <button class="btn" type="submit" name="action" value="save">حفظ الصلاحيات</button>
+  <button class="btn ghost" type="submit" name="action" value="defaults" formnovalidate onclick="return confirm('إعادة الصلاحيات إلى الوضع الافتراضي؟')">إعادة للوضع الافتراضي</button>
+  {% if custom %}<span class="small muted" style="align-self:center">الصلاحيات الحالية مخصّصة.</span>{% else %}<span class="small muted" style="align-self:center">الصلاحيات الحالية هي الافتراضية.</span>{% endif %}
+</div>
+</form>
+<script>
+document.querySelectorAll('.perm-row').forEach(function(box){
+  var cells=box.closest('tr').querySelectorAll('.perm-cell');
+  function sync(){box.checked=[].every.call(cells,function(c){return c.checked});}
+  sync();
+  box.addEventListener('change',function(){cells.forEach(function(c){c.checked=box.checked});});
+  cells.forEach(function(c){c.addEventListener('change',sync);});
+});
+</script>
+{% endblock %}

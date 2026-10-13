@@ -1,0 +1,8 @@
+{% extends "student/base.html" %}
+{% block title %}الإعلانات{% endblock %}
+{% block topbar_title %}الإعلانات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>إعلانات {{ t.display_label }}</h1></div>
+{% if items %}{% for a in items %}<div class="card mb"><div class="row spread"><h3 style="margin:0">{{ a.title }}</h3><span class="small muted">{{ a.created_at|date:"d/m/Y" }}</span></div><p>{{ a.body|linebreaks }}</p></div>{% endfor %}
+{% else %}<div class="empty"><span class="big">📣</span>لا توجد إعلانات حاليًا.</div>{% endif %}
+{% endblock %}

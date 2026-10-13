@@ -1,0 +1,27 @@
+{% extends "owner/base.html" %}
+{% block title %}{{ t.name }}{% endblock %}
+{% block topbar_title %}{{ t.name }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'owner:teachers' %}">المدرّسون</a> ← {{ t.name }}</div>
+<div class="pagehead">
+  <div><h1>{{ t.name }} <span class="badge {% if t.user.is_active %}green{% else %}red{% endif %}">{% if t.user.is_active %}نشط{% else %}موقوف{% endif %}</span></h1>
+  <p class="muted">{{ t.subject }}{% if t.grades %} — {{ t.grades }}{% endif %} — رقم المدرّس: <span class="ltr badge gold">{{ t.teacher_code }}</span> — هاتف: <span class="ltr">{{ t.user.phone }}</span>{% if t.display_name %} — الاسم الظاهر للطلاب: <span class="badge">{{ t.display_name }}</span>{% endif %}</p></div>
+  <div class="row">
+    <a class="btn sm ghost" href="{% url 'owner:teacher_edit' t.pk %}">تعديل</a>
+    {% if staff_can.teacher_impersonate %}<form method="post" action="{% url 'owner:impersonate' t.pk %}" data-confirm="ستدخل بصلاحية هذا المدرّس وتدير كل ما يديره بنفسه (كل ما تفعله يُسجَّل). متابعة؟">{% csrf_token %}<button class="btn sm ghost">👁️ إدارة حساب المدرّس من الداخل</button></form>{% endif %}
+    <form method="post" action="{% url 'owner:teacher_toggle' t.pk %}" data-confirm="تأكيد تغيير حالة الحساب؟">{% csrf_token %}<button class="btn sm {% if t.user.is_active %}danger{% else %}teal{% endif %}">{% if t.user.is_active %}إيقاف الحساب{% else %}تفعيل الحساب{% endif %}</button></form>
+  </div>
+</div>
+<div class="grid g4 mb">
+  <div class="card stat"><span>الطلاب</span><b>{{ stats.students }}</b><span class="small">{{ stats.active }} نشط</span></div>
+  <div class="card stat teal"><span>الدورات</span><b>{{ stats.courses }}</b></div>
+  <div class="card stat purple"><span>الدروس</span><b>{{ stats.lessons }}</b></div>
+  <div class="card stat gold"><span>إجمالي إيراده</span><b>{{ stats.revenue|floatformat:0 }} ج</b></div>
+</div>
+{% if staff_can.teacher_passwords %}<div class="card mb"><h3>إعادة تعيين كلمة المرور</h3>
+<form method="post" action="{% url 'owner:teacher_reset_password' t.pk %}" class="row" data-once>{% csrf_token %}<input class="input" type="password" name="password" placeholder="كلمة مرور جديدة" required><button class="btn">تغيير</button></form></div>{% endif %}
+<h3>آخر الطلاب المنضمّين</h3>
+<div class="tablewrap"><table class="t"><thead><tr><th>الطالب</th><th>الحالة</th><th>التاريخ</th></tr></thead><tbody>
+{% for e in recent_enr %}<tr><td>{{ e.student.full_name }}</td><td><span class="badge {% if e.display_status == 'active' %}green{% else %}amber{% endif %}">{{ e.display_label }}</span></td><td>{{ e.created_at|date:"Y-m-d" }}</td></tr>{% empty %}<tr><td colspan="3" class="center muted">لا يوجد طلاب بعد.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

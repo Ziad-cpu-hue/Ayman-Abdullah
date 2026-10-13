@@ -1,0 +1,363 @@
+{% extends "ui/document.html" %}
+{% load static %}
+{% load ui_extras %}
+{% block title %}إتمام عملية الاشتراك{% endblock %}
+{% block body_class %}h-full bg-[#f0f5fa] text-slate-800 flex overflow-hidden{% endblock %}
+{% block head %}<style data-purpose="typography-and-custom-styles">
+    html { height: 100%; }
+    /* أي نص إنجليزي في الصفحة */
+    .t-en { font-family: "Plus Jakarta Sans", sans-serif; }
+    body { font-family: 'Tajawal', sans-serif; background-color: #f1f6fb; color: #1e293b; -webkit-font-smoothing: antialiased; }
+    .font-numbers { font-family: 'Plus Jakarta Sans', sans-serif; font-feature-settings: "tnum" 1, "cv05" 1; direction: ltr; display: inline-block; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.03); }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>{% endblock %}
+{% block body %}
+<!-- صفحة «إتمام عملية الاشتراك» — التصميم الجديد كما هو، بدون القائمة الجانبية. -->
+<div class="flex w-full h-full overflow-hidden" data-purpose="dashboard-container">
+<!-- BEGIN: MainContentArea -->
+<div class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto">
+
+<!-- BEGIN: ContentWrapper -->
+<main class="flex-1 px-8 pt-8 pb-10 max-w-[1380px] w-full mx-auto" data-purpose="checkout-content">
+<!-- Breadcrumb Navigation -->
+<nav class="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-4" data-purpose="breadcrumbs">
+<a class="hover:text-blue-600 transition flex items-center gap-1" href="{% url 'student:subscriptions' %}">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">الاشتراكات</span>
+</a>
+<span class="text-slate-300">›</span>
+<span class="text-slate-500 font-medium">تفاصيل الاشتراك</span>
+</nav>
+<!-- Page Header Title -->
+<div class="flex flex-col items-start mb-6" data-purpose="page-title-banner">
+<div class="flex items-center gap-2.5">
+<h1 class="text-2xl font-black text-slate-900 tracking-tight">إتمام عملية الاشتراك</h1>
+<div class="w-8 h-8 rounded-lg bg-blue-100/70 text-blue-600 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<p class="text-xs md:text-sm text-slate-500 mt-1 font-medium">قم بتحويل المبلغ المطلوب لإكمال عملية الاشتراك في محتوى المدرس</p>
+</div>
+<!-- حالة الاشتراك (تظهر عند الحاجة فقط) -->
+{% if active %}<div class="rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-xs font-bold px-5 py-3 mb-5">اشتراكك نشط ويتبقّى <span class="font-numbers">{{ days_left }}</span> يوم (حتى <span class="font-numbers">{{ enr.expires_at|date:"Y-m-d" }}</span>). يمكنك التجديد مبكرًا.</div>
+{% elif pending %}<div class="rounded-2xl border border-blue-200 bg-blue-50 text-blue-800 text-xs font-bold px-5 py-3 mb-5">طلبك قيد المراجعة. سنُفعّل اشتراكك خلال وقت قصير ونُرسل لك إشعارًا.</div>{% endif %}
+<!-- Main Subscription & Payment Columns -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start" data-purpose="subscription-grid">
+<!-- BEGIN: LeftColumn (Instructor Info & Subscription Breakdown) -->
+{% teacher_public_stats t as TS %}
+<div class="lg:col-span-4 bg-white rounded-3xl p-5 border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] flex flex-col" data-purpose="instructor-card">
+<!-- Teacher Picture with Floating Badge -->
+<div class="relative w-full h-48 rounded-2xl overflow-hidden mb-4 bg-slate-100 group">
+{% if t.photo %}<img alt="{{ t.display_label }}" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-500" src="{{ t.photo.url }}">{% else %}<div class="w-full h-full relative overflow-hidden group-hover:scale-105 transition duration-500 flex items-center justify-center" style="background-color: {% if "عرب" in t.subject or "arab" in t.subject|lower %}rgb(37, 99, 235){% elif "نجليز" in t.subject or "english" in t.subject|lower %}rgb(13, 148, 136){% else %}{% if t.id|divisibleby:2 %}rgb(13, 148, 136){% else %}rgb(37, 99, 235){% endif %}{% endif %};"><div class="relative z-10 flex flex-col items-center justify-center text-white/90 drop-shadow-sm"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAofbqCSqDLO70k0f0_EgrCMh4QftZLwxlZMdveaDE7nC2HxLW2gi-28Dvdslf7k8u_BMSUpIuGMdOokoetmZWyHBBjWeACyWkg6egF_1QGY2G4DLFmDiG2mkTmoqc8krN01Ar65v4w1_9li8lOs5VRiwBXYP51DSgPreOJwT_zg5IFJsavnfnPY555luynH7l_F9jWcuXR4jY5HMNDCE0R0ocgUqWC8ysgXcbq8gOl2FjVXaSjbdIRbQlzu-zFzi-BE4Y" alt="Educational illustration" class="max-h-[140px] w-auto object-contain drop-shadow-md select-none"></div></div>{% endif %}
+{% if "عرب" in t.subject or "arab" in t.subject|lower %}<div class="absolute top-4 right-4 z-20 px-3.5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow-sm" style="background-color: rgb(255, 240, 221); color: rgb(245, 158, 11); border-width: medium; border-style: none; border-color: currentcolor; border-image: none;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXX0_72UgTYH8x5B1TxBKKPiByiA6tJrffwjPj3Sn0Lc5X6ubZaMz6tApG0wMbBB83ASEySQbMirQzqG1iCgy_mIvS8HExK7i-iNUNlXpe0txd2Gty5XsDE8PYwYeCaJhI2Ce7qQh2LAdVSQR2fYFBaj2_xJVuHgkWJnzrOJiafzyaYSEC2B04J-66Ezr_vH1UTD0k59_8P61RtX59QqE5sucUKznBf4NZXmC7jJZ7XmvhTHcdHij4i5h5p7jb0JpTYjc" alt="Arabic" class="w-4 h-4 object-contain"><span class="">مدرس {{ t.subject }}</span></div>{% elif "نجليز" in t.subject or "english" in t.subject|lower %}<div class="absolute top-4 right-4 z-20 px-3.5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow-sm" style="background-color: rgb(225, 247, 255); color: rgb(8, 145, 178); border-width: medium; border-style: none; border-color: currentcolor; border-image: none;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtj-tXq1s8HhqdpuiaIusQLbT5Pvl3GOmTk0HjiY-5ZADNgxC7AkzvbJ1aotuJQO3TdEiDMP1OSjHCDHRclw9hcxZTYTWAg-BoZySCjpY4yfugftC2FWXtJYKPvZkgBv5QmyX7_tAvsY-IN_QvKHsARVk7JuXCxF7vTPpLe7pvqpqFuCSBQgBuMH52hWNUDgFrhF1bpif-EKjCm0fXLTKhkza8n641FK5_QlOlsNlZiNmUZTLt4mr2fBuGr3ZaanfqzLA" alt="English" class="w-4 h-4 object-contain"><span class="">مدرس {{ t.subject }}</span></div>{% else %}<div class="absolute top-4 right-4 z-20 px-3.5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow-sm" style="background-color: #EAF4FF; color: #2563EB; border-width: medium; border-style: none; border-color: currentcolor; border-image: none;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXX0_72UgTYH8x5B1TxBKKPiByiA6tJrffwjPj3Sn0Lc5X6ubZaMz6tApG0wMbBB83ASEySQbMirQzqG1iCgy_mIvS8HExK7i-iNUNlXpe0txd2Gty5XsDE8PYwYeCaJhI2Ce7qQh2LAdVSQR2fYFBaj2_xJVuHgkWJnzrOJiafzyaYSEC2B04J-66Ezr_vH1UTD0k59_8P61RtX59QqE5sucUKznBf4NZXmC7jJZ7XmvhTHcdHij4i5h5p7jb0JpTYjc" alt="Subject" class="w-4 h-4 object-contain"><span class="">مدرس {{ t.subject }}</span></div>{% endif %}
+</div>
+<!-- Instructor Name and Role -->
+<div class="text-center mb-4">
+<h2 class="text-xl font-black text-slate-900 tracking-tight">{{ t.display_label }}</h2>
+<p class="text-xs text-slate-500 font-semibold mt-0.5">{{ t.subject }}{% if t.grades %} - {{ t.grades }}{% endif %}</p>
+</div>
+<!-- Stats Bar (3 Metric Boxes) -->
+<div class="grid grid-cols-3 gap-2 mb-5">
+<!-- Rating Box -->
+<div class="bg-blue-50/50 border border-blue-100/60 rounded-xl p-2.5 text-center flex flex-col items-center justify-center">
+<div class="flex items-center gap-1">
+<svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400" viewBox="0 0 20 20">
+<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+</svg>
+<span class="font-numbers font-extrabold text-sm text-slate-800">{{ TS.courses }}</span>
+</div>
+<span class="text-[10px] text-slate-500 font-medium mt-0.5">كورس</span>
+</div>
+<!-- Students Box -->
+<div class="bg-blue-50/50 border border-blue-100/60 rounded-xl p-2.5 text-center flex flex-col items-center justify-center">
+<div class="flex items-center gap-1">
+<svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="font-numbers font-extrabold text-sm text-slate-800">{{ TS.students }}</span>
+</div>
+<span class="text-[10px] text-slate-500 font-medium mt-0.5">طالب</span>
+</div>
+<!-- Experience Box -->
+<div class="bg-blue-50/50 border border-blue-100/60 rounded-xl p-2.5 text-center flex flex-col items-center justify-center">
+<div class="flex items-center gap-1">
+<svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="font-extrabold text-sm text-slate-800"><span class="font-numbers">{{ TS.lessons }}</span></span>
+</div>
+<span class="text-[10px] text-slate-500 font-medium mt-0.5">درس</span>
+</div>
+</div>
+<!-- Subscription Details Section -->
+<div class="mb-5">
+<h3 class="text-xs font-black text-slate-900 mb-2.5">تفاصيل الاشتراك</h3>
+<div class="space-y-2">
+<!-- Item 1: Content -->
+<div class="bg-[#f8fafc] border border-slate-100 rounded-xl p-3 flex items-center justify-between">
+<div class="flex flex-col text-right">
+<span class="text-[11px] font-bold text-slate-700">المحتوى المشترك</span>
+<span class="text-[10px] text-slate-400 font-medium mt-0.5">دروس + اختبارات + واجبات + متابعة تقدم</span>
+</div>
+<div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Item 2: Duration -->
+<div class="bg-[#f8fafc] border border-slate-100 rounded-xl p-3 flex items-center justify-between">
+<div class="flex flex-col text-right">
+<span class="text-[11px] font-bold text-slate-700">مدة الاشتراك</span>
+<span class="text-[10px] text-slate-400 font-medium mt-0.5">شهر واحد (<span class="font-numbers">30</span> يوم)</span>
+</div>
+<div class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Item 3: Price -->
+<div class="bg-[#f8fafc] border border-slate-100 rounded-xl p-3 flex items-center justify-between">
+<div class="flex flex-col text-right">
+<span class="text-[11px] font-bold text-slate-700">قيمة الاشتراك</span>
+<span class="text-[10px] text-slate-400 font-medium mt-0.5"><span class="font-numbers font-bold text-slate-700">{{ t.monthly_price|floatformat:"-2" }}</span> جنيه / شهر</span>
+</div>
+<div class="w-7 h-7 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+<!-- Important Information Card (Blue Notice) -->
+<div class="bg-[#f0f7ff] border border-blue-100 rounded-2xl p-3.5" data-purpose="notice-box">
+<div class="flex items-center gap-1.5 mb-2 text-blue-600 font-bold text-xs">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path>
+</svg>
+<span class="">معلومات مهمة</span>
+</div>
+<ul class="text-[11px] text-slate-600 space-y-1.5 leading-relaxed pr-1 list-disc list-inside">
+<li class="">بعد إتمام التحويل سيتم تفعيل الاشتراك فوراً.</li>
+<li class="">يمكنك متابعة محتوى المدرس من قائمة المدرسين.</li>
+<li class="">سيتم إشعارك عبر الإشعارات عند نجاح عملية الدفع.</li>
+</ul>
+</div>
+</div>
+<!-- END: LeftColumn -->
+<!-- BEGIN: RightColumn (Payment / E-wallet Checkout Card) -->
+<div class="lg:col-span-8 bg-[#e9f2fa]/70 border border-blue-100/90 rounded-3xl p-7 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)] flex flex-col justify-between" data-purpose="checkout-card">
+<div>
+<!-- Checkout Card Header with 3D Illustration Graphic -->
+<div class="flex items-start justify-between relative mb-6 pb-2" data-purpose="invoice-header">
+<div>
+<div class="flex items-center gap-2">
+<h2 class="text-xl font-black text-slate-900 tracking-tight">فاتورة الاشتراك</h2>
+<span class="text-blue-600">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</span>
+</div>
+<p class="text-xs text-slate-500 font-medium mt-1">يرجى تحويل المبلغ المطلوب إلى رقم المحفظة التالية لإتمام عملية الاشتراك</p>
+</div>
+<!-- 3D Mobile / Digital Wallet Illustration Placeholder (Faithful graphic representation) -->
+<div class="w-24 h-24 shrink-0 relative -mt-3 hidden sm:flex items-center justify-center" data-purpose="wallet-illustration">
+<!-- Decorative circles -->
+<div class="absolute inset-0 bg-blue-200/40 rounded-full blur-lg"></div>
+<!-- Phone Mock SVG graphic -->
+<svg class="w-20 h-20 relative z-10 drop-shadow-md" fill="none" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#2563eb" height="80" rx="8" width="50" x="25" y="10"></rect>
+<rect fill="#f8fafc" height="72" rx="5" width="42" x="29" y="14"></rect>
+<!-- Screen items -->
+<rect fill="#cbd5e1" height="4" rx="2" width="30" x="35" y="24"></rect>
+<rect fill="#e2e8f0" height="4" rx="2" width="22" x="35" y="32"></rect>
+<rect fill="#e2e8f0" height="4" rx="2" width="26" x="35" y="40"></rect>
+<!-- Wallet overlay -->
+<rect fill="#1d4ed8" height="32" rx="6" transform="rotate(-6 12 46)" width="46" x="12" y="46"></rect>
+<rect fill="#3b82f6" height="26" rx="4" transform="rotate(-6 15 49)" width="40" x="15" y="49"></rect>
+<circle cx="48" cy="62" fill="#fbbf24" r="4"></circle>
+<!-- Success Checkmark floating -->
+<circle cx="70" cy="68" fill="#10b981" r="9"></circle>
+<path d="M66.5 68L69 70.5L73.5 66" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Price Box Component -->
+<div class="bg-white/95 rounded-2xl p-5 border border-slate-200/60 shadow-sm mb-6 flex items-center justify-between" data-purpose="amount-card">
+<div>
+<span class="text-xs font-bold text-slate-500 block mb-1">المبلغ المطلوب</span>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-black text-blue-600 font-numbers tracking-tight">{{ t.monthly_price|floatformat:"-2" }}</span>
+<span class="text-2xl font-black text-blue-600">جنيه</span>
+</div>
+</div>
+<div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center ring-4 ring-blue-50/50">
+<svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Payment Details Header -->
+<h3 class="text-xs font-black text-slate-800 mb-3">تفاصيل الدفع</h3>
+<!-- Payment Info 2-column Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3" data-purpose="payment-fields">
+<!-- Wallet Number Box -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm flex items-center justify-between">
+<div class="text-right">
+<span class="text-[11px] text-slate-400 font-medium block">رقم المحفظة (تحويل من محفظة إلى محفظة)</span>
+<span class="text-lg font-black text-slate-900 font-numbers tracking-wider mt-1 block" id="wallet-number">{{ site_s.wallet_number|default:"01556060683" }}</span>{% if site_s.wallet_holder %}<span class="text-[11px] text-slate-500 font-semibold block mt-0.5">باسم {{ site_s.wallet_holder }}</span>{% endif %}
+</div>
+<!-- Copy Button -->
+<button class="p-2.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition" id="copy-btn" onclick="navigator.clipboard.writeText('{{ site_s.wallet_number|default:"01556060683" }}')" title="نسخ الرقم" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+<!-- Digital Wallet Provider Box -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm flex items-center justify-between">
+<div class="text-right flex-1">
+<span class="text-[11px] text-slate-400 font-medium block">المحفظة الرقمية</span>
+<div class="flex items-center gap-2 mt-1">
+<!-- Vodafone Cash Icon -->
+<span class="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center">
+<span class="text-[9px] font-bold text-white leading-none">’</span>
+</span>
+<span class="text-sm font-black text-slate-800">فودافون كاش</span>
+</div>
+</div>
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Payment Method Full-width Box -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200/70 shadow-sm flex items-center justify-between mb-5">
+<div class="text-right">
+<span class="text-[11px] text-slate-400 font-medium block">طريقة الدفع</span>
+<span class="text-xs font-bold text-slate-800 mt-1 block">تحويل من محفظة إلى محفظة (e-wallet)</span>
+</div>
+<div class="w-8 h-8 rounded-lg text-slate-400 flex items-center justify-center">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+</div>
+<!-- Important Notes (Alert Box) -->
+<div class="bg-[#f0f7ff] border border-blue-100 rounded-2xl p-4 mb-6" data-purpose="notes-alert">
+<div class="flex items-center gap-2 mb-2 text-blue-600 font-bold text-xs">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd"></path>
+</svg>
+<span class="">ملاحظات هامة</span>
+</div>
+<ul class="text-[11px] text-slate-600 space-y-1.5 leading-relaxed pr-1 list-disc list-inside">
+<li class="">يرجى التأكد من إدخال رقم المحفظة بشكل صحيح.</li>
+<li class="">استخدم نفس رقم المحفظة المسجل باسمك.</li>
+<li class="">بعد التحويل، سيتم تفعيل الاشتراك تلقائياً خلال دقائق قليلة.</li>
+{% if site_s.payment_instructions %}<li class="">{{ site_s.payment_instructions|linebreaksbr }}</li>{% endif %}
+</ul>
+</div>
+</div>
+<!-- Action Buttons Group -->
+<div class="space-y-2.5 pt-2" data-purpose="action-buttons">
+<!-- Confirm Payment Primary Button -->
+<button id="open-pay" class="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-bold py-3.5 px-6 rounded-2xl transition shadow-md shadow-blue-500/20 flex items-center justify-center gap-2.5 text-sm" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">لقد قمت بالتحويل - تأكيد الدفع</span>
+<span class="font-sans">←</span>
+</button>
+<!-- Return Back Secondary Outline Button -->
+<a href="{% url 'student:subscriptions' %}" class="no-underline w-full bg-white hover:bg-slate-50 active:scale-[0.99] text-blue-600 border border-blue-400/80 font-bold py-3.5 px-6 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 text-sm">
+<span class="">العودة إلى قائمة الاشتراكات</span>
+<span class="font-sans">←</span>
+</a>
+</div>
+</div>
+<!-- END: RightColumn -->
+</div>
+{% if history %}
+<!-- سجل المدفوعات -->
+<h3 class="text-sm font-black text-slate-900 mt-8 mb-3">سجل المدفوعات</h3>
+<div class="bg-white rounded-3xl border border-slate-200/80 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] overflow-x-auto"><table class="w-full text-xs"><thead class="bg-slate-50 text-slate-500"><tr><th class="p-3 text-right font-bold">التاريخ</th><th class="p-3 text-right font-bold">المبلغ</th><th class="p-3 text-right font-bold">الوسيلة</th><th class="p-3 text-right font-bold">الحالة</th></tr></thead><tbody>
+{% for p in history %}<tr class="border-t border-slate-100"><td class="p-3 font-numbers">{{ p.created_at|date:"Y-m-d H:i" }}</td><td class="p-3"><span class="font-numbers">{{ p.amount }}</span> ج</td><td class="p-3">{{ p.get_method_display }}</td><td class="p-3"><span class="text-[11px] font-bold px-3 py-1 rounded-full {% if p.status == 'approved' %}bg-emerald-100 text-emerald-700{% elif p.status == 'rejected' %}bg-rose-100 text-rose-700{% else %}bg-amber-100 text-amber-700{% endif %}">{{ p.get_status_display }}</span></td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+</main>
+<!-- END: ContentWrapper -->
+</div>
+<!-- END: MainContentArea -->
+</div>
+
+<!-- نافذة تأكيد الدفع: مخفية افتراضيًا، تظهر عند الضغط على «تأكيد الدفع» (وتحتوي نموذج رفع الإيصال) -->
+<div id="pay-modal" class="hidden fixed inset-0 z-[90] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="pay-title">
+  <div id="pay-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-6">
+    <div class="flex items-start justify-between gap-3 mb-1">
+      <h3 id="pay-title" class="text-lg font-black text-slate-900 m-0">أكّد الدفع وارفع الإيصال</h3>
+      <button id="pay-close" type="button" class="w-8 h-8 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 flex items-center justify-center" aria-label="إغلاق">✕</button>
+    </div>
+    <p class="text-xs text-slate-500 font-medium mb-4">بعد التحويل، أدخل بيانات التحويل وارفع صورة الإيصال ليُفعَّل اشتراكك.</p>
+    {% if pending %}<p class="text-sm text-slate-500">لديك طلب قيد المراجعة بالفعل.</p>
+    {% else %}<form method="post" enctype="multipart/form-data" data-once class="legacy">{% csrf_token %}{% include "partials/form.html" %}<img id="rc" class="hidden mb" style="max-height:160px;border-radius:10px" alt=""><button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-2xl transition shadow-md text-sm" type="submit">إرسال طلب التفعيل</button></form>{% endif %}
+  </div>
+</div>
+
+<script data-purpose="clipboard-interaction">
+    document.addEventListener('DOMContentLoaded', () => {
+      const copyBtn = document.getElementById('copy-btn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const originalHTML = copyBtn.innerHTML;
+          copyBtn.innerHTML = `
+            <svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+          `;
+          setTimeout(() => {
+            copyBtn.innerHTML = originalHTML;
+          }, 1800);
+        });
+      }
+    });
+  </script>
+<script>
+(function(){
+  var modal=document.getElementById('pay-modal'), openBtn=document.getElementById('open-pay');
+  function setOpen(o){modal.classList.toggle('hidden',!o);}
+  if(openBtn)openBtn.addEventListener('click',function(){setOpen(true);});
+  document.getElementById('pay-close').addEventListener('click',function(){setOpen(false);});
+  document.getElementById('pay-backdrop').addEventListener('click',function(){setOpen(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
+  {% if form.errors and not pending %}setOpen(true);{% endif %}
+})();
+</script>
+<script>
+/* لفّ أي نص إنجليزي بخط Plus Jakarta Sans (النص العربي لا يتأثر) */
+(function(){
+  var re=/[A-Za-z][A-Za-z0-9.'\u2019\-]*(?:\s+[A-Za-z][A-Za-z0-9.'\u2019\-]*)*/g;
+  var skip={SCRIPT:1,STYLE:1,TEXTAREA:1,OPTION:1,NOSCRIPT:1};
+  var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
+    var p=n.parentNode;if(!p||skip[p.nodeName]||(p.classList&&p.classList.contains('t-en')))return NodeFilter.FILTER_REJECT;
+    return /[A-Za-z]/.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+  var nodes=[],n;while((n=walker.nextNode()))nodes.push(n);
+  nodes.forEach(function(t){var txt=t.nodeValue,last=0,m,frag=document.createDocumentFragment();re.lastIndex=0;
+    while((m=re.exec(txt))){if(m.index>last)frag.appendChild(document.createTextNode(txt.slice(last,m.index)));
+      var sp=document.createElement('span');sp.className='t-en';sp.textContent=m[0];frag.appendChild(sp);last=m.index+m[0].length;}
+    if(last<txt.length)frag.appendChild(document.createTextNode(txt.slice(last)));t.parentNode.replaceChild(frag,t);});
+})();
+</script>
+{% endblock %}

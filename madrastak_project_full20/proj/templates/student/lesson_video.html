@@ -1,0 +1,18 @@
+{% extends "student/base.html" %}
+{% block title %}فيديو: {{ l.title }}{% endblock %}
+{% block page %}
+<nav class="text-xs text-slate-500 mb-4 flex items-center gap-2 flex-wrap"><a href="{% url 'student:unit' t.teacher_code l.unit.pk %}" class="hover:text-blue-600">{{ l.unit.title }}</a><i class="fa-solid fa-chevron-left text-[9px]"></i><a href="{% url 'student:lesson' t.teacher_code l.pk %}" class="hover:text-blue-600">{{ l.title }}</a><i class="fa-solid fa-chevron-left text-[9px]"></i><span class="font-bold text-slate-700">الفيديو</span></nav>
+<div class="max-w-4xl mx-auto">
+  <h1 class="text-2xl font-black text-[#173A73] mb-4">🎬 {{ l.title }}</h1>
+  {% if has_file %}<div class="rounded-3xl overflow-hidden bg-black shadow-xl"><video controls preload="metadata" class="w-full max-h-[70vh]" src="{% url 'student:lesson_video' l.pk %}"></video></div>
+  {% elif embed %}<div class="rounded-3xl overflow-hidden bg-black shadow-xl aspect-video"><iframe class="w-full h-full" src="{{ embed }}" allowfullscreen></iframe></div>
+  {% elif is_media %}<div class="rounded-3xl overflow-hidden bg-black shadow-xl"><video controls preload="metadata" class="w-full max-h-[70vh]" src="{{ direct }}"></video></div>
+  {% else %}<div class="bg-white rounded-3xl border border-[#DCE8F8] p-8 text-center"><p class="text-slate-600 mb-4">هذا الفيديو مستضاف خارج المنصة.</p><a href="{{ direct }}" target="_blank" rel="noopener" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold no-underline">فتح الفيديو ↗</a></div>{% endif %}
+  {% if l.summary %}<p class="text-slate-600 mt-4">{{ l.summary }}</p>{% endif %}
+  <div class="flex flex-wrap gap-3 mt-6">
+    <a href="{% url 'student:lesson' t.teacher_code l.pk %}" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold no-underline">📖 النص التعليمي للدرس</a>
+    <a href="{% url 'student:unit' t.teacher_code l.unit.pk %}" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold no-underline">العودة للوحدة</a>
+    <form method="post" action="{% url 'student:lesson_complete' t.teacher_code l.pk %}">{% csrf_token %}<button class="px-5 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold" type="submit">تمييز الدرس كمكتمل ✓</button></form>
+  </div>
+</div>
+{% endblock %}

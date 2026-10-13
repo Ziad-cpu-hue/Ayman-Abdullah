@@ -1,0 +1,14 @@
+{% extends "owner/base.html" %}
+{% block title %}الدعم والتذاكر{% endblock %}
+{% block topbar_title %}الدعم والتذاكر{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>تذاكر الدعم</h1></div>
+<div class="tabs mb"><a href="?status=" class="{% if not status %}on{% endif %}">الكل</a><a href="?status=new" class="{% if status == 'new' %}on{% endif %}">جديدة ({{ counts.new }})</a><a href="?status=in_progress" class="{% if status == 'in_progress' %}on{% endif %}">قيد المعالجة ({{ counts.in_progress }})</a><a href="?status=resolved" class="{% if status == 'resolved' %}on{% endif %}">محلولة ({{ counts.resolved }})</a></div>
+{% for t in page %}
+<a class="card mb" href="{% url 'owner:ticket_detail' t.pk %}" style="display:block;text-decoration:none;color:inherit">
+  <div class="row spread"><b>{{ t.subject }}</b><span class="badge {% if t.status == 'new' %}amber{% elif t.status == 'in_progress' %}blue{% else %}green{% endif %}">{{ t.get_status_display }}</span></div>
+  <p class="small muted" style="margin:4px 0 0">{{ t.user.full_name }} ({{ t.user.get_role_display }}) — {{ t.get_category_display }} — {{ t.updated_at|timesince }}</p>
+</a>
+{% empty %}<div class="empty"><span class="big">🎫</span>لا توجد تذاكر.</div>{% endfor %}
+{% include "partials/pager.html" with page=page qs=qs %}
+{% endblock %}

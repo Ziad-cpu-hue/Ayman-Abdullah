@@ -1,0 +1,18 @@
+{% extends "teacher/base.html" %}
+{% block title %}تعديل سؤال مستورد{% endblock %}
+{% block topbar_title %}تعديل سؤال{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'examimport:batch_review' iq.batch_id %}">مراجعة الاستيراد</a> ← تعديل سؤال</div>
+<div class="grid g2">
+  <div class="card">
+    <h4 class="small muted">النص الأصلي من الملف</h4>
+    <pre style="white-space:pre-wrap;font-family:inherit;font-size:.9rem">{{ iq.raw_block }}</pre>
+  </div>
+  <div class="card">
+    <form method="post" data-once>{% csrf_token %}
+      {% include "partials/form.html" %}
+      <button class="btn" type="submit">حفظ</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

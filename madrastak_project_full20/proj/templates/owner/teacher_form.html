@@ -1,0 +1,8 @@
+{% extends "owner/base.html" %}
+{% block title %}{% if is_new %}إضافة مدرّس{% else %}تعديل مدرّس{% endif %}{% endblock %}
+{% block topbar_title %}{% if is_new %}إضافة مدرّس جديد{% else %}تعديل {{ t.name }}{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:600px">
+<form method="post" data-once>{% csrf_token %}{% include "partials/form.html" %}<button class="btn" type="submit">{% if is_new %}إنشاء الحساب{% else %}حفظ{% endif %}</button></form>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "student/base.html" %}
+{% block title %}سؤال تدريبي{% endblock %}
+{% block topbar_title %}تدريب — {{ t.subject }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'student:bank' t.teacher_code %}?{{ qstr }}">بنك الأسئلة</a> ← سؤال</div>
+<div class="qcard">
+  <div class="row spread mb"><span class="badge purple">{{ q.get_difficulty_display }}</span>
+    <form method="post" action="{% url 'student:bank_save' q.pk %}"><input type="hidden" name="next" value="{{ request.get_full_path }}">{% csrf_token %}<button class="linkbtn">{% if is_saved %}⭐ محفوظ{% else %}☆ حفظ السؤال{% endif %}</button></form></div>
+  {% if q.image %}<img src="{{ q.image.url }}" style="max-height:220px;border-radius:10px;margin-bottom:12px" alt="">{% endif %}
+  <div class="qtext">{{ q.text }}</div>
+  {% if not answered %}
+  <form method="post">{% csrf_token %}
+    {% for c in q.choices.all %}<label class="choice"><input type="radio" name="choice" value="{{ c.id }}" required> {{ c.text }}</label>{% endfor %}
+    {% if q.hint %}<details class="small muted mt"><summary>تلميح</summary>{{ q.hint }}</details>{% endif %}
+    <button class="btn mt" type="submit">تأكيد الإجابة</button>
+  </form>
+  {% else %}
+  {% for c in q.choices.all %}<div class="choice {% if c == correct %}ok{% elif c == chosen %}bad{% endif %}">{{ c.text }}</div>{% endfor %}
+  {% if ok %}<div class="right mt">✅ إجابة صحيحة{% if q.explanation %} — {{ q.explanation }}{% endif %}</div>
+  {% else %}<div class="reason mt">❌ {% if chosen.why_wrong %}{{ chosen.why_wrong }}{% else %}إجابة غير صحيحة{% endif %}</div>
+  <div class="right">الصحيح: {{ correct.text }}{% if q.explanation %} — {{ q.explanation }}{% endif %}</div>{% endif %}
+  <div class="row mt">
+    {% if lesson %}<a class="btn sm ghost" href="{% url 'student:lesson' t.teacher_code lesson.pk %}{% if q.section_id %}#section-{{ q.section_id }}{% endif %}">📖 راجع الدرس</a>{% endif %}
+    {% if next_id %}<a class="btn sm" href="{% url 'student:bank_question' t.teacher_code next_id %}?{{ qstr }}">السؤال التالي ←</a>{% else %}<a class="btn sm" href="{% url 'student:bank' t.teacher_code %}">العودة للبنك</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

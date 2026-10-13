@@ -1,0 +1,9 @@
+{% extends "site/public_base.html" %}
+{% block title %}تواصل معنا{% endblock %}
+{% block main %}
+<section class="section"><div class="wrap" style="max-width:640px">
+  <h2>تواصل معنا</h2><p class="sub">اكتب لنا وسنرد عليك. وإن كنت مدرّسًا وترغب بالانضمام فاذكر ذلك في رسالتك.</p>
+  <div class="card"><form method="post" data-once>{% csrf_token %}{% include "partials/form.html" %}<button class="btn block" type="submit">إرسال</button></form></div>
+  {% if site.support_phone or site.support_email %}<p class="center muted mt">{% if site.support_phone %}هاتف: <span class="ltr">{{ site.support_phone }}</span>{% endif %} {% if site.support_email %} — بريد: <span class="ltr">{{ site.support_email }}</span>{% endif %}</p>{% endif %}
+</div></section>
+{% endblock %}

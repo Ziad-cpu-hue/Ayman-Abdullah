@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="authwrap">
+  <aside class="authside">
+    <a class="brand" href="{% url 'landing' %}" style="padding:0">{% include "partials/logo.html" %}<span>{{ site.platform_name }}</span></a>
+    <div>
+      <h2>{% block sidetitle %}ابدأ رحلتك التعليمية{% endblock %}</h2>
+      <ul>
+        <li><b>1</b><span>حساب واحد لكل مدرّسيك ومواد دراستك</span></li>
+        <li><b>2</b><span>تعرف سبب كل خطأ وتراجع الجزء المناسب من الدرس</span></li>
+        <li><b>3</b><span>تتابع تقدّمك ودرجاتك مع كل مدرّس على حدة</span></li>
+      </ul>
+    </div>
+    <div class="small" style="opacity:.75">{{ site.tagline }}</div>
+  </aside>
+  <main class="authform"><div class="authbox">{% block box %}{% endblock %}</div></main>
+</div>
+{% endblock %}

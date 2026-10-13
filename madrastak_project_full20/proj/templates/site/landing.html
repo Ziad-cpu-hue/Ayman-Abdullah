@@ -1,0 +1,348 @@
+{% load static %}<!DOCTYPE html><html class="scroll-smooth" dir="rtl" lang="ar" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>منصة مدرستك التعليمية المتكاملة | معاً نحو مستقبل أفضل</title>
+<!-- External Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Tajawal -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet">
+<!-- FontAwesome Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"><link href="https://fonts.cdnfonts.com/css/somar" rel="stylesheet" class="">
+<style>
+  .font-somar {
+    font-family: 'Somar', 'Tajawal', sans-serif !important;
+  }
+</style>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#EEF5FF',
+              100: '#DCE8F8',
+              500: '#3B82F6',
+              600: '#2563EB',
+              blue: '#2563EB',
+              primary: '#2563EB',
+              navy: '#173A73',
+              dark: '#133664',
+              footer: '#133664',
+              muted: '#6F7F9A',
+              border: '#DCE8F8'
+            }
+          },
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+            sans: ['Tajawal', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Typography & Specific Layout Styles -->
+<style>
+    * {
+      font-family: 'Tajawal', sans-serif !important;
+    }
+    body {
+      background-color: #F7FAFF;
+      overflow-x: hidden;
+      color: #173A73;
+    }
+    .custom-card {
+      background-color: #FFFFFF;
+      border: 1px solid #DCE8F8;
+      box-shadow: 0 4px 20px -2px rgba(31, 64, 120, 0.07);
+    }
+    .card-hover-effect {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover-effect:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 28px -6px rgba(31, 64, 120, 0.12);
+      border-color: #BFDBFE;
+    }
+  </style>
+<style>
+    /* رسائل Django (نجاح/خطأ) — لا تظهر إلا عند وجود رسالة، ولا تؤثر على تصميم الصفحة */
+    .flashes{position:fixed;top:14px;left:0;right:0;z-index:100;display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+    .flash{pointer-events:auto;min-width:260px;max-width:92vw;padding:11px 18px;border-radius:12px;background:#173A73;color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.2);font-weight:600}
+    .flash.success{background:#16a34a}.flash.error{background:#dc2626}.flash.warning{background:#d97706}
+  </style>
+</head>
+<body class="text-[#173A73] antialiased selection:bg-blue-600 selection:text-white bg-[#F7FAFF]">
+{% include "partials/flashes.html" %}
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 bg-[#EAF2FB]/95 backdrop-blur-md border-b border-[#CAD9EA] shadow-sm" data-purpose="main-header">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Mobile menu toggle -->
+    <div class="md:hidden flex items-center justify-start py-3">
+      <button
+        id="mobileMenuToggle"
+        type="button"
+        class="inline-flex items-center justify-center p-0 border-0 bg-transparent cursor-pointer"
+        aria-label="فتح القائمة"
+        aria-expanded="false"
+        aria-controls="mobileHeaderMenu"
+      >
+        <img src="{% static 'ui/landing/mobile-menu-icon.png' %}" alt="" class="w-12 h-12 object-contain" style="transform: scaleX(-1);">
+      </button>
+    </div>
+
+    <!-- Existing desktop header -->
+    <div class="hidden md:flex items-center justify-between py-3">
+      <div class="flex items-center gap-3">
+        {% if not user.is_authenticated %}<a class="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full border-2 border-[#2563EB] text-[#2563EB] font-bold text-base hover:bg-blue-50 transition-all shadow-sm" href="{% url 'login' %}">
+          <img alt="تسجيل الدخول" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiiWJShpGasopkLtPBly_zxB903QqKC1YG38z2cvyHciW6mYf886C8Q6B9vZzTtMwwujczwi55GjFAq53n05EAHYcITm7MOCrANrB7R37jxEMMejpzxjuaVhN-Hqc30Ljxl7p_gy3-escIoPZnzKUiQ2FTLl3JVw9DqpFLZgxYnwBctEQN_lEsGBYhuYpbY6UZOn6YWalzTKrl_EINafmeKEPGmuuIYxlORFXcrMPM-pM1BPWYrIfY">
+          <span class="">تسجيل الدخول</span>
+        </a>{% endif %}
+        <a class="inline-flex items-center gap-2.5 px-7 py-2.5 rounded-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white font-bold text-base shadow-md shadow-blue-500/20 transition-all hover:shadow-lg border-2 border-[#2563EB]" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}">
+          <img alt="" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOalZ3Ufh2KtzZgGGuRSwBCXP5pRGM0QQSbFPGfWAtKdzt5RCd-iiQxI82KgBpLKQSeOPMez7pjdPO4nEYz3YEGVOsiwiE7gNH80Ro3HXDcXbXy7_4aRpBj7g6snHuohoXxncU3bhItvtgfyEL3GWn6pIyuS0WBwD4bA9GHUnaEwRWPdldgiX86NgmbUvUV3bArpA7jZe1wGV_nEH5WBU1JiNlKjqDRauvwBfQ21lJhQv7rNu4OCIw">
+          <span class="">{% if user.is_authenticated %}لوحتي{% else %}إنشاء حساب{% endif %}</span>
+        </a>
+      </div>
+      <a href="{% url 'landing' %}" class="flex items-center">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGrVuAC-6JBF5vFOyeY7ONfP9UhpdoM2G7XeQrsn85hfchyNsyT57OF1D9cmwLpYZbSd9QXYSe-zxH8XeflqMxWvxKg1m9UQhTAcj9W6bXFNOm7e5Fb80wCmsuRr2NlVtVvC9l7snNtQfaA7-heCbkJFaMQM85q12_peFuVCpY5rVtKoViaK4eMyYXArb3HQ-97p0FfVVekU4EZeTcXNiGdQSb7RJaFjwKZR_Pt9sc5pcFe2mqVwOj" alt="مدرستك - Madrasatak" class="h-14 md:h-16 w-auto object-contain">
+      </a>
+    </div>
+
+    <!-- Mobile header content: hidden until the icon is clicked -->
+    <div id="mobileHeaderMenu" class="hidden md:hidden pb-4" aria-hidden="true">
+      <div class="flex flex-col items-stretch gap-3">
+        <a href="{% url 'landing' %}" class="flex items-center justify-center py-2">
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGrVuAC-6JBF5vFOyeY7ONfP9UhpdoM2G7XeQrsn85hfchyNsyT57OF1D9cmwLpYZbSd9QXYSe-zxH8XeflqMxWvxKg1m9UQhTAcj9W6bXFNOm7e5Fb80wCmsuRr2NlVtVvC9l7snNtQfaA7-heCbkJFaMQM85q12_peFuVCpY5rVtKoViaK4eMyYXArb3HQ-97p0FfVVekU4EZeTcXNiGdQSb7RJaFjwKZR_Pt9sc5pcFe2mqVwOj" alt="مدرستك - Madrasatak" class="h-14 w-auto object-contain" onerror="this.onerror=null;this.src='{% static 'ui/landing/mobile-logo.png' %}';">
+        </a>
+        <div class="flex flex-col gap-2">
+          {% if not user.is_authenticated %}<a class="inline-flex items-center justify-center gap-2.5 px-7 py-2.5 rounded-full border-2 border-[#2563EB] text-[#2563EB] font-bold text-base hover:bg-blue-50 transition-all shadow-sm" href="{% url 'login' %}">
+            <img alt="تسجيل الدخول" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiiWJShpGasopkLtPBly_zxB903QqKC1YG38z2cvyHciW6mYf886C8Q6B9vZzTtMwwujczwi55GjFAq53n05EAHYcITm7MOCrANrB7R37jxEMMejpzxjuaVhN-Hqc30Ljxl7p_gy3-escIoPZnzKUiQ2FTLl3JVw9DqpFLZgxYnwBctEQN_lEsGBYhuYpbY6UZOn6YWalzTKrl_EINafmeKEPGmuuIYxlORFXcrMPM-pM1BPWYrIfY">
+            <span>تسجيل الدخول</span>
+          </a>{% endif %}
+          <a class="inline-flex items-center justify-center gap-2.5 px-7 py-2.5 rounded-full bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white font-bold text-base shadow-md shadow-blue-500/20 transition-all hover:shadow-lg border-2 border-[#2563EB]" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}">
+            <img alt="" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOalZ3Ufh2KtzZgGGuRSwBCXP5pRGM0QQSbFPGfWAtKdzt5RCd-iiQxI82KgBpLKQSeOPMez7pjdPO4nEYz3YEGVOsiwiE7gNH80Ro3HXDcXbXy7_4aRpBj7g6snHuohoXxncU3bhItvtgfyEL3GWn6pIyuS0WBwD4bA9GHUnaEwRWPdldgiX86NgmbUvUV3bArpA7jZe1wGV_nEH5WBU1JiNlKjqDRauvwBfQ21lJhQv7rNu4OCIw">
+            <span>{% if user.is_authenticated %}لوحتي{% else %}إنشاء حساب{% endif %}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const toggle = document.getElementById('mobileMenuToggle');
+      const menu = document.getElementById('mobileHeaderMenu');
+      if (!toggle || !menu) return;
+
+      toggle.addEventListener('click', () => {
+        const isOpen = !menu.classList.contains('hidden');
+        menu.classList.toggle('hidden');
+        menu.setAttribute('aria-hidden', String(isOpen));
+        toggle.setAttribute('aria-expanded', String(!isOpen));
+        toggle.setAttribute('aria-label', isOpen ? 'فتح القائمة' : 'إغلاق القائمة');
+      });
+    })();
+  </script>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: HeroSection -->
+<section class="relative bg-[#d3e3ff] py-10 lg:py-14 border-b border-[#DCE8F8]" data-purpose="hero-section" style="background-color: #d3e3ff !important; background-image: none !important;">
+<div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:pr-0 lg:pl-8">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+    <div class="lg:col-span-7 flex flex-col items-start text-right lg:pr-0 -mr-2 sm:-mr-4 lg:-mr-12 w-fit max-w-full p-6 sm:p-8">
+      <div class="inline-flex items-center gap-2.5 mb-5 px-4 py-2 rounded-full bg-[#EEF5FF] border border-[#DCE8F8] text-[#2563EB] text-xs font-bold shadow-sm">
+        <img alt="هدف" class="w-4 h-4 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFUOSGcDUZ71bN3yPzMZw2RnWZWAtApKaVTsdyx7bPErH2as_fnXuH7E34rVx1rEFpwQw6whzVpRvI_cOojhGdqSyieXvVq8nkUibGZQ6YfipUYc6NM0mT8F1UZHw9WL3NkbP8QDPqRd9KAaaNlWyumEu44JSjPgDq4OQyl_rzvHaIAPUSw75cIA8sciqROcKlNnsgRNsdnXFCyiRqFUFZyByb5IWl1Nu7M99HOMg1m5-8p9sqMyI7">
+        <span class="">تتبع تحصيلك حقق أهدافك</span>
+        <img alt="" class="w-3 h-3 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBzemMHE6QMYcyWg2Zzem4YufaMHsX31CGWp0pWgtH72AzlvrWwB-KN4WJkwGoP93Hs52XJ-D2ZUnl7T08P0ubrls7RxKdBTBGVBXTSU1vYJPfi7xGtbulH2yEHDEJpcYgA9z4klYmUUtvY8Y5E6ddc7ULpKuIPPHe3boqypNX6B6jMSskbaEbyO9WwhrDKNBpyACUZ4mMQVM_hDzL_ytQnBdfx4_0Us1XKC5-0D3anIsjz-4whZSZ8">
+      </div>
+      <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-[#173A73] leading-tight mb-5 tracking-tight font-somar" style="font-size: clamp(3.2rem, 5.8vw, 4.85rem); font-weight: 900; line-height: 1.08; -webkit-text-stroke: 1.5px rgb(23, 58, 115); paint-order: stroke; font-family: Somar, &quot;Somar Sans&quot;, sans-serif !important;">
+        <span class="block font-somar" style="font-family: 'Somar', 'Somar Sans', sans-serif !important;">منصة تعليمية متكاملة</span>
+        <span class="block font-somar" style="font-family: 'Somar', 'Somar Sans', sans-serif !important;">تجمع بين <span style="color: #F59E0B; font-family: 'Somar', 'Somar Sans', sans-serif !important; font-weight: 900; font-size: inherit; -webkit-text-stroke: 1.5px #F59E0B;" class="font-somar">المدرس</span> <span style="color: #22C55E; font-family: 'Somar', 'Somar Sans', sans-serif !important; font-weight: 900; font-size: inherit; -webkit-text-stroke: 1.5px #22C55E;" class="font-somar">والطالب</span></span>
+      </h1>
+      <p class="text-base sm:text-lg text-[#6F7F9A] leading-relaxed font-normal mb-8 max-w-2xl text-right">
+        مدرستك هي منصة تعليمية حديثة تساعدك على إدارة رحلتك التعليمية بشكل أسهل وأكثر فاعلية، من خلال أدوات ذكية، محتوى منظم وتقارير دقيقة تضمن لك تحقيق أفضل النتائج.
+      </p>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5 w-full max-w-3xl mb-8">
+        <div class="bg-white rounded-2xl p-4 border border-[#DCE8F8] shadow-sm hover:shadow-md card-hover-effect flex flex-col items-center text-center justify-center" style="background-color: rgba(147, 51, 234, 0.06); border-color: rgba(147, 51, 234, 0.22);">
+          <div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center mb-2.5">
+            <img alt="معلم خاص" class="w-7 h-7 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDM-gTmm3riFODrEVG2AZLAZU7TzioTkihRtDrs4CGEPHFxUv65UsdnG20VE5LS0ne-fEElg-T8FOb-bapsupdRvtKr2uoFMycdQzIpSwPmyVsdAqYr28ZEVuBAymOj-8miCRnRkRwEFa1X-b58ug7N4ClUCShNL9onc4CwTZRwiqudsy4DzVgEo21Nma3Qo-hIVOacDrYKm5el235XAWQAuUz7jowcJ6VMDVZTXVMaCbAy19N-X45E">
+          </div>
+          <span class="text-xs font-bold text-[#173A73] leading-tight">معلم خاص<br>للطلاب</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-[#DCE8F8] shadow-sm hover:shadow-md card-hover-effect flex flex-col items-center text-center justify-center" style="background-color: rgba(245, 158, 11, 0.07); border-color: rgba(245, 158, 11, 0.25);">
+          <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center mb-2.5">
+            <img alt="محتوى تفاعلي" class="w-7 h-7 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbNafEMUaS9G6QI1n_hHsy_6ZAx-UXXQYHjfyA-jPuN7-53P9eadBGdm-0rAiyn_9lGNV0XXFIFRYGz5d3KZ9sPEoZZ_FrIdLU-eqbMiL1GSD9syAl2FRMNl-e9p3KJANWLBujEaQiDWnzsPMPd8WFD6fB-jNJvX5mB9QGucvHugq_bROU51XUHV1gnj8szaMeGSCObQgcyl9RLEOEXh10PCmMJuiyHU3qWNCzI-O3MWpzKPgu0Q6x">
+          </div>
+          <span class="text-xs font-bold text-[#173A73] leading-tight">محتوى تفاعلي<br>ومتنوع</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-[#DCE8F8] shadow-sm hover:shadow-md card-hover-effect flex flex-col items-center text-center justify-center" style="background-color: rgba(37, 99, 235, 0.07); border-color: rgba(37, 99, 235, 0.25);">
+          <div class="w-12 h-12 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-2.5">
+            <img alt="متابعة التقدم" class="w-7 h-7 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5wpzyUho0bnKK496KkTX3rqtX4VjOaWPDzPeolij_H_jCxO4re4_5HgbHLfL_vo5UCJ2l6QR4QA9UiK4zNWhVhMo6_IwyeO2ypRgNd7nocgpirefnHm9nG8rk5SgJ8zkao_tRnYdLK7qgZ0ef5q7VSN0EaqmnlvwxSg9vWiMqS1QGly8FQcBxHDwoKiyCpygClTom7yacxbbryk1RGOyevdxPiYofSS0y5E1esx7nSXC6W3Qp76v9">
+          </div>
+          <span class="text-xs font-bold text-[#173A73] leading-tight">متابعة التقدم<br>والتقارير</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 border border-[#DCE8F8] shadow-sm hover:shadow-md card-hover-effect flex flex-col items-center text-center justify-center" style="background-color: rgba(16, 185, 129, 0.07); border-color: rgba(16, 185, 129, 0.25);">
+          <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-2.5">
+            <img alt="دعم فني" class="w-7 h-7 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDnWIh400hMFRDwoHgVvzJFrkP96DTSK1oyxxjUJYiJmbUiv03NUn-Wz2KFCv2RfEBY5xrv5BsNYaR_61RDrx0Km7MBBC5x-T91m3YEgRlRvIAIGCbT6VFe69uhzDzqnO4s_FT2Jr5qCWOpcff0s6jLRO3__yS8WKoWZ5PKL8cGUesv2s5e6hB3ZAeUKRuykdlyuYC9aYdr1Ctg_eyiCQRbAdCltN5zeRMpyMiDml3POj1IHuvSKVM">
+          </div>
+          <span class="text-xs font-bold text-[#173A73] leading-tight">دعم فني<br>متواصل</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3.5 flex-wrap">
+        <a class="inline-flex items-center justify-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-[#2563EB] to-[#3B82F6] hover:from-[#1D4ED8] hover:to-[#2563EB] text-white font-bold rounded-full shadow-lg shadow-blue-500/25 transition-all text-sm min-w-[145px]" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}">
+          <span class="">ابدأ الآن</span>
+          <img alt="" class="w-3.5 h-3.5 object-contain brightness-0 invert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpW9xWHPi2d1pJV2E204qEJz8cCnvN9I2YHDSGadLGzqkyF_9daayoJiI7hkVTpGoUvTolQmx4aExOGQbuztic6F2f0oJst-8GoDBDC0W9H9eB1M-dxYV1GUOTc6DQNBcOLM900kPUyvSH5_sGk15OAIfgu1BLX9AiwFNj1vln0xCuP1q1tNV7BSIo4WwMLs4RGfw_smSIdbgkfneSiopeuLhIcLmOL7Zpu7hCAdv2GwOefpLb_PrW">
+        </a>
+        <a class="inline-flex items-center justify-center px-7 py-3.5 bg-white hover:bg-blue-50/50 text-[#2563EB] font-bold border border-[#3B82F6] rounded-full transition-colors text-sm min-w-[130px] shadow-sm" href="#features">اكتشف المزيد</a>
+      </div>
+    </div>
+    <div class="lg:col-span-5 flex items-center justify-center">
+      <img src="{% static 'ui/landing/hero-study-space.png' %}" alt="" class="w-full h-auto object-contain">
+    </div>
+  </div>
+</div></section>
+<!-- END: HeroSection -->
+<!-- BEGIN: FeaturesSection -->
+<section class="py-16 bg-[#F1F6FB] border-t border-[#D8E4F2]" id="features" data-purpose="features-grid">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Section Header -->
+<div class="text-center max-w-2xl mx-auto mb-14">
+<div class="inline-block px-4 py-1 mb-3 text-xs font-bold text-[#2563EB] bg-[#EEF5FF] rounded-full border border-[#DCE8F8]">
+        ‹ كل ما تحتاجه في مكان واحد ›
+      </div>
+<h2 class="text-5xl sm:text-6xl font-black text-[#173A73] mb-3 tracking-tight font-somar" style="font-size: clamp(2.8rem, 5vw, 3.85rem); font-weight: 900; -webkit-text-stroke: 1.5px rgb(23, 58, 115); paint-order: stroke; font-family: Somar, Cairo, sans-serif !important;">
+        مميزات المنصة
+      </h2>
+<p class="text-[#6F7F9A] text-sm sm:text-base leading-relaxed">
+        من الأدوات الذكية إلى المحتوى التفاعلي، كل ما تحتاجه لتتفوق في رحلتك التعليمية.
+      </p>
+</div>
+<!-- 6 Features Grid (3x2) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6"><div class="md:col-span-2 rounded-2xl p-8 border card-hover-effect flex flex-col items-center text-center shadow-sm" style="background-color: rgba(147, 51, 234, 0.05); border-color: rgba(147, 51, 234, 0.2);"><div class="w-16 h-16 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center mb-5"><img alt="المساعد الذكي" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCNgnh2cH1d2gXpgRr1eCTyduesgvEaPMBB2c8TM-BzOrgKDTMQeJul5wgJh30sEsOBVMeWyRtMMGoUzNNzJtC3IqZ-fwtPv_8LAfRqVK50y418LLYliky5sUbZunPgfmjvpmbzyvOePNhDpHDXi0OOohYfQYICDhaunB2BJSQNrC7Z5R3omeRDkkswkxQugsXtfHfrFN7dQ189FKaKsz3dA1igi1TH8Z7yGz88ooawr2GKM-xwwtq"></div><h3 class="text-xl font-bold text-[#173A73] mb-2">المساعد الذكي</h3><p class="text-sm text-[#6F7F9A] leading-relaxed mb-6 max-w-md">احصل على إجابات فورية لأسئلتك، وشرح مبسط لكل ما تحتاج معرفته في أي وقت وبكل سهولة.</p><a class="mt-auto inline-flex items-center gap-2 text-sm font-bold text-purple-600 hover:text-purple-700 transition-colors" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}"><span class="">اكتشف المزيد</span><img alt="" class="w-3 h-3 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFupq2HErktUJJIWXWkgPPsFCppQo1rSDucRBipTpD8adSNLp8R6ZT2WWYW5I6GnT99DtkYwTXyML59PPFZNbkNWwi9K9zm9DYrqz2iPpbNxP4xSOZF3jcNaqoqnVBvU6QgRQlmOVIH9dO2qgeEosRfN48_DuqwCOp-5QNUYsjh9kT9Ws9RrTzYEtHSW3HVJmMGHc6Xf0917M61PUTI2OWrduVzEmp6cAatESgsnAGoS-B2mdok01T"></a></div><div class="md:col-span-1 rounded-2xl p-8 border card-hover-effect flex flex-col items-center text-center shadow-sm" style="background-color: rgba(16, 185, 129, 0.05); border-color: rgba(16, 185, 129, 0.2);"><div class="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-5"><img alt="إدارة الدورات" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs9sWKc0lijFnpz7qoT3G2ct1TbjC1Us1RdWDfCw_u7BchJ_tHoHPalKojvQs7IqlMDtwibW__K9WFAz0g13xWEq7BADOjNP8PILFSZKhiLR_I0BI3z99WpOxYoMcKDFcMxNEONF-kwAmPJeVO8-kYGQyVi0xlGt8BtMKCu5eAY4TgiQDpgId1tKeWYw63v_f9T_FyW6Xhe0suurhX47FHo_HPxL1OVV7_o7pkXE8KShw7UXK1Ar1G"></div><h3 class="text-lg font-bold text-[#173A73] mb-2">إدارة الدورات</h3><p class="text-sm text-[#6F7F9A] leading-relaxed mb-6">دورات متنوعة ومصممة بعناية لتناسب جميع المستويات والمناهج الدراسية.</p><a class="mt-auto inline-flex items-center gap-2 text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors" href="{% url 'teachers' %}"><span class="">اكتشف المزيد</span><img alt="" class="w-3 h-3 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEOSuEAA_WXgmskGUpL0W4DXB334nUCt5R3ifLkzdRhEkvbwhTaNhTrVWXofHNxyTloZCYbLV2C8OlKT1FWtgSxc0vwfWWA4epV0a627KRcyYTfi3JJAwpoeb1auN2qGHNSQcdjtLQk8Bsag_uaShw26oigW77K07FfrSr9M9Fwu9KaMKCHkl-G8pJgIA9etF7aXWX4PCePKyRi03A1piUpzS7ZiHs0PjuF-2hPytz9msVXRhlcpuM"></a></div><div class="md:col-span-1 rounded-2xl p-8 border card-hover-effect flex flex-col items-center text-center shadow-sm" style="background-color: rgba(59, 130, 246, 0.05); border-color: rgba(59, 130, 246, 0.2);"><div class="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-5"><img alt="الاختبارات والتقييمات" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxCJlGoa8uOIXdHQA04TnFPM_AxX1xAy8J2TH7tN_Va-jdqFh9zi3dSlfsFajUrqakYmWEHmUZX8VUrPn3My2Jsuc_zX4y3Qo1rswuB4E5_3rZbAeesBCOzp-tO3Q2kVwfo09uY22szZFK3Gn25p9a6hCi-HMIAJn19SiEaP_OCp8JmG0AaOXT8Fii8xlSwGHlSXTJXQ_BHVLWXT97Dn6OrxXRxYfXOGZcq_TcetcBf5VWHvxwzb0l"></div><h3 class="text-lg font-bold text-[#173A73] mb-2">الاختبارات والتقييمات</h3><p class="text-sm text-[#6F7F9A] leading-relaxed mb-6">اختبارات تفاعلية تقيس مستواك بدقة مع تصحيح تلقائي وتحليل فوري للنتائج.</p><a class="mt-auto inline-flex items-center gap-2 text-sm font-bold text-[#2563EB] hover:text-[#1D4ED8] transition-colors" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}"><span class="">اكتشف المزيد</span><img alt="" class="w-3 h-3 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCinHE9VZ6aUVEDvLOHL-yuUe-NoNTDJPek85VvBYHfAASx4kpnm66awp-MfNQeb6b_KVLCOFRAYGyPHkfeXRvWGUWVMs-dDGVKGuxJ_uAWQZi5GjInU9ZK3HUbGo5LNCZQChkxJ6biffU3OQbd8-2Z9R0GhoZAFF_tzw81S6aF0j3NuHRlECVOruZlMQlDrGUbm3gSa1ZjQPllvPnQME2M2ul1qGIC8A2j6stJ1n1U1p-WyNk-e4-S"></a></div><div class="md:col-span-2 rounded-2xl p-8 border card-hover-effect flex flex-col items-center text-center shadow-sm" style="background-color: rgba(245, 158, 11, 0.05); border-color: rgba(245, 158, 11, 0.2);"><div class="w-16 h-16 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center mb-5"><img alt="التقارير والإحصائيات" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABgKV2FCqTQLaQsEEOjiCA3eI9uILNSR0clBiDA3qo2i1O-n4nUH6fUe6WaxVNKF7B-tNnVBtYrTqggowTC-84nEmH3zmcnoJ68wTL6suJkdvPn6d-LtRzp9wh4049ro5USzQ7A07Mds7SOivZ373Yd7VMcTb-pxVwGbfUJvyHK8gJJpMDi9PoT-tkAJKkRdS4OvEEHDphs2jvjOFbos5_zwU1GXKnB4pZYW9Z9rsBCpKJsZ3F5n39"></div><h3 class="text-xl font-bold text-[#173A73] mb-2">التقارير والإحصائيات</h3><p class="text-sm text-[#6F7F9A] leading-relaxed mb-6 max-w-md">تابع تطورك من خلال تقارير مفصلة وتحليلات دقيقة لأدائك تساعدك على اتخاذ القرارات الصحيحة.</p><a class="mt-auto inline-flex items-center gap-2 text-sm font-bold text-amber-600 hover:text-amber-700 transition-colors" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}"><span class="">اكتشف المزيد</span><img alt="" class="w-3 h-3 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwqgptBZM97FzkNpDgJJ3xXguJY1Z8igXEIywegpmr-yiDV5QpEyAbNbB30sTuHoii2ApMEap1uwMZ4QtjDomQhABanOSE3bakAITffx7g2n19WuysdT6iXyopY4iFfXRsQV71LFYnwImVbj1RiXtQDSVZ0DaJVtTD7s4rkI7LQJQLLE7aAgLBBeMPc9FLJ3a6GW3rL65YzcY3A1-vJWCPbAWDLiQgTi8i1LkhMOWHtQak-RpVoV0l"></a></div><div class="md:col-span-2 rounded-2xl p-8 border card-hover-effect flex flex-col items-center text-center shadow-sm" style="background-color: rgba(236, 72, 153, 0.05); border-color: rgba(236, 72, 153, 0.2);"><div class="w-16 h-16 rounded-2xl bg-pink-50 border border-pink-100 flex items-center justify-center mb-5"><img alt="معلمك الخاص" class="w-10 h-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCURlcjFO3fnLbAQp1nfTobIocHrQxILEjDmwv9tbXotCGUMJhFD5kDli4etO_MehvbmfDYbxPzoPKczFXaNYg3F64YE1SgNvcsP3UKkPmtm2BiXDElcJ2I9G-sQhRJFiwsy3iVYEI_Ej6SaBaxJBKXAzz-Od6VnV4utBPt4i2CIiadK4Rf09CQOHVxh-lNyukX3d33DG0cmuPhRdynYp_GJIih9I17pqQ9i5G9YC7aPs0L2r09fMv0"></div><h3 class="text-xl font-bold text-[#173A73] mb-2">معلمك الخاص</h3><p class="text-sm text-[#6F7F9A] leading-relaxed mb-6 max-w-md">تواصل مباشرة مع معلمك للحصول على الدعم والتوجيه الشخصي في أي وقت لضمان أعلى مستوى من الفهم.</p><a class="mt-auto inline-flex items-center gap-2 text-sm font-bold text-pink-600 hover:text-pink-700 transition-colors" href="{% url 'teachers' %}"><span class="">اكتشف المزيد</span><img alt="" class="w-3 h-3 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOOQkF9FoBysCYRs6r0FOKfGATdXI7xRhT24SUw5_lqQCxgggP5w11aLqEECZ2CijHEZnoJp9K1YKb_8P69Ma1s4O932WnXpwO-i9PosgHKzAmXKvxfJmAyCnNgQnTSxumpEnhnUP-8SLAjoT0oU7kKOooBLVVMzXhKsEcu3x1j5givCpY4uHu3j_N-9I4hXp19nadsIFxHlrEBdqOvCEinoeHSOOD5vDkDUdZBKunVq1GAlcgtqIH"></a></div></div>
+</div>
+</section>
+<!-- END: FeaturesSection -->
+<!-- BEGIN: StatsSection -->
+<section class="py-20 lg:py-24 bg-white border-y border-[#DCE8F8]" data-purpose="stats-strip">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- Separate Image Container with same #EEF5FF background and larger height -->
+<div class="lg:col-span-4 bg-[#d3e3ff] rounded-3xl shadow-sm flex items-center justify-center min-h-[320px] lg:min-h-[360px] p-8 sm:p-12 py-12">
+<img alt="مساحة دراسة متكاملة ومحفزة" class="h-64 sm:h-72 lg:h-80 w-auto object-contain drop-shadow-md rounded-2xl" src="{% static 'ui/landing/second-section-study.png' %}">
+</div>
+<!-- Separate 4 Cards Container with same #EEF5FF background -->
+<div class="lg:col-span-8 bg-[#d3e3ff] rounded-3xl shadow-sm flex items-center py-4 px-5 sm:px-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+<div class="flex flex-col items-center justify-center p-5 bg-white rounded-2xl border border-purple-100 shadow-sm card-hover-effect transition-all text-center"><div class="w-12 h-12 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center mb-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7wN0AxnMwVEw0LKlvyJH6jhp_VYocKjcFNATDLBN_9HVsWDAggSbVZta8MSLZ9ybW2oDuz6nLasLL7IASX-eBzwIDB2F2O_OiveOutTK5h8IaZApNNj_0jPONHxLD4m5FBW-XRDPYCSeKaG1KHBGcOa_Oa7suS5NERBnksk2VP4xv9ZJUTpRGOmKdC7arghntPkf04jPj_LMaKU-LYBZ9VsYJXho1BnRc_zMcdx4B5hc09cfLNcP1" alt="24/7" class="w-7 h-7 object-contain"></div><span class="text-3xl sm:text-4xl font-extrabold text-[#173A73] mb-1 tracking-tight" style="font-family: 'Plus Jakarta Sans', sans-serif !important; letter-spacing: -0.03em;">24/7</span><span class="text-xs font-bold text-[#173A73] mb-0.5" style="font-family: 'Tajawal', sans-serif !important;">شرح وحل الواجبات</span><span class="text-[10px] text-[#6F7F9A]" style="font-family: 'Tajawal', sans-serif !important;">مساعد ذكي خطوة بخطوة</span></div>
+<div class="flex flex-col items-center justify-center p-5 bg-white rounded-2xl border border-amber-100 shadow-sm card-hover-effect transition-all text-center"><div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center mb-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuANLIpumvTbD1CrQjaS8FiQg2MUX-Tiv8lJBgGsZXoIQ8MbEoJgO8LcyGaW5OTNTXtelqwXZLsZCO3WmHToN3Fr4GzRPU_RrGuAr9aJ2jI-sVFosAUVn1xPIQGKLR2SL6qYJS5Fk-I6UHJOkrRPPrTY8JpWCdZmIudYdfifdUy3PJDywf3CcdWB9b2Dm07laS9UzAYfYAep_JqOo1IxD8gikFAMVAOQmhN1GgmjLdkE0ug-p0Na9vCk" alt="99%" class="w-7 h-7 object-contain"></div><span class="text-3xl sm:text-4xl font-extrabold text-[#173A73] mb-1 tracking-tight" style="font-family: 'Plus Jakarta Sans', sans-serif !important; letter-spacing: -0.03em;">99%</span><span class="text-xs font-bold text-[#173A73] mb-0.5" style="font-family: 'Tajawal', sans-serif !important;">نسبة دقة التقييم</span><span class="text-[10px] text-[#6F7F9A]" style="font-family: 'Tajawal', sans-serif !important;">تصحيح فوري ومحاكاة</span></div>
+<div class="flex flex-col items-center justify-center p-5 bg-white rounded-2xl border border-rose-100 shadow-sm card-hover-effect transition-all text-center"><div class="w-12 h-12 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center mb-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXeC4vAx9FuYJ3zn2mFiBd7LCZeFS_GCclxQ-jEOgqiuLkiEsM5KUHHT1W7EbEyDbTjUR60gTwffMmuHXIyS7X-2BTfUExfR0H--7HEODNX7x8vS0lqa35lcuMY7rNe53tXunrJCaZTRktMwoQLLME12HhO5A9crjV4uUnmfvAJXAS_s1y2mBhWZ1HAuKiqrJnrKgstfJXCmH0JE_CdPWLKfCZm7s7Ey-Fl1coTpTosY_jT2FGjp-0" alt="تشخيص" class="w-7 h-7 object-contain"></div><span class="text-2xl sm:text-3xl font-bold text-[#173A73] mb-1 tracking-tight" style="font-family: 'Tajawal', sans-serif !important;">تشخيص ذكي</span><span class="text-xs font-bold text-[#173A73] mb-0.5" style="font-family: 'Tajawal', sans-serif !important;">تحديد نقاط القوة</span><span class="text-[10px] text-[#6F7F9A]" style="font-family: 'Tajawal', sans-serif !important;">مسار تعليمي مخصص</span></div>
+<div class="flex flex-col items-center justify-center p-5 bg-white rounded-2xl border border-emerald-100 shadow-sm card-hover-effect transition-all text-center"><div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBURSuqTiDkBJkI7fNwTE5YZjY7qZXiBvMr5Vy5XCsrRq9TDGScOKxqrbnrp8L7pftXI5re8g2WuVXeAT_HRJH-RmLMtElmWFBXJLKNkBC5wk9e0Rvix-m3NxUZhQWfGQwi6iZkZhSfVpC-FWzYYDcDxil1JLXfwYaUvZZlkhbn6VE7deL3ce_Bll42XIEpM_SdD5dzzTZI_YFFFffUI0Q58yvTL2Cv8hQTzzMC-3jVLpdOk51kv6fR" alt="AI" class="w-7 h-7 object-contain"></div><span class="text-2xl sm:text-3xl font-bold text-[#173A73] mb-1 tracking-tight flex items-center justify-center gap-1"><span style="font-family: 'Tajawal', sans-serif !important;">تقارير</span> <span style="font-family: 'Plus Jakarta Sans', sans-serif !important; font-weight: 800;">AI</span></span><span class="text-xs font-bold text-[#173A73] mb-0.5" style="font-family: 'Tajawal', sans-serif !important;">تحليلات الأداء المتقدمة</span><span class="text-[10px] text-[#6F7F9A]" style="font-family: 'Tajawal', sans-serif !important;">توصيات ذكية مستمرة</span></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: StatsSection -->
+<!-- BEGIN: ValuePropositionSection -->
+<section class="py-16 bg-[#F7FAFF]" data-purpose="value-proposition">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Section Title -->
+<div class="text-center max-w-xl mx-auto mb-14">
+<div class="inline-block px-4 py-1 mb-3 text-xs font-bold text-[#2563EB] bg-[#EEF5FF] rounded-full border border-[#DCE8F8]">
+        ‹ لماذا تختار مدرستك؟ ›
+      </div>
+<h2 class="text-5xl sm:text-6xl font-black text-[#173A73] tracking-tight font-somar" style="font-size: clamp(2.8rem, 5vw, 3.85rem); font-weight: 900; -webkit-text-stroke: 1.5px rgb(23, 58, 115); paint-order: stroke; font-family: Somar, Cairo, sans-serif !important;">
+        لأن مستقبلك يستحق الأفضل
+      </h2>
+</div>
+<!-- 5 Value Prop Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4"><div class="bg-white rounded-2xl p-6 border border-[#DCE8F8] shadow-sm text-center flex flex-col items-center card-hover-effect"><div class="w-14 h-14 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center mb-4"><img alt="محتوى عالي الجودة" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKSNauNHRoIHArX2a85BYsu2K8_0zRcgzIiUG4DbedkEleEb1Byz6L7B6OXQS7R_aUXqLQIbeWnMm9vWY02rkUGLleFqpLPWDfvIJNx2DN7faFiXcsbjAKkFLJtAM3Np7VfHMUehyhceN0YniVpkt28nZyNt8ofBzM7Rxt743uisZvtzCiqCFO-SwjflP3stHc0zfw0lAAqEQmLkbYnwFl1JJMBAyqqQ4ShxP9la4t7cjxOaXWrXmK"></div><h3 class="text-base font-bold text-[#173A73] mb-1">محتوى عالي الجودة</h3><p class="text-xs text-[#6F7F9A] leading-relaxed">من خبراء ومعلمين متميزين</p></div><div class="bg-white rounded-2xl p-6 border border-[#DCE8F8] shadow-sm text-center flex flex-col items-center card-hover-effect"><div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-4"><img alt="فريق دعم متخصص" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDKMa-o5Ok0DJVWqpCrYU3UjzoD0Ob2NaKYDfueQu2epymEHW0xz1w5ICZPiNcCOp_cjAa_9If9HHOY8MwKnAKMZBDUNJWnAwqPhEtYEE8z72qtBqNIf-eaWurKxRRqAn0FZVEksZhBSIsgbrHMhL7BDEp-MraiTeVyk41F7wrodw9LaLJkNKEGTHVsxBxFk1krSqd_26nU0Qf7l3IWLKPlG5ZEoQxW12G-WpR3o4U4QisNbE0z1iod"></div><h3 class="text-base font-bold text-[#173A73] mb-1">فريق دعم متخصص</h3><p class="text-xs text-[#6F7F9A] leading-relaxed">نحن هنا لمساعدتك دائماً</p></div><div class="bg-white rounded-2xl p-6 border border-[#DCE8F8] shadow-sm text-center flex-col items-center card-hover-effect flex"><div class="w-14 h-14 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mb-4"><img alt="تطوير مستمر" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBURSuqTiDkBJkI7fNwTE5YZjY7qZXiBvMr5Vy5XCsrRq9TDGScOKxqrbnrp8L7pftXI5re8g2WuVXeAT_HRJH-RmLMtElmWFBXJLKNkBC5wk9e0Rvix-m3NxUZhQWfGQwi6iZkZhSfVpC-FWzYYDcDxil1JLXfwYaUvZZlkhbn6VE7deL3ce_Bll42XIEpM_SdD5dzzTZI_YFFFffUI0Q58yvTL2Cv8hQTzzMC-3jVLpdOk51kv6fR"></div><h3 class="text-base font-bold text-[#173A73] mb-1">تطوير مستمر</h3><p class="text-xs text-[#6F7F9A] leading-relaxed">نحدث دائماً للتقديم الأفضل</p></div><div class="bg-white rounded-2xl p-6 border border-[#DCE8F8] shadow-sm text-center flex flex-col items-center card-hover-effect"><div class="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center mb-4"><img alt="أمان وموثوقية" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl81H5H8rVspSXJwncWwoxuZWCJnMBDEMRalxL1ryraqbuWhLu9vJNv28R-UeAq_kcoOKGcZucsHPKqJ9PqQWMuy8EkNacKGpQZZM4Eh2tyPiP0wDSIjVfC_MCtuPSzlD6hXXViHDNkk2Y3GIrk75VCcWcJBSUPA6tORPBfh416cQnW-XK3pVw-OCnT_PId44_8cxEqA4VWlOwdCu7BhiAcgeEkBUL8rcJE2rmcdCwWU3LESSCLqpD"></div><h3 class="text-base font-bold text-[#173A73] mb-1">أمان وموثوقية</h3><p class="text-xs text-[#6F7F9A] leading-relaxed">بياناتك محمية دائماً</p></div><div class="bg-white rounded-2xl p-6 border border-[#DCE8F8] shadow-sm text-center flex flex-col items-center card-hover-effect"><div class="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center mb-4"><img alt="تعلم بمرونة" class="w-8 h-8 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGtoZsg8ahP-V7sZXUA3Du5uhTZVakCzMZJCJRnqpM8EM-JRPFHgmcQhq4G1Kcs8n2gxNkKfxSGehyvMXjyb3NeLQp5HmE94oM2E8maGmn2wZMFLMqRXiR6u6dPQQ_R6ecB-sPYN4FY0wH2bVx5PykKcUFmbnXccozNC83LGRxS28fA4uNwmYyr9U7HR8Jljdpo-0J1-fTN7fDKDnauhVXY7wkXhvq1QZSd8YOfTD2hOgMdfi2_Mt7"></div><h3 class="text-base font-bold text-[#173A73] mb-1">تعلم بمرونة</h3><p class="text-xs text-[#6F7F9A] leading-relaxed">في أي وقت ومن أي مكان</p></div></div>
+</div>
+</section>
+<!-- END: ValuePropositionSection -->
+<!-- BEGIN: CallToActionBanner -->
+<section class="py-12 bg-[#F7FAFF]" data-purpose="cta-banner">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="relative bg-gradient-to-r from-[#133664] via-[#173A73] to-[#0F2347] rounded-3xl p-8 sm:p-12 overflow-hidden shadow-xl shadow-slate-900/10 flex flex-col md:flex-row items-center justify-between gap-6 border border-[#1F457A]">
+<!-- Subtle Background Details -->
+<div class="absolute -right-10 -bottom-10 w-44 h-44 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+<div class="absolute left-1/4 top-3 text-white/10 text-3xl pointer-events-none">
+<i class="fa-regular fa-paper-plane"></i>
+</div>
+<!-- Text Content -->
+<div class="text-center md:text-right text-white relative z-10 max-w-xl">
+<h2 class="text-4xl sm:text-5xl lg:text-6xl font-black mb-3 text-white font-somar" style="font-size: clamp(2.6rem, 4.6vw, 3.6rem); font-weight: 900; -webkit-text-stroke: 1.5px rgb(255, 255, 255); paint-order: stroke; font-family: Somar, Cairo, sans-serif !important;">ابدأ رحلتك التعليمية الآن</h2>
+<p class="text-[#DCE7F7] text-sm sm:text-base font-normal">انضم إلى آلاف الطلاب والمعلمين الذين يثقون في مدرستك</p>
+</div>
+<!-- CTA Button -->
+<div class="relative z-10 flex-shrink-0">
+<a class="inline-flex items-center gap-2.5 px-8 py-3.5 bg-white hover:bg-slate-50 text-[#173A73] hover:text-[#2563EB] font-bold rounded-full shadow-lg transition-all text-sm sm:text-base hover:shadow-xl" href="{% if user.is_authenticated %}{% url 'go' %}{% else %}{% url 'register' %}{% endif %}">
+<img alt="" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGewb9itGcX51kOvzTdvWeB2TJGp2vCQfzdPhmzvb1-XBfxuqUIK7THPlSZYP5T-q_svV47Gy1HJ-1aXXSerBrLRFnE1sGZV-AeZuxWKFerAHrJb7ftixDH92Tqawb7mfmkaCWXPew5JJGX8oPY6Q7hcWqrUlsIhV7MMRTQ4DIeBgJnSOidQx0J9bkg00wtx05y9-WJ3Ae_Y1L6WPYm08LgEPhdaahe0DBbEdSOLJ1p5m6wL8FIj7y">
+<span class="">{% if user.is_authenticated %}لوحتي{% else %}إنشاء حساب مجاني{% endif %}</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- END: CallToActionBanner -->
+<!-- BEGIN: Footer -->
+<footer class="bg-gradient-to-b from-[#133664] to-[#102A4D] text-[#DCE7F7] pt-16 pb-8 border-t border-[#1F457A]" data-purpose="page-footer">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<!-- Top Row Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-[#1F457A]">
+<!-- Col 1: Logo & Mobile App Badges -->
+<div class="flex flex-col items-start"><a href="{% url 'landing' %}" class="inline-block mb-4 transition-transform hover:opacity-95"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkoIbsncmBIcxCh1cgM7IZ6RBjKykC8TM_974JZlm0y0GkoAPKLE45JCS_1LJADjFEdyl2IiUesWujwxp0nhflG86xSJEbb3DKC23EFxJwHe3u6DmhC1mdTvJXs6ihUWIjUK3LXhyM2ei-PGVHiNlmyIE24OyhOHCCXWk654c0KFDufYQkd62g2tANrG1w1aElKNi8dakRBcmvy_8ryl61gvk1Jk8I7UkH1Cr8wk_BawuvEsqArVhJ" alt="مدرستك - Madrasatak" class="h-20 w-auto object-contain drop-shadow-md"></a><p class="text-sm text-[#DCE7F7] leading-relaxed mb-4 max-w-sm">رحلتك نحو التفوق تبدأ بشغف اليوم. مع مدرستك، كل معلومة تصنع فارقاً، وكل خطوة تقربك من مستقبلك الواعد. تعلّم بذكاء، وثق بقدراتك، واستمر في المضي قدماً نحو القمة.</p><div class="flex items-center gap-2 text-xs text-[#91A0BA]"><span class="w-2 h-2 rounded-full bg-[#2563EB]"></span><span class="">التعليم الذكي بوابتك نحو المستقبل</span></div></div>
+<!-- Col 2: Quick Links -->
+<div>
+<h4 class="text-white font-bold text-base mb-4">روابط سريعة</h4>
+<ul class="space-y-2.5 text-sm text-[#DCE7F7]">
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'landing' %}">الرئيسية</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'teachers' %}">الدورات</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'landing' %}#features">الاختبارات</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'landing' %}#features">التقارير</a></li>
+</ul>
+</div>
+<!-- Col 3: Support & Help -->
+<div>
+<h4 class="text-white font-bold text-base mb-4">الدعم والمساعدة</h4>
+<ul class="space-y-2.5 text-sm text-[#DCE7F7]">
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'pricing' %}">الأسئلة الشائعة</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'privacy' %}">سياسة الخصوصية</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'terms' %}">شروط الاستخدام</a></li>
+<li class=""><a class="hover:text-white transition-colors" href="{% url 'contact' %}">تواصل معنا</a></li>
+</ul>
+</div>
+<!-- Col 4: Social & Slogan -->
+<div class="flex flex-col items-start">
+<h4 class="text-white font-bold text-base mb-4">تابعنا على</h4>
+
+<span class="text-xs text-[#91A0BA]">معاً ... نصنع مستقبلاً أفضل</span>
+</div>
+</div>
+<!-- Bottom Bar -->
+<div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#91A0BA]">
+<!-- Country Selector -->
+<div class="flex items-center gap-2">
+<span class="">مصر EG</span>
+<span class="text-sm">🇪🇬</span>
+</div>
+<!-- Copyright Note -->
+<div class="text-center text-[#DCE7F7]">
+        © جميع الحقوق محفوظة لمنصة مدرستك
+      </div>
+<!-- Legal Links -->
+<div class="flex items-center gap-4">
+<a class="hover:text-white transition-colors" href="{% url 'terms' %}">شروط الاستخدام</a>
+<span class="">|</span>
+<a class="hover:text-white transition-colors" href="{% url 'privacy' %}">سياسة الخصوصية</a>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: Footer -->
+<script>
+  setTimeout(function(){document.querySelectorAll('.flash').forEach(function(f){f.style.transition='opacity .5s';f.style.opacity='0';setTimeout(function(){f.remove();},600);});},5200);
+</script>
+</body></html>

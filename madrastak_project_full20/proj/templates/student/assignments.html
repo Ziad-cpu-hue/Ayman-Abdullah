@@ -1,0 +1,31 @@
+{% extends "student/base.html" %}
+{% block title %}الواجبات{% endblock %}
+{% block topbar_title %}الواجبات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>{{ t.subject }} — الواجبات والاختبارات</h1></div>
+<h3>الواجبات</h3>
+{% if homework %}
+<div class="grid gauto mb">
+  {% for h in homework %}
+  <div class="card">
+    <span class="badge {{ h.state.2 }}">{{ h.state.1 }}</span>
+    <h3 class="mt">{{ h.q.title }}</h3><p class="muted small">{{ h.q.location }} — {{ h.n }} سؤال{% if h.q.deadline %} — الموعد: {{ h.q.deadline|date:"d/m H:i" }}{% endif %}</p>
+    {% if h.best is not None %}<p class="small">أفضل نتيجة: <b class="pct">{{ h.best }}%</b> ({{ h.tries }} محاولة)</p>{% endif %}
+    {% if h.state.0 == 'late' and not h.tries %}<span class="btn sm ghost disabled">فات الموعد</span>
+    {% else %}<a class="btn sm" href="{% url 'student:quiz' t.teacher_code h.q.pk %}">{% if h.tries %}عرض / إعادة{% else %}ابدأ الحل{% endif %}</a>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% else %}<div class="empty mb">لا توجد واجبات حاليًا.</div>{% endif %}
+
+<h3>الاختبارات</h3>
+{% if exams %}
+<div class="grid gauto">
+  {% for e in exams %}
+  <div class="card"><h3>{{ e.q.title }}</h3><p class="muted small">{{ e.q.location }} — {{ e.n }} سؤال</p>
+    {% if e.best is not None %}<p class="small">أفضل نتيجة: <b class="pct">{{ e.best }}%</b> ({{ e.tries }} محاولة)</p>{% endif %}
+    <a class="btn sm" href="{% url 'student:quiz' t.teacher_code e.q.pk %}">{% if e.tries %}عرض / إعادة{% else %}ابدأ{% endif %}</a></div>
+  {% endfor %}
+</div>
+{% else %}<div class="empty">لا توجد اختبارات حاليًا.</div>{% endif %}
+{% endblock %}

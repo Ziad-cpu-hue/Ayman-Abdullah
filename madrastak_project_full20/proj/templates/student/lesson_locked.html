@@ -1,0 +1,8 @@
+{% extends "student/base.html" %}
+{% block title %}{{ l.title }}{% endblock %}
+{% block topbar_title %}{{ l.title }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'student:workspace' t.teacher_code %}">{{ t.display_label }}</a> ← {{ l.unit.title }} ← {{ l.title }}</div>
+<div class="empty"><span class="big">🔒</span><h3>هذا الدرس يتطلب اشتراكًا نشطًا</h3><p class="muted">اشترك مع {{ t.display_label }} لفتح هذا الدرس وكل محتوى الدورة.</p>
+<div class="mt"><a class="btn lg" href="{% url 'student:subscribe' t.teacher_code %}">اشترك الآن — {{ t.monthly_price|floatformat:"-2" }} ج / شهر</a></div></div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "student/base.html" %}
+{% block title %}أخطائي{% endblock %}
+{% block topbar_title %}أخطائي{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>أخطائي — {{ t.subject }}</h1></div>
+<div class="tabs mb">
+  <a href="?f=open" class="{% if f == 'open' %}on{% endif %}">تحتاج مراجعة ({{ counts.open }})</a>
+  <a href="?f=reviewed" class="{% if f == 'reviewed' %}on{% endif %}">تمت مراجعتها</a>
+  <a href="?f=resolved" class="{% if f == 'resolved' %}on{% endif %}">أُجيبت صحيحة لاحقًا</a>
+  <a href="?f=all" class="{% if f == 'all' %}on{% endif %}">الكل ({{ counts.all }})</a>
+</div>
+{% if rows %}
+{% for r in rows %}
+<div class="card wrongcard mb">
+  <div class="row spread"><span class="badge">{{ r.unit.title|default:"—" }} — {{ r.lesson.title|default:"اختبار عام" }}</span><span class="small muted">أخطأت {{ r.e.times_wrong }} مرة</span></div>
+  <p class="qtext mt">{{ r.q.text }}</p>
+  <p class="small">إجابتك: <b style="color:var(--red)">{{ r.e.choice.text|default:"—" }}</b></p>
+  <div class="right">✅ الصحيح: <b>{{ r.correct.text }}</b></div>
+  {% if r.e.choice.why_wrong %}<div class="reason">❌ {{ r.e.choice.why_wrong }}</div>{% endif %}
+  <div class="row mt">
+    {% if r.lesson %}<a class="btn sm ghost" href="{% url 'student:lesson' t.teacher_code r.lesson.pk %}{% if r.q.section_id %}#section-{{ r.q.section_id }}{% endif %}">📖 راجع الدرس</a>{% endif %}
+    {% if r.sim %}<a class="btn sm" href="{% url 'student:bank_question' t.teacher_code r.sim.pk %}">🔁 سؤال مشابه</a>{% endif %}
+    {% if not r.e.reviewed %}<form method="post" action="{% url 'student:mistake_reviewed' t.teacher_code r.e.pk %}">{% csrf_token %}<button class="btn sm teal">✓ تم مراجعته</button></form>{% else %}<span class="badge green">تمت مراجعته</span>{% endif %}
+  </div>
+</div>
+{% endfor %}
+{% else %}<div class="empty"><span class="big">🎉</span>لا توجد أخطاء هنا. أحسنت!</div>{% endif %}
+{% endblock %}

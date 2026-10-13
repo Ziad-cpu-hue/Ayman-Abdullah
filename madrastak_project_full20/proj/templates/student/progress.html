@@ -1,0 +1,33 @@
+{% extends "student/base.html" %}
+{% block title %}تقدّمي الدراسي{% endblock %}
+{% block topbar_title %}تقدّمي الدراسي{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>{{ t.display_label }} — {{ t.subject }}</h1></div>
+<div class="grid g4 mb">
+  <div class="card stat"><span>التقدّم العام</span><b>{{ pr.percent }}%</b><span class="small">{{ pr.done }}/{{ pr.total }} درسًا</span></div>
+  <div class="card stat teal"><span>الوحدات المكتملة</span><b>{{ done_units }}/{{ total_units }}</b></div>
+  <div class="card stat gold"><span>متوسط الاختبارات</span><b>{{ stats.avg_percent }}%</b><span class="small">{{ stats.attempts }} محاولة</span></div>
+  <div class="card stat purple"><span>أسئلة محلولة</span><b>{{ solved }}</b><span class="small">{{ reviewed }} خطأ رُوجع</span></div>
+</div>
+
+{% if first_pct is not None %}
+<div class="banner {% if trend > 0 %}green{% elif trend < 0 %}red{% else %}blue{% endif %} mb">
+  {% if trend > 0 %}ارتفع مستواك من {{ first_pct }}% إلى {{ last_pct }}% 📈{% elif trend < 0 %}تراجع مستواك قليلًا، راجع أخطاءك وواصل التدريب.{% else %}مستواك مستقر عند {{ last_pct }}%.{% endif %}
+</div>
+{% endif %}
+
+{% if chart %}
+<div class="card mb"><h3>آخر نتائجك</h3>
+  <div class="bars">{% for c in chart %}<div class="bar"><em>{{ c.p }}%</em><i style="height:{{ c.p }}%"></i><span>{{ c.l }}</span></div>{% endfor %}</div>
+</div>
+{% endif %}
+
+{% if weak %}
+<div class="card mb"><h3>نقاط تحتاج تركيزًا</h3>{% for w in weak %}<div class="hbar"><span>{{ w.title }}</span><div class="progress"><i style="width:{{ w.n|add:0 }}0%;max-width:100%"></i></div><span class="small muted">{{ w.n }} خطأ</span></div>{% endfor %}</div>
+{% endif %}
+
+<h3>تقدّم الوحدات</h3>
+<div class="grid gauto">
+{% for u in units %}<div class="card"><div class="row spread"><b>{{ u.u.title }}</b><span class="pct">{{ u.pr.percent }}%</span></div><p class="muted small">{{ u.c.title }}</p><div class="progress"><i style="width:{{ u.pr.percent }}%"></i></div></div>{% endfor %}
+</div>
+{% endblock %}

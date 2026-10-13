@@ -1,0 +1,36 @@
+{% extends "owner/base.html" %}
+{% block title %}{% if obj %}تعديل مفتاح{% else %}إضافة مفتاح{% endif %}{% endblock %}
+{% block topbar_title %}{% if obj %}تعديل مفتاح{% else %}إضافة مفتاح ذكاء اصطناعي{% endif %}{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>{% if obj %}تعديل المفتاح «{{ obj.name }}»{% else %}إضافة مفتاح ذكاء اصطناعي{% endif %}</h1><a class="btn ghost" href="{% url 'assistant:owner_keys' %}">رجوع</a></div>
+<div class="card" style="max-width:640px">
+  <form method="post" data-once>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error">{% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}</div>{% endif %}
+    {% for f in form %}
+    <div class="field {% if f.field.widget.input_type == 'checkbox' %}checkrow{% endif %}" id="row-{{ f.name }}">
+      {% if f.field.widget.input_type == 'checkbox' %}{{ f }} <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+      {% else %}<label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{% endif %}
+      {% if f.help_text %}<div class="help">{{ f.help_text }}</div>{% endif %}
+      {{ f.errors }}
+    </div>{% endfor %}
+    {% if obj %}<p class="small muted">المفتاح الحالي: <span class="ltr">{{ obj.masked_key }}</span></p>{% endif %}
+    <div id="prov-hint" class="small muted ltr" style="margin-bottom:10px"></div>
+    <button class="btn" type="submit">حفظ</button>
+  </form>
+</div>
+<script>
+(function(){
+  var D={% for k,v in defaults.items %}{% if forloop.first %}{ {% endif %}"{{ k }}":{base:"{{ v.base_url }}",model:"{{ v.model }}"}{% if not forloop.last %},{% else %} }{% endif %}{% endfor %};
+  var prov=document.getElementById('id_provider'), base=document.getElementById('id_base_url'), model=document.getElementById('id_model'),
+      rowBase=document.getElementById('row-base_url'), hint=document.getElementById('prov-hint');
+  function sync(){
+    var d=D[prov.value]||{base:'',model:''}, custom=prov.value==='custom';
+    base.placeholder=d.base||'https://api.example.com/v1/chat/completions';
+    model.placeholder=d.model||'اسم النموذج (مطلوب)';
+    hint.textContent=d.base?('الرابط الافتراضي: '+d.base+(d.model?'  |  النموذج الافتراضي: '+d.model:'')):'';
+    rowBase.style.opacity=custom?1:.75;
+  }
+  prov.addEventListener('change',sync);sync();
+})();
+</script>
+{% endblock %}

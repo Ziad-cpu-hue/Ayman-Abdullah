@@ -1,0 +1,213 @@
+{% extends "ui/document.html" %}
+{% load static %}
+{% load ui_extras %}
+{% block title %}المعلمون{% endblock %}
+{% block body_class %}bg-[rgb(245,250,255)] text-slate-800 antialiased min-h-screen{% endblock %}
+{% block head %}<style>
+  /* كما في التصميم: body { font-family: Tajawal } */
+  body { font-family: Tajawal, sans-serif; }
+  /* الأسماء الإنجليزية فقط: خط Plus Jakarta Sans عريض وسميك (الحروف العربية تبقى كما هي) */
+  .t-en { font-family: "Plus Jakarta Sans", sans-serif; font-weight: 800; letter-spacing: -0.01em; }
+</style>{% endblock %}
+{% block body %}
+<!-- صفحة «اختر معلمك» — التصميم الجديد كما هو، بدون القائمة الجانبية. -->
+<div>
+<form id="teachers-search-form" method="get" action="{% url 'student:teachers' %}"></form>
+<!-- BEGIN: HeroBanner -->
+<section class="relative overflow-hidden mx-auto px-4 sm:px-6 lg:px-8 mt-6 max-w-[1600px]">
+<div class="relative rounded-3xl p-7 md:p-10 border overflow-hidden" style="background: rgb(211, 227, 255); border: 1px solid rgb(191, 215, 255);"><div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"><!-- Left Side (RTL): Educational Illustration Stack --><div class="order-1 lg:col-span-6 flex justify-center lg:justify-end items-center lg:order-2 pl-8 pr-4 lg:pr-12"><div class="relative w-full max-w-lg flex items-center justify-center lg:justify-end h-64 md:h-72"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_GiNUl25mVN0U0E43deOG1-dI_CHRoUBcziSPM5YLR_RR6sItDRBrbw0D3mIhWgJTEaLmZM7wAoGSXb4XwuwDCqh4oFw0zvGU4ezx3BLf2vX39Ef7khe_wgo537AKf88_IKYlCF9DePUnrlMLtqWXSq-uHPbYKKBvvLZSxx4raNYYEMVwIwOkyamnXU8WDGHkbm7lsSo5KDBmSuFP2ZQCp8AW1tZsmKU3zAym6tKXce8jhVxwSPtQyGyFAtBEsQRcFKQ" alt="مساحة دراسة" class="w-auto h-full max-h-[290px] object-contain select-none drop-shadow-lg scale-105 origin-left"></div></div><!-- Right Side (RTL): Title & Description & Breadcrumbs --><div class="lg:col-span-6 text-right order-1"><div class="flex flex-col items-start text-right"><div class="flex items-center gap-3 mb-2"><div class="w-11 h-11 rounded-2xl flex items-center justify-center p-2 shadow-xs border bg-[#EBF4FF]" style="border-color: #D6E7FF;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaHRbR2j0_iA-zTMtVxK-WJRNZdQsRPy5nQ-mj91WNIE_i8qbD7qNx1a7-762bgRGumhBJ0k6qV9tVSl4hq5vXF4GRCwmUm_Rx9jjJG8PHkvweAfYM8VqKQE9YEFd2ZkeZw5dn24gMLql5H-bzoAl50t_lgQfAfPZugv2DhnW_wxZe17-zA1j-wiV7NXiW7yI9tUzqPrnmu0biqPUwZKwYoAeaFLw9zo8rJHrMHhZbrDwrtIj7C80dMe2LDiBoFaZckV0" alt="Teacher Icon" class="w-7 h-7 object-contain"></div><h1 class="font-extrabold tracking-tight" style="color: #174A91; font-size: 38px;">اختر معلمك</h1></div><p class="font-medium text-sm md:text-base leading-relaxed mb-4" style="color: #6682AD;">تصفح قائمة المعلمين المتاحين وإختر المعلم المناسب لك لبدء رحلتك التعليمية</p><div class="flex items-center gap-2 text-xs font-semibold"><a class="hover:underline flex items-center gap-1.5" href="{% url 'student:home' %}" style="color: #6682AD;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfURKG32RNnGGemkxCJrSUMMp59FuOAbkQfzzlaWiW2b73MQ6l7EjgnVg0NHz7Vjcf2bN1GF2nMbpKtpKQ6YOW7IJL6CSA6ia8G74o79KuBsAoIwpwIB_NzbuLc646SHia8wIc6YWNvmSHCfmR8YaSnzqsn1ktvxb_FZkLd4Ux12vxk9Hfiyv2WJZdR63wyNmkxFslhfMs7QgAPTDEEwOCMh0Z6VJiMjXNheE5qT2J7b9S4zRSKUVe0HEaSwXZNP_0MyQ" alt="Home" class="w-4 h-4 object-contain"><span class="">الرئيسية</span></a><i class="fa-solid fa-chevron-left text-[9px]" style="color: #91A7C5;"></i><span class="font-bold" style="color: #1677F9;">المعلمون</span></div></div></div></div></div>
+</section>
+<!-- END: HeroBanner -->
+<!-- BEGIN: MainContent -->
+<main class="mx-auto px-4 sm:px-6 lg:px-8 py-8 max-w-[1600px]">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- BEGIN: TeachersSection -->
+<section class="order-2 lg:col-span-9 space-y-6 max-w-[1600px] lg:order-2">
+<!-- Search & Sorting Bar -->
+<div class="flex flex-col sm:flex-row items-center gap-3">
+<!-- Search Input -->
+<div class="relative flex-1 w-full">
+<span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none" style="color: #1677F9;">
+<i class="fa-solid fa-magnifying-glass text-sm"></i>
+</span>
+<input id="t-search" name="q" value="{{ q }}" form="teachers-search-form" autocomplete="off" class="w-full pr-11 pl-4 rounded-xl text-sm transition shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ابحث عن معلم بالاسم أو التخصص..." style="height: 48px; background-color: #FFFFFF; border: 1px solid #D6E7FF; color: #173A73;" type="text">
+</div>
+<!-- Sorting Dropdown -->
+<div class="relative w-full sm:w-56" id="t-sort">
+<div id="t-sort-btn" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false" class="flex items-center justify-between w-full px-4 rounded-xl cursor-pointer shadow-sm text-sm" style="height: 48px; background-color: #FFFFFF; border: 1px solid #D6E7FF; color: #174A91;">
+<i class="fa-solid fa-chevron-down text-xs" style="color: #91A7C5;"></i>
+<div class="flex items-center gap-2 font-bold">
+<span id="t-sort-label" class="">الأكثر تقييماً</span>
+<i class="fa-solid fa-sliders text-xs" style="color: #1677F9;"></i>
+</div>
+</div>
+<div id="t-sort-menu" role="listbox" class="hidden absolute z-30 mt-2 w-full rounded-xl shadow-lg overflow-hidden text-sm font-bold" style="background-color: #FFFFFF; border: 1px solid #D6E7FF; color: #174A91;">
+<button type="button" role="option" data-sort="default" class="block w-full text-right px-4 py-3 hover:bg-slate-50">الأكثر تقييماً</button>
+<button type="button" role="option" data-sort="students" class="block w-full text-right px-4 py-3 hover:bg-slate-50">الأكثر طلاباً</button>
+<button type="button" role="option" data-sort="mine" class="block w-full text-right px-4 py-3 hover:bg-slate-50">اشتراكاتي الحالية</button>
+</div>
+</div>
+</div>
+<!-- Teacher Cards 3x2 Grid -->
+<div id="t-grid" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+  {% for r in rows %}
+  {% teacher_public_stats r.t as TS %}
+  <div data-t-card data-idx="{{ forloop.counter0 }}" data-search="{{ r.t.display_label }} {{ r.t.subject }} {{ r.t.teacher_code }}" data-subject="{{ r.t.subject }}" data-grades="{{ r.t.grades }}" data-students="{{ TS.students }}" data-mine="{% if r.e %}1{% else %}0{% endif %}" class="bg-white rounded-2xl transition-all duration-300 overflow-hidden flex flex-col group border" style="border-color: rgb(214, 231, 255); box-shadow: rgba(30, 90, 160, 0.05) 0px 4px 16px;"><div class="relative bg-slate-100 overflow-hidden" style="height: 250px;"><a href="{% url 'student:workspace' r.t.teacher_code %}" class="block w-full h-full no-underline" aria-label="{{ r.t.display_label }}">{% if r.t.photo %}<img alt="{{ r.t.display_label }}" class="w-full h-full object-cover object-top group-hover:scale-105 transition duration-500" src="{{ r.t.photo.url }}">{% else %}<div class="w-full h-full relative overflow-hidden group-hover:scale-105 transition duration-500 flex items-center justify-center" style="background-color: {% if "عرب" in r.t.subject or "arab" in r.t.subject|lower %}rgb(37, 99, 235){% elif "نجليز" in r.t.subject or "english" in r.t.subject|lower %}rgb(13, 148, 136){% else %}{% if r.t.id|divisibleby:2 %}rgb(13, 148, 136){% else %}rgb(37, 99, 235){% endif %}{% endif %};"><div class="relative z-10 flex flex-col items-center justify-center text-white/90 drop-shadow-sm"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAofbqCSqDLO70k0f0_EgrCMh4QftZLwxlZMdveaDE7nC2HxLW2gi-28Dvdslf7k8u_BMSUpIuGMdOokoetmZWyHBBjWeACyWkg6egF_1QGY2G4DLFmDiG2mkTmoqc8krN01Ar65v4w1_9li8lOs5VRiwBXYP51DSgPreOJwT_zg5IFJsavnfnPY555luynH7l_F9jWcuXR4jY5HMNDCE0R0ocgUqWC8ysgXcbq8gOl2FjVXaSjbdIRbQlzu-zFzi-BE4Y" alt="Educational illustration" class="max-h-[140px] w-auto object-contain drop-shadow-md select-none"></div></div>{% endif %}</a>
+  {% if "عرب" in r.t.subject or "arab" in r.t.subject|lower %}<div class="absolute top-4 right-4 z-20 px-3.5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow-sm" style="background-color: rgb(255, 240, 221); color: rgb(245, 158, 11); border-width: medium; border-style: none; border-color: currentcolor; border-image: none;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXX0_72UgTYH8x5B1TxBKKPiByiA6tJrffwjPj3Sn0Lc5X6ubZaMz6tApG0wMbBB83ASEySQbMirQzqG1iCgy_mIvS8HExK7i-iNUNlXpe0txd2Gty5XsDE8PYwYeCaJhI2Ce7qQh2LAdVSQR2fYFBaj2_xJVuHgkWJnzrOJiafzyaYSEC2B04J-66Ezr_vH1UTD0k59_8P61RtX59QqE5sucUKznBf4NZXmC7jJZ7XmvhTHcdHij4i5h5p7jb0JpTYjc" alt="Arabic" class="w-4 h-4 object-contain"><span class="">{{ r.t.subject }}</span></div>{% elif "نجليز" in r.t.subject or "english" in r.t.subject|lower %}<div class="absolute top-4 right-4 z-20 px-3.5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow-sm" style="background-color: rgb(225, 247, 255); color: rgb(8, 145, 178); border-width: medium; border-style: none; border-color: currentcolor; border-image: none;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtj-tXq1s8HhqdpuiaIusQLbT5Pvl3GOmTk0HjiY-5ZADNgxC7AkzvbJ1aotuJQO3TdEiDMP1OSjHCDHRclw9hcxZTYTWAg-BoZySCjpY4yfugftC2FWXtJYKPvZkgBv5QmyX7_tAvsY-IN_QvKHsARVk7JuXCxF7vTPpLe7pvqpqFuCSBQgBuMH52hWNUDgFrhF1bpif-EKjCm0fXLTKhkza8n641FK5_QlOlsNlZiNmUZTLt4mr2fBuGr3ZaanfqzLA" alt="English" class="w-4 h-4 object-contain"><span class="">{{ r.t.subject }}</span></div>{% else %}<div class="absolute top-4 right-4 z-20 px-3.5 py-1.5 rounded-full text-sm font-bold flex items-center gap-1.5 shadow-sm" style="background-color: #EAF4FF; color: #2563EB; border-width: medium; border-style: none; border-color: currentcolor; border-image: none;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXX0_72UgTYH8x5B1TxBKKPiByiA6tJrffwjPj3Sn0Lc5X6ubZaMz6tApG0wMbBB83ASEySQbMirQzqG1iCgy_mIvS8HExK7i-iNUNlXpe0txd2Gty5XsDE8PYwYeCaJhI2Ce7qQh2LAdVSQR2fYFBaj2_xJVuHgkWJnzrOJiafzyaYSEC2B04J-66Ezr_vH1UTD0k59_8P61RtX59QqE5sucUKznBf4NZXmC7jJZ7XmvhTHcdHij4i5h5p7jb0JpTYjc" alt="Subject" class="w-4 h-4 object-contain"><span class="">{{ r.t.subject }}</span></div>{% endif %}</div><div class="p-6 flex-1 flex flex-col justify-between text-center items-center"><div class="w-full"><h3 class="font-bold mb-3 text-xl" style="color: #174A91;"><a href="{% url 'student:workspace' r.t.teacher_code %}" class="no-underline" style="color: inherit;">{{ r.t.display_label }}</a></h3><div class="flex flex-wrap items-center justify-center gap-2 text-xs mb-5"><span class="px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5" style="background-color: #EAF4FF; color: #2563EB;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAot2kxMDXrV95x5SqjH5QW3eIlWruIxw1jDTbYxA0mjmT2LMQ9Bw3oPzeL8nEnyXh0_etQIGzv-DXFIk9-0Tmd2YBbF8uouvo9W8WbEtLAXBBy4VuKejedjq25pVRIDFYhs9arAvju1jbRVV1cj3U2gfmKpZwdt9Ydya4JY77J0yTeSh_3vhm3yNU5CT_iceaG3MdL7--6GpWBZNQ28ugEsfAZ2l68Y8IYq69FwiYXyBVxtFPfSvHmvpFkRZ0c0y6Ppgo" alt="Stage" class="w-3.5 h-3.5 object-contain"><span class="">{% if "إعدادي" in r.t.grades or "اعدادي" in r.t.grades %}{% if "ثانوي" in r.t.grades or "ثانوية" in r.t.grades %}المرحلة الإعدادية والثانوية{% else %}المرحلة الإعدادية{% endif %}{% else %}المرحلة الثانوية{% endif %}</span></span><span class="px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5" style="background-color: #EEF6FF; color: #4C7DBB;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0pnYvuNZEfDxyKMP_OyuHcWpibiXrTREhV-RCX-xPChPD2GmIWDyvuaCiC3mh1P98rWjkoxtpZrPZVmyAw13FSKnxCcpMxgJA6guhWoV2ZNDYTwdsxnfKJ_uMeDQX38wlKBKK6dkKsIQTNJ7tudQ-l1qPz4AnneunIKWgKO2bmOtuuHxO4MgaDfRuXaQ8xwNcUUZZ2AUDPw4SMmOJHJXVGC1uv7wVdSQ3DsYvOxQk8J-oiCqVmAhzrmjUVWAwAUSrBhU" alt="Grades" class="w-3.5 h-3.5 object-contain"><span class="">الصفوف: {% if r.t.grades %}<span class="font-num font-semibold">{{ r.t.grades }}</span>{% else %}<span class="font-num font-semibold">1 - 3</span> ثانوي{% endif %}</span></span></div></div><div class="w-full flex items-center justify-center gap-2.5"><a href="{% url 'student:workspace' r.t.teacher_code %}" title="{% if r.e.display_status == 'active' %}اشتراك نشط — فتح المحتوى{% else %}فتح صفحة المعلم{% endif %}" class="flex-1 py-2.5 text-white font-bold text-sm sm:text-base rounded-xl flex items-center justify-center gap-1.5 transition shadow-sm hover:opacity-95 no-underline" style="height: 44px; background-color: #1677F9;"><span class="">اختيار المعلم</span><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB05usVKIxH4ljFDn9JCfpZ8hYr9_qRvkaTsIfs8FIxJyejAPgE4v9d1oNb1M_zRUAMiiTlSxqPGIIFCUhp0wXaDInvEfGMaJG95O8iEo7IExnHOy1E0IP6GTRZfTqOhOllaqoBr2-u8fufnPWu_P7rjWxEQ-fWJ1zQcPRv5UQa0o5rVZEWdAcK9YbeCJGrU7MdOp-FmkWRZZeLZVx5YVQRVr8JuA0p1dz7HsTscBEMmrWBDryB2wrYpTXGsOQg_EXrW4A" alt="Chevron" class="w-3.5 h-3.5 object-contain"></a><a href="{% url 'student:subscribe' r.t.teacher_code %}" title="{% if r.e %}{{ r.e.display_label }} — متابعة الاشتراك{% else %}الاشتراك الشهري {{ r.t.monthly_price|floatformat:"-2" }} ج{% endif %}" class="flex-1 py-2.5 font-bold text-sm sm:text-base rounded-xl flex items-center justify-center gap-1.5 transition shadow-xs hover:bg-blue-50/50 border no-underline" style="height: 44px; border-color: #1677F9; color: #1677F9; background-color: #F0F7FF;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBRHdyKISmlYSoCtLwe5qEl7kLStyuJmZZgKUeIkDGR5Z8k24IiwvK1sGYWw_D4rdD9YxU_fiBZs1zxwHBNYanPvkpteMmoL9Ee205bfktPJCStX1NtTfCtaN4imn5B4d5O9qY_vYYp_V-1DpIuOqp70hOrl1NDTJcOyHWCn3cN6c1kT6RBDC8yp12ERFWaRsig1yu3BHNkO7J4gw8nI3DdpbLrjLg-8qmohea62CYPorm8YA4q4koK_vK7YVbMdu2KSA" alt="محفظة" class="w-4 h-4 object-contain inline-block"><span class="">اشترك الآن</span></a></div></div></div>
+  {% endfor %}
+  <div id="t-empty" class="hidden md:col-span-2 rounded-3xl border-2 border-dashed border-slate-200 bg-white p-10 text-center text-slate-500"><div class="text-4xl mb-2">🔎</div><span id="t-empty-msg">لا يوجد معلمون مطابقون للبحث.</span></div>
+</div>
+<!-- Pagination Bar -->
+<div id="t-pager" class="flex items-center justify-center gap-2 pt-6"></div>
+</section>
+<!-- END: TeachersSection -->
+<!-- BEGIN: FilterSidebar -->
+<aside class="order-1 lg:col-span-3 space-y-6 lg:order-1"><!-- Filter Card -->
+<div class="bg-white rounded-2xl p-5 border shadow-sm" style="border-color: rgb(214, 231, 255);">
+<!-- Card Header -->
+<div class="flex items-center justify-between pb-4 mb-4 border-b" style="border-color: #D6E7FF;">
+<div class="flex items-center gap-2.5 font-bold" style="color: #174A91; font-size: 20px;"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7t86gN6x6CCsJiEeN1qROP3C5iax2sP716bFrZLBtXMWMM46ACPdQz6CvEdvwd3rJS21cGVP8TPFqOwXMTYhAYudiwZBTmmlg3Mtf_CxkQ7w_ybQFiePDc_sGjdKrqf_eJKBWEPvZKlp8Ck53wQ5cicQdbRvdBT8EOSn8z5Ld0Mezg22ychIJerrcjBIeAVOWtmo3JmaF47Z5Btct94p4eeTpPnUTzZqFamEzOIlcziTX3jf9B8FZKSD9W5IGyDTb_TI" alt="Filter" class="w-6 h-6 object-contain"><span class="">تصفية المعلمين</span></div>
+</div>
+<!-- Filter Form Controls -->
+<div class="space-y-4">
+<!-- Section 1: Study Stage -->
+<div>
+<label class="flex items-center justify-between text-xs font-bold mb-1.5" style="color: #174A91;">
+<div class="flex items-center gap-1.5"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAot2kxMDXrV95x5SqjH5QW3eIlWruIxw1jDTbYxA0mjmT2LMQ9Bw3oPzeL8nEnyXh0_etQIGzv-DXFIk9-0Tmd2YBbF8uouvo9W8WbEtLAXBBy4VuKejedjq25pVRIDFYhs9arAvju1jbRVV1cj3U2gfmKpZwdt9Ydya4JY77J0yTeSh_3vhm3yNU5CT_iceaG3MdL7--6GpWBZNQ28ugEsfAZ2l68Y8IYq69FwiYXyBVxtFPfSvHmvpFkRZ0c0y6Ppgo" alt="Study Stage" class="w-4 h-4 object-contain"><span class="">المرحلة الدراسية</span></div>
+</label>
+<div class="relative">
+<select id="stage-select" onchange="updateGrades()" class="w-full pl-8 pr-9 py-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition appearance-none cursor-pointer" style="background-color: rgb(255, 255, 255); border: 1px solid rgb(214, 231, 255); color: rgb(23, 74, 145);"><option value="all">جميع المراحل</option><option value="prep">المرحلة الإعدادية</option><option value="sec">المرحلة الثانوية</option></select>
+<i class="fa-solid fa-chevron-down absolute left-3 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none" style="color: #91A7C5;"></i>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAot2kxMDXrV95x5SqjH5QW3eIlWruIxw1jDTbYxA0mjmT2LMQ9Bw3oPzeL8nEnyXh0_etQIGzv-DXFIk9-0Tmd2YBbF8uouvo9W8WbEtLAXBBy4VuKejedjq25pVRIDFYhs9arAvju1jbRVV1cj3U2gfmKpZwdt9Ydya4JY77J0yTeSh_3vhm3yNU5CT_iceaG3MdL7--6GpWBZNQ28ugEsfAZ2l68Y8IYq69FwiYXyBVxtFPfSvHmvpFkRZ0c0y6Ppgo" alt="Stage" class="w-4 h-4 object-contain absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+</div>
+</div>
+<!-- Section 2: Target Grade -->
+<div>
+<label class="flex items-center justify-between text-xs font-bold mb-1.5" style="color: #174A91;">
+<div class="flex items-center gap-1.5"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0pnYvuNZEfDxyKMP_OyuHcWpibiXrTREhV-RCX-xPChPD2GmIWDyvuaCiC3mh1P98rWjkoxtpZrPZVmyAw13FSKnxCcpMxgJA6guhWoV2ZNDYTwdsxnfKJ_uMeDQX38wlKBKK6dkKsIQTNJ7tudQ-l1qPz4AnneunIKWgKO2bmOtuuHxO4MgaDfRuXaQ8xwNcUUZZ2AUDPw4SMmOJHJXVGC1uv7wVdSQ3DsYvOxQk8J-oiCqVmAhzrmjUVWAwAUSrBhU" alt="Target Grade" class="w-4 h-4 object-contain"><span class="">الصف المستهدف</span></div>
+</label>
+<div class="relative">
+<select id="grade-select" class="w-full pl-8 pr-9 py-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition appearance-none cursor-pointer" style="background-color: rgb(255, 255, 255); border: 1px solid rgb(214, 231, 255); color: rgb(23, 74, 145);"><option>جميع الصفوف</option><option>الصف الأول الثانوي</option><option>الصف الثاني الثانوي</option><option>الصف الثالث الثانوي</option><option>الصف الأول الإعدادي</option><option>الصف الثاني الإعدادي</option><option>الصف الثالث الإعدادي</option></select>
+<i class="fa-solid fa-chevron-down absolute left-3 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none" style="color: #91A7C5;"></i>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0pnYvuNZEfDxyKMP_OyuHcWpibiXrTREhV-RCX-xPChPD2GmIWDyvuaCiC3mh1P98rWjkoxtpZrPZVmyAw13FSKnxCcpMxgJA6guhWoV2ZNDYTwdsxnfKJ_uMeDQX38wlKBKK6dkKsIQTNJ7tudQ-l1qPz4AnneunIKWgKO2bmOtuuHxO4MgaDfRuXaQ8xwNcUUZZ2AUDPw4SMmOJHJXVGC1uv7wVdSQ3DsYvOxQk8J-oiCqVmAhzrmjUVWAwAUSrBhU" alt="Grade" class="w-4 h-4 object-contain absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+</div>
+</div>
+<!-- Section 3: Subject Specialization -->
+<div>
+<label class="flex items-center justify-between text-xs font-bold mb-1.5" style="color: #174A91;">
+<div class="flex items-center gap-1.5"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCBmqgOBKzqCyoHrVlh7BOCNo6NeHZwD9BthWpUB4K_tqsOxJx82UVplm3DyjWlrT56D_Ewx2O3OOprtLD6JbNX-IQOiQ5vuJycWXd5J1rzrJWD_0WzVNjcZiXYhK52oYE0jqgH4G5ncXJ_3hlDTN-3jtmbZj-ouNzEgeyoMO6sJiVBSirPwKxJ_h7euQQqn98khMh337J3D5sJWjr15Bd2_GuvBbUl0oKeA3xRS2552qugF3x889d_CWAJHkWZfTDUkOM" alt="Subject" class="w-4 h-4 object-contain"><span class="">المادة</span></div>
+</label>
+<div class="relative">
+<select id="subject-select" class="w-full pl-8 pr-9 py-2.5 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 transition appearance-none cursor-pointer" style="background-color: #FFFFFF; border: 1px solid #D6E7FF; color: #174A91;"><option>جميع المواد</option><option>اللغة العربية</option><option>اللغة الإنجليزية</option><option>الكيمياء</option><option>الفيزياء</option><option>الأحياء</option><option>الجيولوجيا</option><option>الرياضيات</option><option>التاريخ</option><option>الجغرافيا</option><option>الفلسفة والمنطق</option></select>
+<i class="fa-solid fa-chevron-down absolute left-3 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none" style="color: #91A7C5;"></i>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXX0_72UgTYH8x5B1TxBKKPiByiA6tJrffwjPj3Sn0Lc5X6ubZaMz6tApG0wMbBB83ASEySQbMirQzqG1iCgy_mIvS8HExK7i-iNUNlXpe0txd2Gty5XsDE8PYwYeCaJhI2Ce7qQh2LAdVSQR2fYFBaj2_xJVuHgkWJnzrOJiafzyaYSEC2B04J-66Ezr_vH1UTD0k59_8P61RtX59QqE5sucUKznBf4NZXmC7jJZ7XmvhTHcdHij4i5h5p7jb0JpTYjc" alt="Book" class="w-4 h-4 object-contain absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+</div>
+</div>
+<!-- Apply Filter Button -->
+<button id="apply-filters" type="button" class="w-full mt-2 font-bold text-white rounded-xl flex items-center justify-center gap-2 transition shadow-md hover:opacity-95" style="height: 46px; background-color: #1677F9; border-radius: 14px;">
+<i class="fa-solid fa-filter text-xs"></i>
+<span class="">تطبيق الفلاتر</span>
+</button>
+</div>
+</div>
+<!-- Promo/Motivational Sidebar Card -->
+<div class="rounded-2xl text-center relative overflow-hidden border flex flex-col justify-between" style="background: linear-gradient(135deg, rgb(237, 247, 255) 0%, rgb(220, 238, 255) 100%); border-color: rgb(214, 231, 255); padding: 18px;">
+<div>
+<div class="flex items-center justify-center mx-auto mb-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtVvvgtolQuiJxJVSMevg9zdp_ohcOTf1CYlMD1qrGnXedP-42OfJjnkWLSKyuRujmCILPH7ZxY3hykdmrEbIxyvZXsGSKzlUvuPhA1qLb809PAERy4d1Ltzy7Qvcz6lLbv31nwCy9RL8DwH2_A6XU1Pd62CGkVQDcOYWk39AKtjgw0XeH9cr3cJgZJJ3RPeSKK8aZcKgssUS6y-i2Xmjv3BGXPACUm6kZQr_E1ZdQL_gNWCM71bEfGYi_vIlKPe557sI" alt="Idea" class="w-6 h-6 object-contain"></div>
+<h4 class="font-bold mb-1" style="color: #174A91; font-size: 18px;">المعلم المناسب لك</h4>
+<p class="text-xs flex items-center justify-center gap-1 font-medium" style="color: #6682AD;">
+<span class="">يُحدث فرقاً في مستقبلك</span>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA25S4KgpHnhy09IQs9-21RqqTa5ZUFIM7gtLjrK-RfpwwE4CSTO3XYraT1FR5G9Xsti2Fnz0d3DY6KtR8vlkStGY-uOOV_3BGbiU7hNVge-kWIEZiEOG6QGuR-tr0UlXmOf4lkq8IGzllQ_0FLsFdMVRjh9T392WYFVuvb1BQcToZDzpYVaED5cYOYSuog_yE2SZswSMIXMrTZfL-FIGhfB894ZSLhqNWesD0e2-XHQd5Z29YKPDCNs9k_7QYSZS3N7dI" alt="Heart" class="w-4 h-4 object-contain inline-block">
+</p>
+</div>
+<!-- Books & Plant Mini Graphic -->
+<div class="relative flex items-center justify-center mt-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9fwqKnkdZPCz65XYkgwym41KNRsI8XxLRpYnhCe4M4wjYb2E8JPFjXigMhmNlTvIGtDQvFcQtHAHKLpsGLe1A5YKbVSn6yOC4oCCNCRj_xk6pEwg4IR8d_RQXefSWsiJMVTPyK43pxVpwk3y299RKIkFI_ifVZlxWVn3A3dkVfuJ_6K9bPTx_QFuSl5stoh2oJIl4dECXj725Rn-iONzf-_PYKqEPYYufg8kfrs514Ie7Ov29Gt9q9Qyd4_a4UwqQSGc" alt="مساحة دراسة المعلم" class="w-full max-h-48 object-contain rounded-xl drop-shadow-sm select-none"></div>
+</div><script>function updateGrades() { var stage = document.getElementById('stage-select').value; var gradeSelect = document.getElementById('grade-select'); gradeSelect.innerHTML = ''; var options = []; if (stage === 'prep') { options = ['جميع الصفوف', 'الصف الأول الإعدادي', 'الصف الثاني الإعدادي', 'الصف الثالث الإعدادي']; } else if (stage === 'sec') { options = ['جميع الصفوف', 'الصف الأول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي']; } else { options = ['جميع الصفوف', 'الصف الأول الثانوي', 'الصف الثاني الثانوي', 'الصف الثالث الثانوي', 'الصف الأول الإعدادي', 'الصف الثاني الإعدادي', 'الصف الثالث الإعدادي']; } options.forEach(function(opt) { var el = document.createElement('option'); el.textContent = opt; gradeSelect.appendChild(el); }); } updateGrades();</script></aside>
+<!-- END: FilterSidebar -->
+</div>
+</main>
+<!-- END: MainContent -->
+</div>
+
+<script>
+(function(){
+  var PAGE_SIZE=6, ARROW="https://lh3.googleusercontent.com/aida-public/AB6AXuDh7M0Pz5CD40-xW7BHrBihsX0fg6Ci8zGmEbiiTHym4JY05Pa0EOfwIzfrliodr5u7Aw1Ng7pCShMFbG0ybW5lXlivxrtQ5beXM6cyILHdhKgXT7DegxidSB2f_znjPAkC-iuRT3GZ7Hv1lAtnkwWJz2WhhHh35dv9kFcXv-lrn5QJuxxuxXozXDue3w9ExBe-JuhLYA9JQ7ta2KVc7-H0K-YNMlLHheEdilWMz7foOUpdvprLwrHQlyYeu-uXhpOIq5Y";
+  var grid=document.getElementById('t-grid'), emptyBox=document.getElementById('t-empty'), emptyMsg=document.getElementById('t-empty-msg');
+  var pager=document.getElementById('t-pager');
+  var cards=[].slice.call(grid.querySelectorAll('[data-t-card]'));
+  var st={q:'',stage:'all',grade:'',subject:'',sort:'default',page:1};
+  var q=document.getElementById('t-search');
+  /* ---- مساعدات التطبيع ---- */
+  function norm(t){return (t||'').toString().toLowerCase().replace(/[\u064B-\u065F\u0640]/g,'').replace(/[أإآ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه')
+    .replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)}).trim();}
+  function subjKey(t){return norm(t).replace(/^اللغه\s+/,'').replace(/\s+ال/g,' ').replace(/^ال/,'');}
+  function stageOf(n){var o={};if(n.indexOf('ثانو')>-1)o.sec=1;if(n.indexOf('اعداد')>-1)o.prep=1;return o;}
+  function ordsOf(n){var m=n.replace(/ثانو\S*/g,' ').replace(/اعداد\S*/g,' '),o={};
+    if(/اول/.test(m))o[1]=1; if(/ثاني/.test(m))o[2]=1; if(/ثالث/.test(m))o[3]=1;
+    var rg=m.match(/([1-3])\s*(?:[-\u2013\u2014]|الي)\s*([1-3])/);
+    if(rg){for(var i=+rg[1];i<=+rg[2];i++)o[i]=1;}else{(m.match(/[1-3]/g)||[]).forEach(function(d){o[d]=1;});}
+    return o;}
+  function parseGrades(txt){var n=norm(txt);return {stages:stageOf(n),ords:ordsOf(n)};}
+  function has(o){for(var k in o)return true;return false;}
+  function gradeOpt(txt){var n=norm(txt),s=stageOf(n),o=ordsOf(n),stage=s.sec?'sec':(s.prep?'prep':null),ord=null;for(var k in o){ord=+k;break;}return {stage:stage,ord:ord};}
+  function matches(c){
+    var d=c.dataset;
+    if(st.sort==='mine'&&d.mine!=='1')return false;
+    if(st.q&&norm(d.search).indexOf(norm(st.q))===-1)return false;
+    var g=parseGrades(d.grades);
+    if(st.stage!=='all'&&has(g.stages)&&!g.stages[st.stage])return false;
+    if(st.grade&&st.grade.indexOf('جميع')===-1){var o=gradeOpt(st.grade);
+      if(o.stage&&has(g.stages)&&!g.stages[o.stage])return false;
+      if(o.ord&&has(g.ords)&&!g.ords[o.ord])return false;}
+    if(st.subject&&st.subject.indexOf('جميع')===-1){var a=subjKey(st.subject),b=subjKey(d.subject);
+      if(!(a&&b&&(a.indexOf(b)>-1||b.indexOf(a)>-1)))return false;}
+    return true;
+  }
+  function btn(inner,cls,style,extra){return '<button type="button" '+(extra||'')+' class="'+cls+'" style="'+style+'">'+inner+'</button>';}
+  var BOX='width: 36px; height: 36px; border-color: rgb(214, 231, 255); color: rgb(37, 99, 235);';
+  function renderPager(pages){
+    var h='', prevOff=st.page<=1, nextOff=st.page>=pages;
+    h+=btn('<img src="'+ARROW+'" alt="Next" class="w-3 h-3 object-contain rotate-180">','rounded-lg border bg-white flex items-center justify-center text-xs transition hover:bg-slate-50 cursor-pointer p-2'+(nextOff?' opacity-50 pointer-events-none':''),BOX,'data-go="'+(st.page+1)+'" aria-label="التالي"');
+    for(var n=pages;n>=1;n--){
+      h+= n===st.page ? btn(n,'rounded-lg flex items-center justify-center text-xs font-bold shadow-sm cursor-pointer font-num','width: 36px; height: 36px; background-color: rgb(22, 119, 249); color: rgb(255, 255, 255);','data-go="'+n+'"')
+                      : btn(n,'rounded-lg border bg-white flex items-center justify-center text-xs font-bold transition hover:bg-slate-50 cursor-pointer font-num',BOX,'data-go="'+n+'"');
+    }
+    h+=btn('<img src="'+ARROW+'" alt="Previous" class="w-3 h-3 object-contain">','rounded-lg border bg-white flex items-center justify-center text-xs transition hover:bg-slate-50 cursor-pointer p-2'+(prevOff?' opacity-50 pointer-events-none':''),BOX,'data-go="'+(st.page-1)+'" aria-label="السابق"');
+    pager.innerHTML=h;
+  }
+  function render(){
+    var list=cards.filter(matches);
+    if(st.sort==='students')list.sort(function(a,b){return (+b.dataset.students)-(+a.dataset.students)||(+a.dataset.idx)-(+b.dataset.idx);});
+    else list.sort(function(a,b){return (+a.dataset.idx)-(+b.dataset.idx);});
+    var pages=Math.max(1,Math.ceil(list.length/PAGE_SIZE)); if(st.page>pages)st.page=pages; if(st.page<1)st.page=1;
+    cards.forEach(function(c){c.classList.add('hidden');});
+    list.forEach(function(c,i){grid.insertBefore(c,emptyBox); if(i>=(st.page-1)*PAGE_SIZE&&i<st.page*PAGE_SIZE)c.classList.remove('hidden');});
+    emptyMsg.textContent=(st.sort==='mine'&&!st.q&&st.stage==='all'&&!st.grade&&!st.subject)?'لا توجد اشتراكات حالية بعد.':'لا يوجد معلمون مطابقون للبحث.';
+    emptyBox.classList.toggle('hidden',list.length>0);
+    renderPager(pages);
+  }
+  pager.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(!b)return;st.page=+b.getAttribute('data-go');render();});
+  if(q){st.q=q.value||'';q.addEventListener('input',function(){st.q=q.value;st.page=1;render();});}
+  /* ---- الفلاتر الجانبية ---- */
+  document.getElementById('apply-filters').addEventListener('click',function(){
+    st.stage=document.getElementById('stage-select').value;
+    st.grade=document.getElementById('grade-select').value;
+    st.subject=document.getElementById('subject-select').value;
+    st.page=1;render();
+  });
+  /* ---- قائمة الترتيب ---- */
+  var sb=document.getElementById('t-sort-btn'), sm=document.getElementById('t-sort-menu'), sl=document.getElementById('t-sort-label');
+  function toggleMenu(open){var o=open===undefined?sm.classList.contains('hidden'):open;sm.classList.toggle('hidden',!o);sb.setAttribute('aria-expanded',o);}
+  sb.addEventListener('click',function(){toggleMenu();});
+  sb.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();toggleMenu();}if(e.key==='Escape')toggleMenu(false);});
+  sm.addEventListener('click',function(e){var b=e.target.closest('[data-sort]');if(!b)return;st.sort=b.getAttribute('data-sort');sl.textContent=b.textContent;st.page=1;toggleMenu(false);render();});
+  document.addEventListener('click',function(e){if(!e.target.closest('#t-sort'))toggleMenu(false);});
+  /* ---- الأسماء الإنجليزية بخط Plus Jakarta Sans ---- */
+  cards.forEach(function(c){var a=c.querySelector('h3 a');if(!a)return;var t=a.textContent;
+    if(!/[A-Za-z]/.test(t))return;
+    a.innerHTML=t.replace(/[&<>]/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[m];})
+      .replace(/[A-Za-z][A-Za-z0-9.'\u2019\-]*(?:\s+[A-Za-z][A-Za-z0-9.'\u2019\-]*)*/g,'<span class="t-en">$&</span>');});
+  render();
+})();
+</script>
+{% endblock %}

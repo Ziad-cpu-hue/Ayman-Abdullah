@@ -1,0 +1,655 @@
+{% extends "ui/document.html" %}
+{% block title %}المساعد الذكي{% endblock %}
+{% block body_class %}bg-gradient-to-b from-[#F7FAFF] to-[#EEF5FF] text-slate-800 antialiased selection:bg-blue-100 selection:text-brand-blue min-h-screen{% endblock %}
+{% block head %}
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script>
+/* ألوان وظلال التصميم الجديد (إضافة فقط — لا تغيّر أي لون آخر في المنصة) */
+(function(){
+  if(!window.tailwind)return;
+  var c=tailwind.config||{};
+  c.theme=c.theme||{};c.theme.extend=c.theme.extend||{};var e=c.theme.extend;
+  e.colors=Object.assign({},e.colors,{
+    "brand-blue":"#2563EB","brand-blue-hover":"#1D4ED8","nav-active":"#3B82F6","nav-muted":"#4C658D",
+    "navy-deep":"#173A73","sub-muted":"#6F7F9A","card-border":"#DCE8F8","page-bg":"#F7FAFF",
+    "accent-rose":"#F43F5E","accent-green":"#22C55E","accent-purple":"#8B5CF6","accent-teal":"#14B8A6","accent-amber":"#F59E0B"
+  });
+  e.boxShadow=Object.assign({},e.boxShadow,{"card":"0 10px 25px -5px rgba(31, 64, 120, 0.07)","card-hover":"0 14px 28px -4px rgba(31, 64, 120, 0.12)"});
+  tailwind.config=c;
+})();
+</script>
+<style>
+  .as-new, .as-new * { font-family: 'Tajawal', sans-serif; }
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined' !important;
+    font-weight: normal; font-style: normal; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #DCE8F8; border-radius: 9999px; }
+  /* نصف أقطار التصميم (26px / 18px) محصورة داخل الصفحة فقط */
+  .as-new .rounded-3xl { border-radius: 26px; }
+  .as-new .rounded-2xl { border-radius: 18px; }
+  .as-new .rounded-3xl.rounded-tl-sm { border-top-left-radius: .125rem; }
+  .as-new .rounded-2xl.rounded-tr-sm { border-top-right-radius: .125rem; }
+  /* محتوى الرسائل الديناميكي */
+  .as-new .as-msg strong { font-weight: 700; color: #173A73; }
+  .as-new .as-concept strong { color: #2563EB; }
+  .as-new .as-msg code { background: #EEF5FF; border-radius: 6px; padding: 0 .3rem; font-size: .92em; }
+  .as-new .as-cite { display: inline-block; font-size: 10px; font-weight: 800; padding: 0 .35rem; border-radius: 6px; background: #EEF5FF; color: #2563EB; border: 1px solid #DCE8F8; margin: 0 1px; }
+  .as-new .as-dots span { display: inline-block; width: 7px; height: 7px; border-radius: 99px; background: #91A0BA; margin: 0 2px; animation: asb 1s infinite; }
+  .as-new .as-dots span:nth-child(2) { animation-delay: .15s; }
+  .as-new .as-dots span:nth-child(3) { animation-delay: .3s; }
+  @keyframes asb { 0%,80%,100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-5px); opacity: 1; } }
+</style>
+{% endblock %}
+{% block body %}
+<div class="as-new @container pt-6 pb-20 w-full min-h-screen text-[#173A73]">
+{% if impersonating %}<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mb-4"><div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 flex flex-wrap items-center justify-between gap-3"><span>أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div></div>{% endif %}
+<main class="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-1 @5xl:grid-cols-12 gap-6 items-start">
+<!-- RIGHT COLUMN ON SCREEN (Visual RTL Start): Smart Assistant Overview Panel -->
+<aside class="@5xl:col-span-3 order-1 flex flex-col gap-5">
+<div class="bg-white rounded-3xl p-6 border border-card-border shadow-card flex flex-col items-center text-center">
+<!-- Mascot Robot Illustration Container -->
+<div class="relative w-44 h-44 mb-3 flex items-center justify-center">
+<div class="absolute inset-0 bg-blue-100/50 rounded-full blur-2xl"></div>
+<img alt="المساعد الذكي" class="relative w-44 h-44 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300 rounded-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBu5PuEjxjeWiX63f6jeVpgVuqOgWh4u0wV9ieg4pgwruYTKStxtHiRQrOBKo7sqb69FcmKKA6-_kIS4hrzAhqFBH12nBjvA3c_B7GI3LRAZxNLd9GJB7naBa_xDqR8SxCTIVOE_uDW94WaFghNqgZm6Pyrc4XOceNtH_QuYYF372slmk9ueVF-wJqorRHfoRQiVmF46Ge8p_H9nYPLzCUBw5UbzFkDc2AFWK0qCyezl35aWf08zHPBVfEyyKWGWSPu">
+</div>
+<div class="flex items-center gap-1.5 justify-center mb-1">
+<h2 class="text-[22px] font-extrabold text-navy-deep">المساعد الذكي</h2>
+<img alt="أيقونة" class="w-6 h-6 object-contain inline-block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2pRWs8mpVO6xi0hNOEpKfyyf8idODp8Ix9ZUc3EHHtkeGfqvUs8aYq6SRYxbgrVLGjna69sU6jWyepNkbn-cAY8TzcjQfhR-aQYLQ0hXDRfEruwn_ur3qjEV8USQTobnobTbEJlynA6wI7HwC5ic0CNCMUsytFDbd8izphV4q8RGOIDZDk5wNHlUd5WMbHVyYEo4rx8qQ9eGUVaemo5pbc0Bthi1-2hXJmK6C56KMhdUrgtopOfIXTbBhfm05kTck">
+</div>
+<p class="text-[13px] text-sub-muted max-w-[240px] leading-relaxed mb-6">
+          دائماً بجانبك للإجابة على أسئلتك، وتقديم المساعدة في أي وقت.
+        </p>
+<!-- 4 Educational Feature Cards -->
+<div class="flex flex-col gap-3 w-full text-right" dir="rtl">
+<!-- Pillar 1: شرح الدروس (idea.png) -->
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border/60 transition-all">
+<div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0 p-2">
+<img alt="شرح الدروس" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVSrbLVs7lOSYPTgR-_3RkiYvX6n2TM17ORIMtfogZs4_FcurJdHCZpbzAykwDdY9M8ILQukwbfZ-9B8UKHk_Mb9Z3KwZvWDKMq80bdx48GlVn0mN6xBXJK6zBD_sSK8n768Te1a1ySaOl_XbRV7hd2Tqjar9npQ2cswxMLUMog5gP-4v15TcCZWcJ-IljKTk6PQCMRRt8IaVcG5AP_cyg1MzxY6hj70r4mgPnInmVcaT-PW4BBFPvJlVEGZ4nx0ZD">
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[14px] font-bold text-navy-deep">شرح الدروس</span>
+<span class="text-[12px] text-sub-muted font-normal">بأسلوب مبسط وسهل الفهم</span>
+</div>
+</div>
+<!-- Pillar 2: حل الواجبات (course-icon.png) -->
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border/60 transition-all">
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 p-2">
+<img alt="حل الواجبات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmpTdOO3ndLhjbfR3k-8rN3jbq4RJ4HWgsi_3N8O90E51g8ZF3jpKnPcj-8E0Q3clxPaG3ORWrv6pcKgSgyknhGsUyIT_IVYa55QGVgmXMF20P5NWbbBuzFpZDwSGARGGfhq-tkPt4oVxEZ1iWj0HOM7d_rTg6hOa8qCnBHlf0EG1LpvtxhXfdjIk5FKZkvD1MolTgD-c5yttJAjmTglzrW1XYy_SRwoG6LUcLcGFR7KQejYjdl7c1UDhrw-EazXww">
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[14px] font-bold text-navy-deep">حل الواجبات</span>
+<span class="text-[12px] text-sub-muted font-normal">وتوضيح خطوات الحل بالتفصيل</span>
+</div>
+</div>
+<!-- Pillar 3: الاستعداد للاختبارات (goal.png) -->
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border/60 transition-all">
+<div class="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0 p-2">
+<img alt="الاستعداد للاختبارات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-9360kyojw8m36U_b3GEMklz_PQTCLKm8arug7MVROM_XZCNnlmBBgCgzIX0WvF18mnD8vLWlIVcauxCE_FvJViXriFT6yTG-IE7H2SJ2zPDDS1eg8X-nRiV24LZhianCnUf2gfUxwRqISvTktMJkdgsyElU9Axkx4B0gpzOwavQQ4e_v8P7UDewemQ0EZWbWbdlgRTvMway3JITwyze2aDPJjKWs32ZMkDfcAefcDfHMyhKRf4QL62YPTSrg1mke">
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[14px] font-bold text-navy-deep">الاستعداد للاختبارات</span>
+<span class="text-[12px] text-sub-muted font-normal">مع تدريبات ونصائح مخصصة</span>
+</div>
+</div>
+<!-- Pillar 4: الإجابة على الاستفسارات (question-mark.png) -->
+<div class="flex items-center gap-3 p-3.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border/60 transition-all">
+<div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0 p-2">
+<img alt="الإجابة على الاستفسارات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEg73ptXj4gBe9w20Q4H3ZzW545G5P1vnZcho2onokNnVwB1rAbQMSHPDfYNibA_86jG1IP0D7nGW4rvaaMHJAeZ4JKGUE6JZXSdez1LOcny1Xx8XwQyl5_b0OHVYaaLL8noHsa2PmOfo6hZUlHqeOeipDIwmrGFvWqeNnPAZ-73C7eLpV9bO2wFi0Fdc1Z5xIeq0CR085k-VYJh1ckbtmQ2yH80A-FXOD-JJb7Na-XUnBOgUg_WekUJFDwpAUK3f6">
+</div>
+<div class="flex flex-col text-right">
+<span class="text-[14px] font-bold text-navy-deep">الإجابة على الاستفسارات</span>
+<span class="text-[12px] text-sub-muted font-normal">في جميع المواد الدراسية</span>
+</div>
+</div>
+</div>
+<!-- Supportive Bottom Note -->
+<div class="mt-6 pt-3 flex flex-col items-center">
+<span class="text-[13px] font-bold text-navy-deep flex items-center gap-1.5">
+            مستعد لمساعدتك دائماً
+            <img alt="heart" class="w-4 h-4 object-contain inline-block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWk_MipacITfn7M0k0LZJ_ckUyGRGLD392VY0hhfjvrUPdGcJ5P8yjoZwdLgCBvycHU_9R9DXBgUgGiDrCiK7ZrMmhLhI0K3HRlIXrZTZbaW_VkQds59y7lyPU4D2pwbiKqxIivuR4wt0pQtRha91Q8xc63wGYOYV79jbzNhKDirCFFgjwbVvpBD2xu1XDewrlJvn0e7Iz1XNubQWPY613yJzGafEMTrlj_pkYx8A9XyU_Yc_DyB3Tyxbe3AcQkmvC">
+</span>
+<svg class="w-24 h-2.5 mt-1.5 text-nav-active" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5" viewBox="0 0 100 10">
+<path d="M4 6C28 2 68 9 96 5"></path>
+</svg>
+</div>
+</div>
+</aside>
+<!-- MIDDLE COLUMN: Conversation / Active Chat Section -->
+<section class="@5xl:col-span-6 order-2 flex flex-col gap-4">
+<div class="bg-white rounded-3xl p-5 md:p-6 border border-card-border shadow-card min-h-[760px] flex flex-col justify-between">
+<!-- Chat Top Bar -->
+<div class="flex items-center justify-between pb-4 border-b border-card-border" dir="rtl">
+<div class="flex items-center gap-3">
+<div class="relative w-11 h-11 rounded-2xl bg-brand-blue flex items-center justify-center text-white shadow-md shadow-blue-500/20 p-2">
+<img alt="المساعد الذكي" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMY3cMA5HdpgvkqIVobv9YP9Dm3dSCNqlW07l1jwZ4f7RPinCM-zfJkXZf0T-6Hch-t3Yua3mx5mNfRwRk9fzhJ8K97ytzd0Li1YMoMRWYdW7v8qzBvozk_l-KuFTVYWlHEv5v8NCXAMrNmkQGdddeFlo7t-eg-ek5XtEbyM8hDa9msQHeNuYtzGOrnyCsKhFcdGQJUxfDOldeRf7Gwu9smNM2KLhxTsdRWofSEkX_nJ_6oD3JXPEOy6Vt3GERTRxe">
+</div>
+<div class="flex flex-col text-right">
+<h1 class="text-[17px] font-bold text-navy-deep leading-tight">المساعد الذكي</h1>
+<div class="flex items-center gap-1.5 justify-start">
+<span class="w-2 h-2 rounded-full {% if enabled %}bg-accent-green animate-pulse{% else %}bg-slate-300{% endif %} inline-block"></span>
+<span class="text-[12px] text-sub-muted font-medium">{% if enabled %}متصل الآن{% else %}متوقف حاليًا{% endif %}</span>
+</div>
+</div>
+</div>
+<!-- Chat Action Buttons -->
+<div class="flex items-center gap-1.5 relative">
+<button id="as-del" class="w-9 h-9 rounded-full bg-[#F7FAFF] hover:bg-rose-50 hover:border-rose-200 hover:text-accent-rose border border-card-border flex items-center justify-center text-sub-muted transition-colors" title="مسح المحادثة" type="button">
+<span class="material-symbols-outlined text-[19px]">delete</span>
+</button>
+<button id="as-more" class="w-9 h-9 rounded-full bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border flex items-center justify-center text-sub-muted hover:text-navy-deep transition-colors" title="خيارات إضافية" type="button" aria-haspopup="true" aria-expanded="false">
+<span class="material-symbols-outlined text-[19px]">more_horiz</span>
+</button>
+<!-- قائمة المحادثات السابقة + محادثة جديدة (تظهر عند الضغط على «خيارات إضافية») -->
+<div id="as-menu" class="hidden absolute left-0 top-full mt-2 w-72 max-w-[85vw] bg-white border border-card-border rounded-2xl shadow-card-hover p-2 z-30 text-right" dir="rtl">
+<a href="{{ prefix }}?new=1" class="flex items-center justify-center gap-2 w-full bg-brand-blue hover:bg-brand-blue-hover text-white font-bold text-[13px] py-2.5 rounded-xl no-underline transition-all shadow-sm"><span class="material-symbols-outlined text-[18px]">add</span>محادثة جديدة</a>
+<div id="as-threads" class="mt-2 max-h-72 overflow-y-auto flex flex-col gap-1">
+{% for t in threads %}
+<div class="group flex items-center gap-1 rounded-xl {% if thread and thread.id == t.id %}bg-[#EEF5FF]{% else %}hover:bg-[#F7FAFF]{% endif %}">
+<a href="{{ prefix }}t/{{ t.id }}/" class="flex-1 min-w-0 px-3 py-2.5 text-[13px] font-medium text-navy-deep no-underline truncate">{{ t.title }}</a>
+<form method="post" action="{{ prefix }}t/{{ t.id }}/delete/" class="m-0" onsubmit="return confirm('حذف هذه المحادثة؟')">{% csrf_token %}
+<button type="submit" class="w-8 h-8 flex items-center justify-center text-sub-muted hover:text-accent-rose transition-colors" title="حذف"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</form>
+</div>
+{% empty %}<p id="as-threads-empty" class="text-[12px] text-sub-muted text-center p-4 m-0">لا توجد محادثات سابقة.</p>{% endfor %}
+</div>
+</div>
+</div>
+</div>
+{% if not enabled %}<div class="mt-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-[13px] font-bold p-4">المساعد الذكي متوقف حاليًا من إدارة المنصة.</div>{% endif %}
+<!-- Chat Conversation Area -->
+<div class="flex flex-col gap-6 py-5 overflow-y-auto px-1" dir="rtl" id="chat-messages-container" aria-live="polite">
+<div id="as-empty" class="hidden max-w-xl mx-auto text-center py-8">
+<div class="w-16 h-16 mx-auto rounded-3xl bg-brand-blue flex items-center justify-center shadow-md shadow-blue-500/20 p-3 mb-4"><img alt="المساعد الذكي" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMY3cMA5HdpgvkqIVobv9YP9Dm3dSCNqlW07l1jwZ4f7RPinCM-zfJkXZf0T-6Hch-t3Yua3mx5mNfRwRk9fzhJ8K97ytzd0Li1YMoMRWYdW7v8qzBvozk_l-KuFTVYWlHEv5v8NCXAMrNmkQGdddeFlo7t-eg-ek5XtEbyM8hDa9msQHeNuYtzGOrnyCsKhFcdGQJUxfDOldeRf7Gwu9smNM2KLhxTsdRWofSEkX_nJ_6oD3JXPEOy6Vt3GERTRxe"></div>
+<h2 class="text-[17px] font-bold text-navy-deep m-0 mb-1">{% if role == 'student' %}أهلًا بك! اسألني أو تحدّث معي{% else %}اطلب مني أي مهمة وأنا أنفّذها لك{% endif %}</h2>
+<p class="text-[13px] text-sub-muted leading-relaxed mt-0 mb-5">{% if role == 'student' %}أشرح لك دروسك بالتفصيل من محتواها، وأقترح عليك ما تذاكره حسب مستواك، وأدردش معك في أي موضوع.{% else %}أنشئ الدورات والدروس والاختبارات، وأقرأ ملف منهجك (PDF) وأشرح دروسه بالتفصيل وأجهّز اختباراتها بإجاباتها الصحيحة لتراجعها، وأشرح لك أي خطوة على المنصة. ما أنجزه يظهر لك هنا بروابط للمراجعة.{% endif %}</p>
+<div class="flex flex-wrap justify-center gap-2">
+{% if role == 'student' %}
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">ما نقاط ضعفي وماذا أذاكر أولًا؟</button>
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">ما الدروس التي فاتتني؟</button>
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">اقترح عليّ خطة مذاكرة لهذا الأسبوع</button>
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">ما حالة حضوري ونتائجي؟</button>
+{% else %}
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">اشرح الدرس الأول من ملف المنهج بالتفصيل واعمل له اختبارًا</button>
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">كيف أنشئ اختبارًا لدرس؟</button>
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">من الطلاب الذين يحتاجون متابعة؟</button>
+<button type="button" class="as-sg px-4 py-2.5 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border text-[13px] text-navy-deep font-medium transition-all shadow-sm">لخّص لي حالة الحضور</button>
+{% endif %}
+</div>
+<p class="text-[11px] text-[#91A0BA] font-medium leading-relaxed mt-5 mb-0">{% if role == 'student' %}أسئلة المنهج يجيب عنها المساعد من دروسك مع ذكر المصدر. وإن لم تكن الإجابة من دروسك فسينبّهك. للتأكد اسأل مدرّسك.{% else %}ينفّذ المساعد المهام كمسودات لتراجعها، ولا ينشر ولا يحذف ولا يرسل إشعارات إلا بضغطك على زر التأكيد.{% endif %}</p>
+</div>
+</div>
+<!-- Bottom Chat Input Bar -->
+<div class="pt-4 mt-auto">
+<div id="as-error" class="hidden mb-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-[12px] font-bold px-4 py-2.5" role="alert"></div>
+{% if agent %}<div id="as-docs" class="hidden flex-wrap gap-2 mb-3"></div><input type="file" id="as-file" accept="application/pdf,.pdf" class="hidden">{% endif %}
+<div class="relative bg-white border-[1.5px] border-card-border rounded-full p-2 pr-4 pl-2 flex items-center gap-3 shadow-sm hover:border-brand-blue/40 transition-all" dir="rtl"><button class="w-10 h-10 rounded-full bg-[#F7FAFF] hover:bg-[#EEF5FF] flex items-center justify-center text-nav-active transition-colors shrink-0" id="as-attach" title="{% if agent %}ارفع ملف المنهج (PDF){% else %}إرفاق ملف أو صورة{% endif %}" type="button">
+<img alt="إرفاق" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzjs52_7DbPPVx97PvJhhiP81acYxnC3sAuGtUMbntdFggIzmWUP-X8wEdWc4iWBLoY52tuEyI8UJtlbZBFX8DCE9g32mJqKd0_uNRpJ8LyUsksrgGiW_ijynJnJegzz3FtUh0VBu_wjRhgXgdIBT5cEkzhP8d9ywIltuTCM91vaIawcIMCX1-oV4XJVuvnuXo7JpOOrtQhNZAGI3YJUmwMEczLfbeUIKXGJJAWhv8OxcyzJaXqYmc1RjuFR8OCxZc">
+</button>
+<input id="as-input" class="w-full bg-transparent border-0 focus:ring-0 text-navy-deep placeholder:text-[#91A0BA] text-[14.5px] font-medium outline-none text-right" dir="rtl" placeholder="{% if agent %}اكتب طلبك... مثال: اشرح الدرس الأول من الملف واعمل له اختبارًا{% else %}اكتب رسالتك هنا...{% endif %}" type="text" maxlength="{% if agent %}2500{% else %}1200{% endif %}" autocomplete="off"{% if not enabled %} disabled{% endif %}>
+<div class="hidden sm:flex items-center justify-center shrink-0 w-6 h-6 opacity-60" title="{% if role == 'student' %}أسئلة المنهج يجيب عنها المساعد من دروسك مع ذكر المصدر. وإن لم تكن الإجابة من دروسك فسينبّهك. للتأكد اسأل مدرّسك.{% else %}أسئلة المحتوى يجيب عنها المساعد من دوراتك مع ذكر المصدر.{% endif %}">
+<img alt="ذكاء اصطناعي" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADCeK0ZLjfYE5AYtADwlg-UtMd-oBb3ifYKB9BSckPaJqzX2E60xB6ZcQUJH-saCSO2nFojO-nseOSmeQzePet5J4CtCiicixzbknwZIVIR2Rjd7W5Sb4X6pKpNzsDiGENTZC6NKEyKM3MbJsVC1XMS0QteT-oSXU7e1Mu2hgbeawEzUNJx3Nr5OxBtIOPHBDv99sqsNluUUnovlbQS-yrv3exQDYLoYIizAtlnWqMZmdGAT8-ED6-j-xKk4kbkrdt">
+</div>
+<button id="as-send" class="w-11 h-11 rounded-full bg-brand-blue hover:bg-brand-blue-hover text-white flex items-center justify-center transition-all shadow-md shadow-blue-500/25 hover:shadow-lg shrink-0 p-2.5 disabled:opacity-50" title="إرسال" type="button"{% if not enabled %} disabled{% endif %}>
+<img alt="إرسال" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPTAY-ouZWvVjV0YT7moVCC5Al1E4Urzlyg1xqFYiKKnzT5MZP8OY2djStygPWJaDqBPIbUgVetOHI7pjMntq9STADHrSjJCPUdLwqZWRvVNK49I3MZKqlpgF44EVgWk5_nqKw_WciyB6tBKKacnqdAddGO7M04hMcSL2lPKcOGu7o3jJgQYOiOFMBm8f2g6ACjafiFG7l54UUPWp8HHLOG13ZjPghQ3iw9Idx737IJC2Qc-pMxWJfyhAz81977rTI">
+</button></div>
+</div>
+</div>
+</section>
+<!-- LEFT COLUMN ON SCREEN (Visual RTL End): Quick Suggestions & Supported Subjects -->
+<aside class="@5xl:col-span-3 order-3 flex flex-col gap-5">
+<!-- Card 1: Quick Suggestions -->
+<div class="bg-white rounded-3xl p-5 border border-card-border shadow-card flex flex-col gap-4 text-right" dir="rtl">
+<div class="flex items-center gap-2 font-bold justify-start">
+<img alt="اقتراحات سريعة" class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9dGGSU7CBgC6cgCE1XBFHTmZMCcZPmOV9hNkFfjA4X3wuQ8DQ64XfqAwLfxLe0byGeZ2rxbF9g-AZcRXkMJjBWLx3OUGl_bw7yW8hx8B59rhmgBfb7ZfyncnO8NcbXT_G0BOnJ7bs_ibhBJYucDJ914yXWXaJsgsu6wRqbr4xgbodvMyLzMEVw7PNsn3J8vLBDFNmeIJUPbXY94rPecSykNa0DGhUujiiWe1msyw-s-wyvsgbYUBs0BDMr0ksfFGl">
+<h2 class="text-[16px] font-bold text-navy-deep">اقتراحات سريعة</h2>
+</div>
+<div class="flex flex-col gap-2.5">
+<!-- Suggestion 1: Chemistry -->
+<button class="group flex items-center justify-between p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all text-right shadow-sm w-full" type="button">
+<span class="text-[13px] text-navy-deep group-hover:text-brand-blue transition-colors font-medium leading-snug">اشرح لي درس الكيمياء بأسلوب مبسط</span>
+<div class="w-9 h-9 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0 mr-2 p-1.5">
+<img alt="كيمياء" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPZ2GFwC0p6NSn3INQM2R1b1DGvSgio6U21_qpjCrO78gPOq7U6n6a8J3kUzAmpG1O1XWjMbyEXFGevOrs-Sx2GRbk20UYkkkNmc7jEudexCr7nuwRjkrP4GHGozzyqqBj4BBLqqClUH_KGEOZHL0Chr8nhXIIH6fiT8sve11SB4AJfU0AR2cBg1jJBtKOePdpEf31EkVQi010DGX4t3CHUAuIWepHh-k7GNaG9J0wtkBbL18JZYRFMN4y83teWPoB">
+</div>
+</button>
+<!-- Suggestion 2: Math -->
+<button class="group flex items-center justify-between p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all text-right shadow-sm w-full" type="button">
+<span class="text-[13px] text-navy-deep group-hover:text-brand-blue transition-colors font-medium leading-snug">حل هذا السؤال في الرياضيات</span>
+<div class="w-9 h-9 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0 mr-2 p-1.5">
+<img alt="رياضيات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQOSkwpoqRL8bGm6PCUyOx7mFkjnwWO9qVHtPmzPjJxAenokuPuNR16gB7wJeadZScBPL3clsSZToykidZfZrCh17Mw1hbN0nlCA3uh7c2wfcJfuxdn3CTrMV-ghgdocMum4kF0glPrtv1y0QjzFDGK97NkkjrgY9ma_SV97SepRlZqvA6jvtaor_zvT8lyeliyMzE6tVNWvpx_0UenMZTcUKfb3TVQBjzeWN2vQ2SvyGprfbbFevvip9X8cGuNGht">
+</div>
+</button>
+<!-- Suggestion 3: Arabic Grammar -->
+<button class="group flex items-center justify-between p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all text-right shadow-sm w-full" type="button">
+<span class="text-[13px] text-navy-deep group-hover:text-brand-blue transition-colors font-medium leading-snug">ما هي أهم قواعد النحو؟</span>
+<div class="w-9 h-9 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0 mr-2 p-1.5">
+<img alt="نحو" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJlIdr2VWJsRTwX368JHXHpPyFdhArJw3A0NJi1kMz6itF85j-NPwjIwoBm-e7ZBMirfkeyGgHTsGCo7mYiYCSkNotywR00A3zqlPjUOGc_JzzX2hAniGH-6QBg86FXwmcy1_KxpNRNkd04RkOhWTnd4BX20g4m9ODnlwDcy1CV5JXcXyHd_Lcu8fhdmACGkrJmVXaVsf0S_cgIKcMsy6MESOJzQCcyw01yRI5x-BSdQ3oO7hAJziJ865D8jt3ipK5">
+</div>
+</button>
+<!-- Suggestion 4: Biology -->
+<button class="group flex items-center justify-between p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all text-right shadow-sm w-full" type="button">
+<span class="text-[13px] text-navy-deep group-hover:text-brand-blue transition-colors font-medium leading-snug">أعطني ملخصاً لأهم نقاط البيولوجيا</span>
+<div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0 mr-2 p-1.5">
+<img alt="أحياء" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSlglesZgIMIaCfa7jLFl1idUM-cbkcBCa1YcRbDfIPWgpjxLVWIJQ2ZMSJefo9ryQUd9Uy9Z6QAtcD0oC6W0iTK3htusLqyIAqZz5pk1pL7-oyOfp8Dg1Umyktk87re4K6croG5XsRqElVxdQhqA3uFfQ7lYaq7les0-VFe6Cpam5fG6tkktIc8oj7ApGSBFsWZEo7WvqyaJVmnnsRGmLmPSKTyUw3JGZLQc-Qa0yMzJfiAK0ZKG2EuYCDNLCdW3A">
+</div>
+</button>
+<!-- Suggestion 5: Physics -->
+<button class="group flex items-center justify-between p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all text-right shadow-sm w-full" type="button">
+<span class="text-[13px] text-navy-deep group-hover:text-brand-blue transition-colors font-medium leading-snug">ساعدني في فهم هذا المفهوم في الفيزياء</span>
+<div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0 mr-2 p-1.5">
+<img alt="فيزياء" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQycrb0Lvn3vWS_Qv_pRv4nPpuqh7KHjFYPqMxHc4XyTO6dYgKKXsXLWoZBBrM8zKhpxIZRPGKqZShUmAmXwHiZDOeKtyvUXb0brKbC6HffAeFMTDqJWLQ6_-slP-GuHN6k4cDgZ6x_WgLx95qsX8Ug0rG589WiYzPew0Zt_BzOXHoi3RXjhus0iOOv5XYRzxhtgzfUP9RCkcIVAVB5e_FMIxfJgW6pVWWcEARy-hHPA8rJNPkQcCI019Rxzp_LeWp">
+</div>
+</button>
+</div>
+</div>
+<!-- Card 2: Supported Materials (المواد المدعومة) -->
+<div class="bg-white rounded-3xl p-5 border border-card-border shadow-card flex flex-col gap-4 text-right" dir="rtl">
+<div class="flex items-center gap-2 font-bold justify-start">
+<img alt="المواد المدعومة" class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa8plQpUXuX-VmDDTotXFaMhePvLfPgMcu8-2HvlmiVaST87CvqpeJ56jdy6padjXUlimx8ckNcUPCv5ggdV_gIhYVqvcW0B5pEFmC0zPlTLZPZtsCJsOy1qsew_TaKPKU693NxoKtK5kC1zJan83SRs9HXDDqxeOBMEbGWdQpPs_VQO_0dsAjjehJehSVifHDbsdwWr6ZufklDmUq67Kfi35C5TzgKtGGjA-UpGTaiD4DJfNOsatzuJug9hl1TwVZ">
+<h3 class="text-[16px] font-bold text-navy-deep">المواد المدعومة</h3>
+</div>
+<!-- 2x3 Grid of Subjects -->
+<div class="grid grid-cols-3 gap-3">
+<!-- Math -->
+<button class="flex flex-col items-center gap-2 p-2.5 rounded-2xl hover:bg-[#F7FAFF] border border-transparent hover:border-card-border transition-all group" type="button">
+<div class="w-12 h-12 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+<img alt="الرياضيات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM4Hlc9TNnDLDQ1MFRuhebohnIiUjqQOrXtVEyilJ6vr779TzHTfZvPvI-MJesTYc4zYZln5rEmfWdZ7RB1RG-zMBMjcrq48VTAnuh9A-A0ml0Lc1C0zdYCbNNYFDpUhqrnoNCBO-74MFhjQ7h3GEip5vDraMa9XxiV29PfUyKdgMAibHRO9iKUgsf8kOQT1jQGi-QWtIYdAJDrh8o__lmMx9xtvxUEG0-Adh7sjJ-TK2r5nLHy8bU5YZazNQZ5adz">
+</div>
+<span class="text-[13px] text-navy-deep font-bold">الرياضيات</span>
+</button>
+<!-- Arabic -->
+<button class="flex flex-col items-center gap-2 p-2.5 rounded-2xl hover:bg-[#F7FAFF] border border-transparent hover:border-card-border transition-all group" type="button">
+<div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+<img alt="اللغة العربية" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGqu3gWR15pQ3WxAizZDDFNXUysAwKJRoxoG_8m_iwWCFw0WskgyrbnRXwnKqwByvwGypplKg_hUsD04eJN5xEwt82skVaXUv7yHa1bu77jGa4gGs3e9OZalkFOzoTxFZU0ot3V5AJcU0AoTDX8CdZBXFGrQWBktxBtZzZY22PiHGnjYFG8w1lyu7_7gZuKy3gWwcSDqMUokxjGmKVFVYMWjHyNQDz8UYkh_5-_69oxNt3oMBiXJ-HvebOeb1tw-zS">
+</div>
+<span class="text-[13px] text-navy-deep font-bold">اللغة العربية</span>
+</button>
+<!-- English -->
+<button class="flex flex-col items-center gap-2 p-2.5 rounded-2xl hover:bg-[#F7FAFF] border border-transparent hover:border-card-border transition-all group" type="button">
+<div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+<img alt="الإنجليزية" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACcP70Vg8_7YrqQgEL-moLAWtdFF1gjIw-2-8hC6wIktJY3FuPt8Pnzgf4prMGvX7ZWfFSqPwgz1pavwzW7qfUfy02CoYg2Z_6MycwCSHZrzYDqkPYPufM0aKZ8Yzv15JaQAoyQp1W58GtBGym7PiOOZb4XGWPX9jevkA2qXdyJ216kavd28Tyqbm7LA82dQo06N72e9oPrvjBrzg4unVWNfLB5QQw-B4YScpWm8Qw83MwA_42pfHCcZEigtCcjcl2">
+</div>
+<span class="text-[13px] text-navy-deep font-bold">الإنجليزية</span>
+</button>
+<!-- Biology -->
+<button class="flex flex-col items-center gap-2 p-2.5 rounded-2xl hover:bg-[#F7FAFF] border border-transparent hover:border-card-border transition-all group" type="button">
+<div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+<img alt="الأحياء" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAuRKcc32brkPszacJxUrjWR3-PxPdIIQas5n4C8RWnqLxIvyMRltik49nAs4n3B3bt4jNrmGSu33zWl0y0YfwR61f2xY0h301ZZA8-B_1BKuAdzLAs9qcUH4HoOdXy4Wv_adoYZAJ6erDwpgIwoKXBK-QSys00ED5tEoYrqe_er22gAbuxjxr2joDVg4meZGgfng4lhTd5-EuIGiqsX4vY6-gqI4qtgL91Z_QpI6pF6iUUbGqKzQsoRCsBwQsa188T">
+</div>
+<span class="text-[13px] text-navy-deep font-bold">الأحياء</span>
+</button>
+<!-- Chemistry -->
+<button class="flex flex-col items-center gap-2 p-2.5 rounded-2xl hover:bg-[#F7FAFF] border border-transparent hover:border-card-border transition-all group" type="button">
+<div class="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+<img alt="الكيمياء" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUH-gfxZbIMLlJd15b82lAFA7eBM_ejYbhLABouSJF0yhCn99W9zm8MP4pdaUMCxVvDX6QIpzvUjZmOFGJx0mzu3ZVKKWFOKTu6GRx5yIh8nv4JT9B2SWPn7kDmsUw1mpCetmXHCGmpO8LLEZogKbHtkHuHvlp7UXFIQgY41piwCsSYj_NB0E2a2uPrPxVoYJreDKmb7LPoUq5UYZToqGZgzvQpJL3lT1Gizzzrp7uZX8Aro3Maq17tCDESYBHeDqJ">
+</div>
+<span class="text-[13px] text-navy-deep font-bold">الكيمياء</span>
+</button>
+<!-- Physics -->
+<button class="flex flex-col items-center gap-2 p-2.5 rounded-2xl hover:bg-[#F7FAFF] border border-transparent hover:border-card-border transition-all group" type="button">
+<div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+<img alt="الفيزياء" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLxbys3jMvlUkcIrHXhyM-fyhGCTo5aattyctvWuAHd-sJMtc_nQy5aVHRvUCieNwJ_hTJ5kf9fHcZJjaaHzt8yDIkxY5qGPBTZbTVBm5uqZqJJQoBvu_j5ykfJ58BSIapnOGt-Aql6BDHXeKrSVPPw005c4ist6YRnJaGqTVt_BWleanKOHzdWsLAZvrvB8Bo0rrk9TN9pyU0u7y6aMOZMpP0w7NaPp0m493D1snXN0GU8wsBCVOQEMGgAr8WkzI-">
+</div>
+<span class="text-[13px] text-navy-deep font-bold">الفيزياء</span>
+</button>
+</div>
+<!-- Motivational Line at Bottom -->
+<div class="pt-4 flex flex-col items-center text-center">
+<div class="flex items-center gap-1.5 text-[13px] font-bold text-navy-deep">
+<span class="">لأنك تستحق الأفضل</span>
+<img alt="heart" class="w-4 h-4 object-contain inline-block" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm20zo2pk4YnArX75Je7X4UZF_v_NXMPWcwR9bPACmGKTt7jGNF9tLjO_ISqKrTgnwgfxPZt6Clt-V66QMP-kYD_0cbu_M3pR_QHv3m_ASUMt6hIe6ZFcL6BLorWB59nnLWcqRw7rXO8k6SOBi-WM2t3e3tKZuoJIKqFGLsVS50jEzAtaDmCFje1WKW7EbOXFp6gWAvU_PPytwXJBarpYmtGATVK2yVOkoQTu3gdIBvNkN1SUJTsyZcKo9OiwOwNmZ">
+</div>
+<svg class="w-24 h-2 mt-1 text-nav-active" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5" viewBox="0 0 100 8">
+<path d="M2 5C25 1 75 9 98 4"></path>
+</svg>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+{{ messages_json|json_script:"as-initial" }}
+{% if agent %}{{ docs_json|json_script:"as-docs-data" }}{% endif %}
+<script>window.AS={send:"{% if agent %}/teacher/assistant/agent/send/{% else %}{{ prefix }}send/{% endif %}",agent:{% if agent %}true{% else %}false{% endif %},run:{% if active_run %}{{ active_run }}{% else %}null{% endif %},prefix:"{{ prefix }}",thread:{% if thread %}{{ thread.id }}{% else %}null{% endif %},role:"{{ role }}",csrf:"{{ csrf_token }}",enabled:{% if enabled %}true{% else %}false{% endif %}};</script>
+{% endblock %}
+{% block scripts %}<script>
+(function(){
+  var root=document.querySelector('.as-new'); if(!root)return;
+  var IMG={"bot": "https://lh3.googleusercontent.com/aida-public/AB6AXuB3G9L2_jT1sjppa_tt6QrGxNP0kPU9Lsq9sON8yNUy084KjfPLBvpLSDaDDPGIjmIhXWFKULDv4N2gN_dNvFQVPff4i-vF1rSLqUN4BvNBlQSJSv4CgjGkcyiT04w5BX-2bhbsdixUBJjLqbMos-dh939e7YMVAg21YGizyyl95WrWOALrcBlorfS8Gc6Yk5ZSu2z4NgxjMdnm7772T5SdSKUx7UmPqLdIcWiVTbF-HjbVxt7vpW9erDVWbpsKhcVz", "user": "https://lh3.googleusercontent.com/aida-public/AB6AXuAyY07As0lq441XiR8FKqVZ8l2lGf6pwD7xwrPqZEQeHxda4Vn0UlXEyT56BIHeGoywwuBAXo2w3Me5H4y1hckfOZaOLteC2fnhuMAwssLyNT2SISsS2-JtbXCApn6CCIxYCwzohUOPKZ8ZWkR6VNaGhpp8DH9HdB_IeWqK9s_pkFWqASQftdtRjK_GuVqbOemR-MNIweTDcQ1nt-Ff8qZG2M-s3_MFGP8uRoV6ge8WC04Z1h8kSZkz4rbpB3A5LVMY", "idea": "https://lh3.googleusercontent.com/aida-public/AB6AXuCQh1lWn0eTiMCT-9MJ07Co5x4xxFWw9Gn90NcL3BUtOiQTx4XNcmL7B1w0ivwtWaT_4qPFLvKGDfvGsyrTRHceK-ATYHx5El7JKGfD_JYswB18cAxFAZdGIQ-Gu96qdtMvchveWjAYDKyzm1cwbQgigAru8bD0bysp95sL3VZJ1b2he7MlCewl13JY18zeoN5Z2GJqfLgHKacU3brAoO96HJfVtVUQ496KWh7W3b9VuVUxcqY-Jgd6_OLYrjCog80W", "goal": "https://lh3.googleusercontent.com/aida-public/AB6AXuAvQ-mdheyhDZvDCeOnyypAP-H30AY0FpzUVRZEP09NWGAV9mggrLSva4PzT-XERGxt2RIAbrE8L7RAIlyDTbmMNLVd9ZC56dQisfLPsGqirIYj6pPyqiX-J7p5DkPTzUOrjkosfe-aSOzF0rksbZH9alXcf-K3N4yIELiIUh0x0ftR0slVlef9_9kZgUoUJf886HsZULgkqvmMoRbR_29xHSHmq8Le1BzmOhjjCZNJA1aX2jb5PhndacYSQi8sYNJX", "aiq": "https://lh3.googleusercontent.com/aida-public/AB6AXuBGHhB3RlR3BGuoosDeOdCUee_5zDMUKi9jiuMETjnbOOhj03P8TCGGb120tOJ8gEFWWzAPlhesu1q6P1DNUlC4xh8cMbMBSwiD7u_UYLq9_vlBXW6NJfR3aVZ4TrgiIyMYqYRwdMLgNfue5jaikTYnuOb1m4uHyRnjS0f4HbZ488lmd1p80myH0y1hNZPSS5nV8Twa9ybfua4gk3_kP-RDJQRhP3zCcN8gVWKkc1RZVenMhjAfbR9bAqdAO3A3L9XN", "copy": "https://lh3.googleusercontent.com/aida-public/AB6AXuAbNomWgA9auw7MN_dw8SCz2p15JbEAYhtzHrd_7cbtrLvkk8iYlAKNJ26TfxMN-WWQyrR6bco9HVnQTMYDxbYF1RUx6vciHBEu9n4KK7iv5wtegfte0mAK36lWN-ocNBgqhpoKdbrUdKAsLdcIcf-Xjo7TpcA1dbEviimx7Xqy2PVfZvXIbzZl3whULD-FUpT8icp7-2IEnBj_JX_bzGbzN3OoI7Hxyon7Yle8uy1yzmPCX84kCRiwP_f1ahMGyCO_", "like": "https://lh3.googleusercontent.com/aida-public/AB6AXuBrGqDzPL-we9lV3brbMprdEOw_rfATJyiTkx2yiljd6Ho-OTkcNz0h7c7KtRZeAluEJca6Tvw3azNzsCHixU4_i7BUk01YJJSUWUyxUaSTzUBD0SRN-A63bjBMwUyFnEu-C9eXDN1vB7GSMvojGoUSBbsarMWKI0EPC-3dJY_X1NCPNn1hOV2jq5VXI1vNX2HNhnehQlz_gt5nDKD7N6HCL0qlvq9mIYmdTm8yKe0r7SlR792wGeFG-pwwx_x3Tduj", "dislike": "https://lh3.googleusercontent.com/aida-public/AB6AXuBg2iisgOgydkXMU4PjFR_yeXOcYra-8OBI32YDr2XL77NHfBpeISR-p7rfaAKsditIPzn5fWiys0V6-xUSXN-S_Gjdpmx0uRRDUnvTTpInmUFP-6W5o6eYSWynto2dibh18-JUmslfuNOP0Ne96uqPmK1Z_7xO0vADgG1p3bKDBMcFyzvs3pgMRKsmi-F0sFjVDzwaqAv-PTdwqgqwoTYZZGbi2RyDfh1hyIB7U5i2ULts1LcNsmQ8vAycqeJn0Wcy", "share": "https://lh3.googleusercontent.com/aida-public/AB6AXuB55jnFJkUwfCFeqeneGguh6EoI9i-S5rTvfeqa9xGusCK2aCta7iVP95nDxyB7kynxIX0sovjny6jjoHdB--njGkZvHBEYj6Y3bjl9eV2pJNZv1_6i3XD-TrfXzftBla4C6f7IRKrH5zTJ6serHckFS709o2eZ1D_93ztkO9W8k_dkZDOal31SL4J-TFJkBaE6ZZlL6UYygUKD7h9vQlmXZWUV4eRxTxZ3yv03sO5fj5_xEGF2-hby0MJxUxbkUwaD"};
+  var feed=document.getElementById('chat-messages-container'), input=document.getElementById('as-input'),
+      sendBtn=document.getElementById('as-send'), errBox=document.getElementById('as-error'), empty=document.getElementById('as-empty'),
+      menuBtn=document.getElementById('as-more'), menu=document.getElementById('as-menu'), delBtn=document.getElementById('as-del'),
+      busy=false, student=(AS.role==='student');
+
+  /* ---------- أدوات ---------- */
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function fmt(iso){
+    var d=iso?new Date(iso):new Date(); if(isNaN(d.getTime()))d=new Date();
+    var h=d.getHours(), m=d.getMinutes(), ap=h<12?'ص':'م'; h=h%12||12;
+    return h+':'+(m<10?'0':'')+m+' '+ap;
+  }
+  function inline(s){
+    s=esc(s).replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');
+    return s.replace(/\[\s*م\s*(\d+)\s*\]/g,'<span class="as-cite">م$1</span>');
+  }
+  function plain(t){return String(t||'').replace(/\*\*/g,'').replace(/`/g,'').replace(/^\s*#{1,4}\s+/gm,'').replace(/\[\s*م\s*\d+\s*\]/g,'').trim();}
+  function toast(t){
+    var old=document.getElementById('as-toast'); if(old)old.remove();
+    var d=document.createElement('div'); d.id='as-toast';
+    d.className='fixed bottom-6 left-1/2 -translate-x-1/2 z-[110] bg-navy-deep text-white text-[12px] font-bold rounded-full px-5 py-2.5 shadow-card-hover';
+    d.textContent=t; document.body.appendChild(d); setTimeout(function(){d.remove();},1800);
+  }
+  function showErr(t){errBox.textContent=t;errBox.classList.remove('hidden');}
+  function hideErr(){errBox.classList.add('hidden');}
+  function reveal(el,tall){
+    if(!el||!el.scrollIntoView)return;
+    var big=tall&&el.getBoundingClientRect().height>window.innerHeight*0.7;
+    el.scrollIntoView({block:big?'start':'nearest',behavior:'smooth'});
+  }
+
+  /* ---------- تحويل نص المساعد (Markdown مبسّط) إلى عناصر التصميم ---------- */
+  function parse(text){
+    var lines=String(text||'').replace(/\r/g,'').split('\n'), out=[], cur=null, m;
+    lines.forEach(function(l){
+      if(!l.trim()){cur=null;return;}
+      if((m=l.match(/^\s*#{1,4}\s+(.*)$/))){out.push({t:'h',x:m[1]});cur=null;return;}
+      if((m=l.match(/^\s*[-*•]\s+(.*)$/))){if(!cur||cur.t!=='ul'){cur={t:'ul',i:[]};out.push(cur);}cur.i.push(m[1]);return;}
+      if((m=l.match(/^\s*\d+[.)]\s+(.*)$/))){if(!cur||cur.t!=='ol'){cur={t:'ol',i:[]};out.push(cur);}cur.i.push(m[1]);return;}
+      cur=null;out.push({t:'p',x:l.trim()});
+    });
+    return out;
+  }
+  function listH(b){
+    var li=b.i.map(function(x){return '<li class="">'+inline(x)+'</li>';}).join('');
+    return '<'+b.t+' class="flex flex-col gap-2 text-sub-muted pr-5 '+(b.t==='ol'?'list-decimal':'list-disc')+' text-[13.5px] marker:text-accent-green leading-relaxed text-right">'+li+'</'+b.t+'>';
+  }
+  function bodyH(body,pcls){
+    return body.map(function(b){return b.t==='p'?'<p class="'+pcls+' text-right">'+inline(b.x)+'</p>':(b.t==='h'?'':listH(b));}).join('');
+  }
+  function isEx(t){return /مثال|أمثلة/.test(t);}
+  function colon(t){return /[:：]\s*$/.test(t)?t:t+':';}
+  function leadIn(bl,i){var b=bl[i],nx=bl[i+1];return !!(b&&b.t==='p'&&nx&&(nx.t==='ul'||nx.t==='ol')&&/[:：]\s*$/.test(b.x)&&b.x.length<=70);}
+  function conceptH(title,body){
+    return '<div class="as-concept bg-gradient-to-br from-[#EEF6FF] to-[#F7FAFF] border border-card-border rounded-2xl p-6 md:p-7 flex flex-col gap-3 shadow-sm my-1 text-right">'
+      +'<div class="flex items-center gap-2 text-brand-blue font-bold justify-start"><img alt="فكرة" class="w-5 h-5 object-contain" src="'+IMG.idea+'"><h4 class="text-[15.5px] font-bold text-brand-blue text-right">'+inline(title)+'</h4></div>'
+      +bodyH(body,'text-[14.5px] text-navy-deep leading-relaxed pt-1').replace(/<strong>/g,'<span class="font-bold text-brand-blue">').replace(/<\/strong>/g,'</span>')+'</div>';
+  }
+  function checkH(title,body){
+    return '<div class="flex flex-col gap-2 mt-1 text-right"><div class="flex items-center gap-1.5 text-accent-green font-bold justify-start"><span class="material-symbols-outlined text-accent-green text-[18px]">check_circle</span><span class="text-[14px]">'+inline(title)+'</span></div>'
+      +bodyH(body,'text-[13.5px] text-sub-muted leading-relaxed')+'</div>';
+  }
+  function exampleH(title,body){
+    return '<div class="bg-[#ECFDF3] border border-emerald-200/70 rounded-2xl p-4 flex flex-col gap-1.5 mt-1 text-right"><div class="flex items-center gap-2 text-accent-purple font-bold justify-start"><img alt="هدف" class="w-4 h-4 object-contain" src="'+IMG.goal+'"><span class="text-[14px] text-navy-deep font-bold">'+inline(colon(title))+'</span></div>'
+      +bodyH(body,'text-[13.5px] text-sub-muted leading-relaxed pr-6')+'</div>';
+  }
+  function render(bl,top){
+    var h='', i=0, n=bl.length;
+    while(i<n){
+      var b=bl[i];
+      if(b.t==='h'){
+        var body=[], j=i+1; while(j<n&&bl[j].t!=='h'){body.push(bl[j]);j++;}
+        if(isEx(b.x)){h+=exampleH(b.x,body);}
+        else if(body.length&&body[0].t==='p'&&!leadIn(body,0)){
+          var k=0; while(k<body.length&&body[k].t==='p'&&!leadIn(body,k))k++;
+          h+=conceptH(b.x,body.slice(0,k))+render(body.slice(k),false);
+        }
+        else{h+=checkH(colon(b.x),body);}
+        i=j;continue;
+      }
+      if(b.t==='p'){
+        if(leadIn(bl,i)){h+=checkH(b.x,[bl[i+1]]);i+=2;continue;}
+        var intro=(top&&i===0&&n>1&&b.x.length<=130);
+        h+='<p class="'+(intro?'text-[15px] font-bold text-navy-deep':'text-[14.5px] text-navy-deep leading-relaxed')+' text-right">'+inline(b.x)+'</p>';
+        i++;continue;
+      }
+      h+=listH(b);i++;
+    }
+    return h;
+  }
+
+  /* ---------- الرسائل ---------- */
+  function userEl(msg){
+    var w=document.createElement('div');
+    w.className='flex items-start gap-3 justify-start self-start max-w-[85%] text-right scroll-mt-28'; w.setAttribute('dir','rtl');
+    w.innerHTML='<div class="w-10 h-10 rounded-full bg-[#EEF5FF] border border-card-border flex items-center justify-center shrink-0 shadow-sm p-1.5"><img alt="المستخدم" class="w-full h-full object-contain" src="'+IMG.user+'"></div>'
+      +'<div class="flex flex-col gap-1.5 items-start text-right min-w-0"><div class="bg-[#EEF6FF] border border-card-border text-navy-deep px-5 py-3.5 rounded-2xl rounded-tr-sm shadow-sm leading-relaxed text-right max-w-full"><p class="text-[14.5px] font-medium text-right whitespace-pre-wrap break-words">'+esc(msg.content)+'</p></div>'
+      +'<div class="flex items-center gap-1.5 text-sub-muted text-[11px] pr-1 font-medium"><span class="">'+fmt(msg.created)+'</span><span class="material-symbols-outlined text-nav-active text-[15px]">done_all</span></div></div>';
+    return w;
+  }
+  function botEl(msg){
+    var w=document.createElement('div');
+    w.className='flex items-start gap-3 justify-start self-start w-full max-w-[98%] text-right scroll-mt-28'; w.setAttribute('dir','rtl');
+    w._msg=msg;
+    var extra='';
+    if(msg.mode==='related'){
+      extra+='<div class="flex items-start gap-2 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-[12px] font-bold px-4 py-3 leading-6"><span class="material-symbols-outlined text-amber-600 text-[18px] shrink-0 mt-0.5">info</span><span>'+(student?'هذه الإجابة ليست من نص دروسك مباشرة — تأكد منها مع مدرّسك قبل الاعتماد عليها في الامتحان.':'هذه الإجابة ليست من نص محتوى دوراتك مباشرة.')+'</span></div>';
+    }
+    if(msg.lessons&&msg.lessons.length){
+      extra+='<div class="flex flex-col gap-2"><span class="text-[12px] font-bold text-sub-muted flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">menu_book</span>دروس مقترحة لك</span>';
+      msg.lessons.forEach(function(l){extra+='<a href="'+esc(l.url)+'" class="group flex items-center justify-between gap-2 p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all no-underline shadow-sm"><span class="min-w-0"><span class="block text-[13px] font-bold text-navy-deep group-hover:text-brand-blue transition-colors truncate">'+esc(l.title)+'</span><span class="block text-[11px] text-sub-muted font-medium truncate">'+esc(l.sub||'')+'</span></span><span class="material-symbols-outlined text-sub-muted text-[18px] shrink-0">chevron_left</span></a>';});
+      extra+='</div>';
+    }
+    if(msg.links&&msg.links.length){
+      extra+='<div class="flex flex-col gap-2"><span class="text-[12px] font-bold text-sub-muted flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">link</span>للمراجعة والمتابعة</span>';
+      msg.links.forEach(function(l){extra+='<a href="'+esc(l.url)+'" target="_blank" rel="noopener" class="group flex items-center justify-between gap-2 p-3 rounded-2xl bg-[#F7FAFF] hover:bg-[#EEF5FF] border border-card-border transition-all no-underline shadow-sm"><span class="min-w-0 block text-[13px] font-bold text-navy-deep group-hover:text-brand-blue transition-colors truncate">'+esc(l.title)+'</span><span class="material-symbols-outlined text-sub-muted text-[18px] shrink-0">open_in_new</span></a>';});
+      extra+='</div>';
+    }
+    if(msg.actions&&msg.actions.length){extra+='<div class="flex flex-col gap-2">'+msg.actions.map(actionH).join('')+'</div>';}
+    if(msg.sources&&msg.sources.length){
+      extra+='<div class="flex flex-wrap gap-1.5 items-center"><span class="text-[11px] font-bold text-sub-muted">المصدر من المنهج:</span>';
+      msg.sources.forEach(function(s){extra+='<a href="'+esc(s.url)+'" class="text-[11px] font-bold text-brand-blue bg-[#EEF5FF] border border-card-border rounded-lg px-2 py-1 no-underline hover:bg-blue-100 transition-colors">'+esc(s.title)+'</a>';});
+      extra+='</div>';
+    }
+    w.innerHTML='<div class="w-10 h-10 rounded-2xl bg-brand-blue flex items-center justify-center text-white shrink-0 shadow-md shadow-blue-500/20 mt-1 p-2"><img alt="المساعد الذكي" class="w-full h-full object-contain" src="'+IMG.bot+'"></div>'
+      +'<div class="w-full min-w-0 flex flex-col gap-2.5"><div class="as-msg bg-white border border-card-border rounded-3xl rounded-tl-sm p-5 md:p-6 shadow-sm flex flex-col gap-4 text-right" dir="rtl">'
+      +render(parse(msg.content),true)+extra
+      +'<div class="as-actions flex items-center justify-between pt-2 border-t border-card-border/60 text-nav-muted" dir="rtl"><div class="flex items-center gap-3">'
+      +'<button class="hover:scale-110 transition-transform p-1" title="نسخ الشرح" type="button" data-act="copy"><img alt="نسخ" class="w-5 h-5 object-contain" src="'+IMG.copy+'"></button>'
+      +'<button class="hover:scale-110 transition-transform p-1" title="إعجاب" type="button" data-act="like"><img alt="إعجاب" class="w-5 h-5 object-contain" src="'+IMG.like+'"></button>'
+      +'<button class="hover:scale-110 transition-transform p-1" title="لم يعجبني" type="button" data-act="dislike"><img alt="لم يعجبني" class="w-5 h-5 object-contain" src="'+IMG.dislike+'"></button>'
+      +'<button class="hover:scale-110 transition-transform p-1" title="مشاركة" type="button" data-act="share"><img alt="مشاركة" class="w-5 h-5 object-contain" src="'+IMG.share+'"></button>'
+      +'</div><span class="text-[11.5px] text-sub-muted font-medium">'+fmt(msg.created)+'</span></div>'
+      +'</div></div>';
+    return w;
+  }
+  function followUp(wrap){
+    feed.querySelectorAll('.as-follow').forEach(function(f){f.remove();});
+    var m=wrap&&wrap._msg; if(!m||m.mode==='agent')return;
+    var bar=wrap.querySelector('.as-actions'); if(!bar)return;
+    var ttl=parse(m.content).filter(function(b){return b.t==='h'&&!isEx(b.x);})[0], kind='الموضوع';
+    if(!ttl&&m.mode!=='curriculum'&&m.mode!=='related')return;
+    if(ttl){var kinds=[['قانون','القانون'],['قاعدة','القاعدة'],['درس','الدرس'],['نظرية','النظرية'],['مفهوم','المفهوم'],['تعريف','التعريف']];
+      for(var q=0;q<kinds.length;q++){if(ttl.x.indexOf(kinds[q][0])===0){kind=kinds[q][1];break;}}}
+    bar.insertAdjacentHTML('beforebegin','<div class="as-follow bg-[#ECFDF3] border border-emerald-200 text-emerald-900 rounded-2xl p-3.5 flex items-center justify-between gap-3 mt-1" dir="rtl"><div class="flex items-center gap-2"><img alt="ذكاء" class="w-5 h-5 object-contain" src="'+IMG.aiq+'"><p class="text-[13px] font-bold text-navy-deep text-right">هل ترغب في أمثلة إضافية أو تمارين تطبيقية على هذا '+kind+'؟</p></div><button data-kind="'+kind+'" class="as-yes shrink-0 bg-brand-blue hover:bg-brand-blue-hover text-white rounded-xl px-4 py-2 text-[12px] font-bold transition-all shadow-sm" type="button">نعم، أريد ذلك</button></div>');
+  }
+  function add(msg){
+    empty.classList.add('hidden');
+    var el=(msg.role==='user')?userEl(msg):botEl(msg);
+    feed.appendChild(el); return el;
+  }
+  function typing(){
+    var d=document.createElement('div'); d.id='as-typing'; d.className='flex items-start gap-3 justify-start self-start scroll-mt-28'; d.setAttribute('dir','rtl');
+    d.innerHTML='<div class="w-10 h-10 rounded-2xl bg-brand-blue flex items-center justify-center text-white shrink-0 shadow-md shadow-blue-500/20 p-2"><img alt="المساعد الذكي" class="w-full h-full object-contain" src="'+IMG.bot+'"></div><div class="as-dots bg-white border border-card-border rounded-3xl rounded-tl-sm px-5 py-4 shadow-sm"><span></span><span></span><span></span><div id="as-step" class="text-[12px] text-sub-muted font-bold mt-2 empty:hidden"></div></div>';
+    feed.appendChild(d); reveal(d,false);
+  }
+  function untyping(){var t=document.getElementById('as-typing');if(t)t.remove();}
+
+  /* ---------- قائمة المحادثات (خيارات إضافية) ---------- */
+  function closeMenu(){menu.classList.add('hidden');menuBtn.setAttribute('aria-expanded','false');}
+  menuBtn.addEventListener('click',function(e){e.stopPropagation();var open=menu.classList.toggle('hidden')===false;menuBtn.setAttribute('aria-expanded',open?'true':'false');});
+  document.addEventListener('click',function(e){if(!menu.contains(e.target)&&!menuBtn.contains(e.target))closeMenu();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeMenu();});
+  function addThreadToMenu(id,title,url){
+    var list=document.getElementById('as-threads'), emp=document.getElementById('as-threads-empty'); if(emp)emp.remove();
+    var row=document.createElement('div'); row.className='group flex items-center gap-1 rounded-xl bg-[#EEF5FF]';
+    row.innerHTML='<a href="'+esc(url)+'" class="flex-1 min-w-0 px-3 py-2.5 text-[13px] font-medium text-navy-deep no-underline truncate">'+esc(title)+'</a>'
+      +'<form method="post" action="'+esc(AS.prefix+'t/'+id+'/delete/')+'" class="m-0"><input type="hidden" name="csrfmiddlewaretoken" value="'+esc(AS.csrf)+'"><button type="submit" class="w-8 h-8 flex items-center justify-center text-sub-muted hover:text-accent-rose transition-colors" title="حذف"><span class="material-symbols-outlined text-[18px]">delete</span></button></form>';
+    row.querySelector('form').addEventListener('submit',function(e){if(!confirm('حذف هذه المحادثة؟'))e.preventDefault();});
+    list.insertBefore(row,list.firstChild);
+  }
+  /* مسح (حذف) المحادثة الحالية */
+  delBtn.addEventListener('click',function(){
+    if(!AS.thread)return;
+    if(!confirm('حذف هذه المحادثة؟'))return;
+    var f=document.createElement('form'); f.method='post'; f.action=AS.prefix+'t/'+AS.thread+'/delete/';
+    var i=document.createElement('input'); i.type='hidden'; i.name='csrfmiddlewaretoken'; i.value=AS.csrf;
+    f.appendChild(i); document.body.appendChild(f); f.submit();
+  });
+
+  /* ---------- أزرار شريط الرسالة + «نعم، أريد ذلك» ---------- */
+  feed.addEventListener('click',function(e){
+    var yes=e.target.closest('.as-yes');
+    if(yes){submit('نعم، أريد أمثلة إضافية وتمارين تطبيقية على هذا '+(yes.getAttribute('data-kind')||'الموضوع')+'.');return;}
+    var b=e.target.closest('[data-act]'); if(!b)return;
+    var wrap=b.closest('[dir="rtl"].self-start'); var m=wrap&&wrap._msg; var act=b.getAttribute('data-act');
+    if(!m)return;
+    var txt=plain(m.content);
+    if(act==='copy'){
+      if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){toast('تم نسخ الشرح');},function(){toast('تعذّر النسخ');});}
+      else{var t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');toast('تم نسخ الشرح');}catch(x){toast('تعذّر النسخ');}t.remove();}
+    }else if(act==='share'){
+      if(navigator.share){navigator.share({text:txt}).catch(function(){});}
+      else if(navigator.clipboard){navigator.clipboard.writeText(txt).then(function(){toast('تم نسخ النص للمشاركة');});}
+    }
+  });
+
+  /* ---------- الإرسال ---------- */
+  function submit(text){
+    text=(text||'').trim();
+    if(busy||!text||!AS.enabled)return;
+    busy=true;sendBtn.disabled=true;hideErr();
+    var uEl=add({role:'user',content:text,created:new Date().toISOString()}); reveal(uEl,false); typing();
+    var fd=new FormData();fd.append('message',text);fd.append('csrfmiddlewaretoken',AS.csrf);
+    if(AS.thread)fd.append('thread_id',AS.thread);
+    fetch(AS.send,{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+    .then(function(res){
+      if(!res.ok){untyping();showErr(res.j.error||'حدث خطأ. حاول مرة أخرى.');endBusy();return;}
+      var isNew=!AS.thread;
+      AS.thread=res.j.thread_id;
+      if(history.replaceState&&res.j.thread_url){history.replaceState(null,'',res.j.thread_url);}
+      if(isNew)addThreadToMenu(res.j.thread_id,res.j.title||text.slice(0,60),res.j.thread_url);
+      if(AS.agent){setStep('أبدأ التنفيذ…');pollRun(res.j.run_id);return;}  // التنفيذ في الخلفية ثم تصل الرسالة بالمتابعة
+      untyping();var bEl=add(res.j.message); followUp(bEl); reveal(bEl,true);endBusy();
+    }).catch(function(){untyping();showErr('تعذّر الاتصال بالخادم. تحقق من الإنترنت وحاول مرة أخرى.');endBusy();});
+  }
+  sendBtn.addEventListener('click',function(){var t=input.value;input.value='';submit(t);});
+  input.addEventListener('keydown',function(e){
+    if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();var t=input.value;input.value='';submit(t);}
+  });
+  root.querySelectorAll('.as-sg').forEach(function(b){b.addEventListener('click',function(){submit(b.textContent);});});
+
+  /* ---------- اقتراحات الأعمدة الجانبية (سلوك التصميم: تعبئة حقل الرسالة) ---------- */
+  root.querySelectorAll('aside button').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var txt=this.querySelector('span:not(.material-symbols-outlined)');
+      var v=txt?String(txt.innerText||txt.textContent||'').trim():'';
+      if(v.length>6){input.value=v;input.focus();}
+    });
+  });
+
+  /* ---------- وكيل المدرّس: التنفيذ في الخلفية + الأزرار + رفع المنهج ---------- */
+  function endBusy(){busy=false;sendBtn.disabled=!AS.enabled;input.focus();}
+  function actionH(a){
+    var base='rounded-2xl border px-4 py-3 text-[13px] font-bold leading-6 text-right ';
+    if(a.status==='pending'){
+      return '<div class="'+base+'border-amber-200 bg-amber-50 text-amber-900" data-action="'+a.id+'"><div class="flex items-start gap-2"><span class="material-symbols-outlined text-amber-600 text-[18px] shrink-0 mt-0.5">pending_actions</span><span>'+esc(a.summary)+'</span></div>'
+        +'<div class="flex gap-2 mt-2.5"><button type="button" data-agent-act="confirm" class="px-4 py-2 rounded-xl bg-brand-blue hover:bg-brand-blue-hover text-white text-[12px] font-bold transition-all shadow-sm">تأكيد وتنفيذ</button>'
+        +'<button type="button" data-agent-act="cancel" class="px-4 py-2 rounded-xl bg-white border border-card-border text-sub-muted hover:text-navy-deep text-[12px] font-bold transition-all">إلغاء</button></div></div>';
+    }
+    var map={done:['border-emerald-200 bg-[#ECFDF3] text-emerald-800','check_circle','تم: '],cancelled:['border-card-border bg-[#F7FAFF] text-sub-muted','block','أُلغي: '],failed:['border-rose-200 bg-rose-50 text-rose-800','error','تعذّر: ']};
+    var m=map[a.status]||map.failed;
+    return '<div class="'+base+m[0]+'" data-action="'+a.id+'"><span class="material-symbols-outlined text-[18px] align-middle ml-1">'+m[1]+'</span>'+m[2]+esc(a.result||a.summary)+'</div>';
+  }
+  feed.addEventListener('click',function(e){
+    var b=e.target.closest('[data-agent-act]'); if(!b)return;
+    var box=b.closest('[data-action]'),id=box.getAttribute('data-action'),kind=b.getAttribute('data-agent-act');
+    box.querySelectorAll('button').forEach(function(x){x.disabled=true;});
+    var fd=new FormData();fd.append('csrfmiddlewaretoken',AS.csrf);
+    fetch('/teacher/assistant/agent/action/'+id+'/'+kind+'/',{method:'POST',body:fd,credentials:'same-origin'})
+      .then(function(r){return r.json();})
+      .then(function(j){box.outerHTML=actionH({id:id,status:j.status||'failed',result:j.result||j.error||'',summary:''});})
+      .catch(function(){box.querySelectorAll('button').forEach(function(x){x.disabled=false;});showErr('تعذّر الاتصال بالخادم.');});
+  });
+  var pollTimer=null;
+  function setStep(t){var el=document.getElementById('as-step');if(el&&t)el.textContent=t;}
+  function pollRun(id){
+    var fails=0; clearInterval(pollTimer);
+    pollTimer=setInterval(function(){
+      fetch('/teacher/assistant/agent/run/'+id+'/',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
+        fails=0;
+        if(j.steps&&j.steps.length)setStep(j.steps[j.steps.length-1]);
+        if(j.status&&j.status!=='running'){
+          clearInterval(pollTimer);untyping();
+          if(j.message){var bEl=add(j.message);reveal(bEl,true);}
+          endBusy();
+        }
+      }).catch(function(){
+        if(++fails>=8){clearInterval(pollTimer);untyping();showErr('انقطع الاتصال أثناء المتابعة. التنفيذ مستمر في الخلفية — حدّث الصفحة بعد قليل لترى النتيجة.');endBusy();}
+      });
+    },1500);
+  }
+  var docsBox=document.getElementById('as-docs'),attach=document.getElementById('as-attach'),fileIn=document.getElementById('as-file');
+  var docs=[];try{docs=JSON.parse((document.getElementById('as-docs-data')||{}).textContent||'[]');}catch(x){}
+  var docTimers={};
+  function docChip(d){
+    var st=d.status==='ready'?'جاهز · '+d.page_count+' صفحة':(d.status==='failed'?esc(d.error||'فشلت القراءة'):'جارٍ القراءة'+(d.page_count?' '+d.pages_done+'/'+d.page_count:'…'));
+    var ic=d.status==='ready'?'check_circle':(d.status==='failed'?'error':'progress_activity');
+    var cl=d.status==='ready'?'text-accent-green':(d.status==='failed'?'text-accent-rose':'text-brand-blue');
+    return '<span class="inline-flex items-center gap-2 text-[12px] font-bold bg-[#F7FAFF] border border-card-border rounded-xl px-3 py-1.5 text-navy-deep" data-doc="'+d.id+'"><span class="material-symbols-outlined text-[18px] '+cl+'">'+ic+'</span><span class="truncate max-w-[180px]">'+esc(d.title)+'</span><span class="text-sub-muted font-medium">'+st+'</span><button type="button" data-docdel="'+d.id+'" class="text-sub-muted hover:text-accent-rose" title="حذف الملف"><span class="material-symbols-outlined text-[16px]">close</span></button></span>';
+  }
+  function renderDocs(){
+    if(!docsBox)return;
+    docsBox.innerHTML=docs.map(docChip).join('');
+    docsBox.classList.toggle('hidden',!docs.length);docsBox.classList.toggle('flex',!!docs.length);
+    docs.forEach(function(d){if(d.status==='processing'&&!docTimers[d.id])watchDoc(d.id);});
+  }
+  function watchDoc(id){
+    docTimers[id]=setInterval(function(){
+      fetch('/teacher/assistant/agent/doc/'+id+'/',{credentials:'same-origin'}).then(function(r){return r.json();}).then(function(j){
+        if(!j.doc)return;
+        docs=docs.map(function(d){return d.id===id?j.doc:d;});renderDocs();
+        if(j.doc.status!=='processing'){clearInterval(docTimers[id]);delete docTimers[id];}
+      }).catch(function(){});
+    },2000);
+  }
+  if(AS.agent&&docsBox&&attach&&fileIn){
+    renderDocs();
+    attach.addEventListener('click',function(){fileIn.click();});
+    fileIn.addEventListener('change',function(){
+      if(!fileIn.files.length)return;
+      hideErr();
+      var fd=new FormData();fd.append('file',fileIn.files[0]);fd.append('csrfmiddlewaretoken',AS.csrf);
+      attach.disabled=true;
+      fetch('/teacher/assistant/agent/upload/',{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json().then(function(j){return {ok:r.ok,j:j};});})
+        .then(function(res){
+          if(!res.ok){showErr(res.j.error||'تعذّر رفع الملف.');return;}
+          docs.unshift(res.j.doc);renderDocs();
+          if(!input.value.trim())input.value='رفعتُ ملف المنهج. اشرح الدرس الأول منه بالتفصيل واعمل له اختبارًا';
+          input.focus();
+        }).catch(function(){showErr('تعذّر رفع الملف. تحقق من الاتصال وحاول مرة أخرى.');})
+        .finally(function(){attach.disabled=false;fileIn.value='';});
+    });
+    docsBox.addEventListener('click',function(e){
+      var b=e.target.closest('[data-docdel]');if(!b)return;
+      if(!confirm('حذف هذا الملف من مكتبة المنهج؟ (لن يتأثر ما أُنشئ منه من دروس)'))return;
+      var id=parseInt(b.getAttribute('data-docdel'),10),fd=new FormData();fd.append('csrfmiddlewaretoken',AS.csrf);
+      fetch('/teacher/assistant/agent/doc/'+id+'/delete/',{method:'POST',body:fd,credentials:'same-origin'}).then(function(r){return r.json();}).then(function(){
+        clearInterval(docTimers[id]);delete docTimers[id];docs=docs.filter(function(d){return d.id!==id;});renderDocs();
+      }).catch(function(){showErr('تعذّر حذف الملف.');});
+    });
+  }
+
+  /* ---------- تحميل المحادثة الحالية ---------- */
+  var initial=[]; try{initial=JSON.parse(document.getElementById('as-initial').textContent||'[]');}catch(x){}
+  if(initial.length){
+    var last=null; initial.forEach(function(m){last=add(m);});
+    if(last&&last._msg)followUp(last);
+    reveal(last,true);
+  }else{empty.classList.remove('hidden');}
+  if(AS.agent&&AS.run){busy=true;sendBtn.disabled=true;typing();setStep('ما زلت أنفّذ طلبك السابق…');pollRun(AS.run);}
+})();
+</script>{% endblock %}

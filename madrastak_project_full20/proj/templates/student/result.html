@@ -1,0 +1,543 @@
+{% load ui_extras %}<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>نتيجة {{ q.title }} | {{ site.platform_name }}</title>
+<!-- Tailwind CSS CDN with forms and container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Tajawal & Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Tajawal:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet">
+<!-- FontAwesome for standard UI icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<!-- Tailwind Configuration -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif'],
+            num: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#F0F6FE',
+              100: '#E1EDFD',
+              500: '#2563EB',
+              600: '#1D4ED8',
+              700: '#163A78',
+              800: '#133060',
+              900: '#0F2347',
+            },
+            success: {
+              50: '#ECFDF5',
+              100: '#D1FAE5',
+              500: '#10B981',
+              600: '#059669',
+            },
+            danger: {
+              50: '#FFF1F2',
+              100: '#FFE4E6',
+              500: '#F43F5E',
+              600: '#E11D48',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Typography & Micro-Styles -->
+<style data-purpose="typography">
+    body {
+      font-family: "Plus Jakarta Sans", 'Tajawal', sans-serif;
+      background-color: #F4F7FC;
+      color: #1E293B;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    .q-card { scroll-margin-top: 110px; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+  </style>
+<style data-purpose="ai-explain">
+.ai-wrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease;margin-top:0}
+.ai-wrap.open{grid-template-rows:1fr;margin-top:.75rem}
+.ai-inner{overflow:hidden;min-height:0}
+.ai-card{position:relative;border-radius:1.1rem;padding:1rem;display:flex;flex-direction:column;gap:.75rem;
+  background:linear-gradient(135deg,rgba(255,255,255,.78),rgba(225,237,253,.6));
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(59,130,246,.28);
+  box-shadow:0 10px 30px -12px rgba(37,99,235,.3);opacity:0;transform:translateY(-6px);transition:opacity .35s ease .08s,transform .35s ease .08s}
+.ai-wrap.open .ai-card{opacity:1;transform:none}
+.ai-head{display:flex;align-items:center;gap:.65rem}
+.ai-badge{width:2.2rem;height:2.2rem;border-radius:.8rem;background:linear-gradient(135deg,#3B82F6,#6366F1);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.9rem;box-shadow:0 6px 14px -4px rgba(79,70,229,.5)}
+.ai-title{font-weight:900;font-size:.85rem;color:#163A78}.ai-sub{font-size:.68rem;font-weight:700;color:#64748b}
+.ai-block{background:rgba(255,255,255,.72);border:1px solid rgba(203,213,225,.7);border-radius:.9rem;padding:.8rem .9rem}
+.ai-block p,.ai-block li,.ai-opt p{font-size:.75rem;line-height:1.95;font-weight:600;color:#334155;margin:0;white-space:pre-line}
+.ai-h{display:flex;align-items:center;gap:.45rem;font-weight:900;font-size:.76rem;color:#163A78;margin-bottom:.4rem}
+.ai-h i{width:1.55rem;height:1.55rem;border-radius:.5rem;background:rgba(59,130,246,.12);color:#2563EB;display:flex;align-items:center;justify-content:center;font-size:.7rem}
+.ai-idea{background:rgba(254,243,199,.6);border-color:rgba(251,191,36,.45)}.ai-idea .ai-h i{background:rgba(245,158,11,.18);color:#d97706}
+.ai-ok{background:rgba(209,250,229,.6);border-color:rgba(52,211,153,.5)}.ai-ok .ai-h{color:#065f46}.ai-ok .ai-h i{background:rgba(16,185,129,.18);color:#059669}
+.ai-warn{background:rgba(255,237,213,.6);border-color:rgba(251,146,60,.45)}.ai-warn .ai-h i{background:rgba(249,115,22,.18);color:#ea580c}
+.ai-warn ul{margin:0;padding:0 1rem 0 0;display:flex;flex-direction:column;gap:.25rem}
+.ai-mem{background:rgba(237,233,254,.6);border-color:rgba(167,139,250,.45)}.ai-mem .ai-h i{background:rgba(124,58,237,.15);color:#7c3aed}
+.ai-tip{background:rgba(204,251,241,.55);border-color:rgba(45,212,191,.45)}.ai-tip .ai-h i{background:rgba(20,184,166,.18);color:#0d9488}
+.ai-two{display:grid;grid-template-columns:1fr;gap:.75rem}@media(min-width:640px){.ai-two{grid-template-columns:1fr 1fr}}
+.ai-opts{display:flex;flex-direction:column;gap:.5rem}
+.ai-opt{border-radius:.75rem;border:1px solid #e2e8f0;background:rgba(248,250,252,.8);padding:.6rem .75rem}
+.ai-opt.is-ok{border-color:#34d399;background:rgba(236,253,245,.9)}.ai-opt.is-bad{border-color:#fb7185;background:rgba(255,241,242,.92)}
+.ai-opt-top{display:flex;align-items:center;gap:.5rem;margin-bottom:.2rem;font-size:.75rem;font-weight:800;color:#334155}
+.ai-opt.is-ok .ai-opt-top i{color:#059669}.ai-opt.is-bad .ai-opt-top i{color:#e11d48}.ai-opt:not(.is-ok):not(.is-bad) .ai-opt-top i{color:#94a3b8}
+.ai-opt-text{flex:1;min-width:0}
+.ai-pill{font-size:.62rem;font-weight:900;padding:.1rem .5rem;border-radius:99px;background:#ffe4e6;color:#be123c}.ai-pill.ok{background:#d1fae5;color:#047857}
+.ai-steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.45rem}
+.ai-steps li{display:flex;gap:.55rem;align-items:flex-start}
+.ai-n{flex:none;width:1.4rem;height:1.4rem;border-radius:99px;background:#2563EB;color:#fff;font-size:.68rem;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:.15rem}
+.ai-open{align-self:flex-start;display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:800;color:#2563EB;text-decoration:none}.ai-open:hover{text-decoration:underline}
+.ai-toggle.is-open .ai-chev{transform:rotate(180deg)}.ai-chev{transition:transform .3s ease}
+@media (prefers-reduced-motion:reduce){.ai-wrap,.ai-card,.ai-chev{transition:none}}
+</style>
+<style data-purpose="print">
+    @media print {
+      header, footer, aside, [data-no-print] { display: none !important; }
+      body { background: #fff !important; }
+      main { max-width: 100% !important; padding: 0 !important; }
+      .lg\:col-span-8 { grid-column: 1 / -1 !important; }
+      article, section { break-inside: avoid; box-shadow: none !important; }
+      details.q-section { display: block; }
+      details.q-section[open] > div { display: block; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#F3F6FD]">
+{% if messages %}
+<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none" data-no-print>
+  {% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}
+</div>
+{% endif %}
+<!-- BEGIN: MainHeader -->
+{% include "ui/_student_header.html" with hstyle="margin-bottom:-.5rem" %}
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="max-w-[1440px] w-full mx-auto px-4 lg:px-8 py-8 flex-1">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- BEGIN: LeftSidebarColumn (Visual Right in RTL) -->
+<aside class="lg:col-span-4 flex flex-col gap-6 order-1">
+<!-- Top Motivational Student Illustration Card -->
+<div class="bg-gradient-to-b from-[#EBF3FF] to-[#D9E8FD] rounded-3xl p-6 sm:p-8 border border-blue-100 shadow-sm flex flex-col items-center justify-between text-center relative overflow-hidden h-full"><div class="flex flex-col items-center w-full"><div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg mb-3"><i class="fa-solid fa-seedling"></i></div><h4 class="text-lg font-black text-[#163A78] leading-snug">كل خطوة صغيرة<br>تقربك من هدفك الكبير.</h4></div><div class="w-full flex-1 flex items-center justify-center mt-4 overflow-hidden"><img alt="بيئة دراسية محفزة" class="w-full h-full object-contain rounded-xl drop-shadow-sm h-auto" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAv4DorPSQ4qGNUSpINmmvedJM83EYC2ez7PEq6_oJcPn0PVSH6BjkMflsiLmoJa9bGv3Md-FUxFH2la75Y8yGKJY73fYPzc3WpZJmTqE5dVU0ZaFj4aB3xokb07Gw32fBwFt7AoDif3y8YQNT3DnPCbz9EHbeo9CN12OvyWRP9xC2VF2Wpm5VMsCkequnRcEErD-hT78pgGvlTIktDkgwf_1T5m5MAlvTytxInaxDYUNp-0O3M0tmlyWrfiOOgHMrykCo"></div></div>
+<!-- Exam Details Card (تفاصيل الاختبار) -->
+<div class="bg-white rounded-3xl p-6 border border-[#E3EDFB] shadow-sm flex flex-col gap-4">
+<div class="flex items-center gap-2.5 pb-3 border-b border-slate-100 text-[#163A78]">
+<i class="fa-solid fa-clipboard-list text-blue-600 text-lg"></i>
+<h3 class="text-base font-black">تفاصيل الاختبار</h3>
+</div>
+<div class="flex flex-col divide-y divide-slate-100 text-xs font-semibold">
+<div class="py-2.5 flex justify-between items-center gap-3">
+<span class="text-slate-500">اسم الاختبار</span>
+<span class="text-slate-800 font-bold">{{ q.title }}</span>
+</div>
+<div class="py-2.5 flex justify-between items-center">
+<span class="text-slate-500">المادة</span>
+<span class="text-slate-800 font-bold">{{ t.subject }}</span>
+</div>
+<div class="py-2.5 flex justify-between items-center">
+<span class="text-slate-500">الصف</span>
+<span class="text-slate-800 font-bold">{{ q.course.get_grade_display }}</span>
+</div>
+<div class="py-2.5 flex justify-between items-center">
+<span class="text-slate-500">عدد الأسئلة</span>
+<span class="text-slate-800 font-bold font-num">{{ question_count }}</span>
+</div>
+<div class="py-2.5 flex justify-between items-center">
+<span class="text-slate-500">الزمن المخصص</span>
+<span class="text-slate-800 font-bold">{% if q.duration_minutes %}<span class="font-num">{{ q.duration_minutes }}</span> دقيقة{% else %}بلا حد{% endif %}</span>
+</div>
+<div class="py-2.5 flex justify-between items-center">
+<span class="text-slate-500">تاريخ البدء</span>
+<span class="text-slate-800 font-bold font-num">{{ a.started_at|res_dt }} <span class="font-sans font-medium text-[11px]">{{ a.started_at|res_ampm }}</span></span>
+</div>
+<div class="py-2.5 flex justify-between items-center">
+<span class="text-slate-500">تاريخ الانتهاء</span>
+<span class="text-slate-800 font-bold font-num">{{ a.submitted_at|res_dt }} <span class="font-sans font-medium text-[11px]">{{ a.submitted_at|res_ampm }}</span></span>
+</div>
+</div>
+</div>
+<!-- Results Summary Card (ملخص النتائج) -->
+<div class="bg-white rounded-3xl p-6 border border-[#E3EDFB] shadow-sm flex flex-col gap-5">
+<div class="flex items-center gap-2.5 pb-3 border-b border-slate-100 text-[#163A78]">
+<i class="fa-solid fa-chart-pie text-blue-600 text-lg"></i>
+<h3 class="text-base font-black">ملخص النتائج</h3>
+</div>
+<!-- Refined Circular Chart Ring -->
+<div class="flex justify-center my-1">
+<div class="relative w-32 h-32 flex items-center justify-center"><svg class="w-full h-full -rotate-90" viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="transparent" stroke="#E6EEF9" stroke-width="16"></circle>{% if a.percent %}<circle cx="50" cy="50" r="38" fill="transparent" stroke="url(#sidebar-grad)" stroke-width="16" stroke-dasharray="238.76" stroke-dashoffset="{{ ring_big|stringformat:'.2f' }}" stroke-linecap="round"></circle>{% endif %}<defs><linearGradient id="sidebar-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="{% if passed %}#2DD4BF{% else %}#FB7185{% endif %}"></stop><stop offset="100%" stop-color="{% if passed %}#10B981{% else %}#F43F5E{% endif %}"></stop></linearGradient></defs></svg><div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"><span class="text-2xl font-extrabold text-slate-800 leading-none font-num">{{ a.percent }}%</span><span class="text-[11px] font-bold text-slate-400 mt-1">النتيجة</span></div></div>
+</div>
+<!-- Breakdown List -->
+<div class="flex flex-col gap-3 text-xs font-bold">
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/70 text-emerald-800">
+<div class="flex items-center gap-2">
+<i class="fa-solid fa-check-circle text-emerald-600"></i>
+<span class="">إجابات صحيحة</span>
+</div>
+<span class="text-sm font-black font-num">{{ a.correct_count }}</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-rose-50/70 text-rose-800">
+<div class="flex items-center gap-2">
+<i class="fa-solid fa-circle-xmark text-rose-600"></i>
+<span class="">إجابات خاطئة</span>
+</div>
+<span class="text-sm font-black font-num">{{ wrong_only }}</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 text-slate-600">
+<div class="flex items-center gap-2">
+<i class="fa-regular fa-circle-dot text-slate-400"></i>
+<span class="">لم يتم الإجابة</span>
+</div>
+<span class="text-sm font-black font-num">{{ skipped_count }}</span>
+</div>
+<div class="pt-3 border-t border-slate-100 flex items-center justify-between font-extrabold text-sm text-[#163A78]">
+<span class="">الدرجة الكلية</span>
+<span class="font-num tracking-wide">{{ a.score }} / {{ a.total }}</span>
+</div>
+</div>
+</div>
+<!-- Color Key Card (مفتاح الألوان) -->
+<div class="bg-white rounded-3xl p-6 border border-[#E3EDFB] shadow-sm flex flex-col gap-3">
+<div class="flex items-center gap-2 pb-2 text-[#163A78]">
+<i class="fa-solid fa-palette text-blue-600"></i>
+<h4 class="text-sm font-black">مفتاح الألوان</h4>
+</div>
+<div class="flex flex-col gap-2.5 text-xs font-bold">
+<div class="flex items-center gap-2.5 text-slate-700">
+<span class="w-3.5 h-3.5 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[8px]">
+<i class="fa-solid fa-check"></i>
+</span>
+<span class="">إجابة صحيحة</span>
+</div>
+<div class="flex items-center gap-2.5 text-slate-700">
+<span class="w-3.5 h-3.5 rounded-full bg-rose-500 flex items-center justify-center text-white text-[8px]">
+<i class="fa-solid fa-xmark"></i>
+</span>
+<span class="">إجابة خاطئة</span>
+</div>
+<div class="flex items-center gap-2.5 text-slate-700">
+<span class="w-3.5 h-3.5 rounded-full bg-slate-300"></span>
+<span class="">لم يتم الإجابة</span>
+</div>
+</div>
+</div>
+<!-- Bottom Motivation Card with Books Vector Graphic -->
+<div class="bg-gradient-to-br from-[#EBF3FF] to-[#D9E8FD] rounded-3xl p-6 border border-blue-100 shadow-sm flex flex-col items-center text-center gap-4">
+
+<p class="text-xs sm:text-sm font-black text-[#163A78] leading-relaxed">
+            التعلم لا يتوقف عند نتيجة الاختبار، بل يبدأ من فهم الأخطاء.
+          </p>
+<!-- Stacked Colorful Books Illustration -->
+<div class="w-full mt-2 flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCMaBuFUWtXxTohD73NGBCXqkVDPaHrRpUvI4b0FdUHdVWEe2WJXTkSV6K3-ych0I9huTPp5Z_5UaD6lVhV6R-WrRn0pD8kJLmgWimHN6UEYn6YCX-xL3kFqbAoDbEBRenyZc-ouFA5bAfRAjYNxL5kX6FyeDxTr2XzUonHQmEBGsAkQMhIjKXczxwD2Z5VQzfWwduOA0O_jZdZ4_GZM7yvuTnlBxjj5768fQQ4KDfuarRDBu2yC9Dj9RCvd_4XYRx-Wc" alt="كتب وقبعة التخرج" class="w-full h-auto object-contain rounded-xl drop-shadow-sm"></div>
+</div>
+</aside>
+<!-- END: LeftSidebarColumn -->
+<!-- BEGIN: CenterRightColumn (Main Examination Data & Questions) -->
+<div class="lg:col-span-8 flex flex-col gap-8 order-2">
+<!-- Banner: Exam Completion Celebration Card -->
+<section class="bg-white rounded-3xl sm:p-8 border border-[#E3EDFB] shadow-sm relative overflow-hidden py-10">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+<!-- Left Side: 3D Illustration Graphic Container -->
+<div class="md:col-span-4 flex justify-center items-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_qTdfzqF7ojuph72z2I_PjgBT89W8wPLyPXCbeo-XESm208RYfaIVTIYjRiPD6WKZ-Dv5a5u4iHH1grHTD93_fqV_Rvj7Vju1iHPfKaq7N3QAcQ3ySZxizcd0E7Nf4DAMjHV2-yD0Z-ghJPKh9vVnRkaTjeSHspZr6w9U19uqNEOWpEWSYUwWeQ4aVK-OBASYV3J0uBPRh4MppMrw2T1ctRFK8qXc7lipJsvwS0MKx0Pii4OBwRe_7Zg0eBbtCUnQA0w" alt="بيئة دراسية متميزة" class="w-full max-w-sm sm:max-w-md h-auto max-h-80 object-contain mx-auto drop-shadow-sm"></div>
+<!-- Right Side: Celebration & Details Info -->
+<div class="md:col-span-8 flex flex-col gap-3">
+<div class="flex items-center gap-2">
+<span class="text-2xl">{% if passed %}🎉{% else %}💪{% endif %}</span>
+<h1 class="text-2xl sm:text-3xl font-black text-[#163A78]">{% if passed %}انتهيت من الاختبار بنجاح!{% else %}انتهيت من الاختبار!{% endif %}</h1>
+</div>
+<p class="text-base sm:text-lg font-bold text-slate-700">لقد أكملت اختبار: <span class="text-blue-600">"{{ q.title }}"</span></p>
+<div class="flex flex-wrap items-center gap-4 text-xs font-semibold text-slate-500">
+<div class="flex items-center gap-1.5">
+<i class="fa-regular fa-calendar-check text-blue-500"></i>
+<span class="">بتاريخ: <span class="font-num">{{ a.submitted_at|res_dt }}</span> {{ a.submitted_at|res_period }}</span>
+</div>
+{% if prev %}<div class="flex items-center gap-1.5">
+<i class="fa-solid fa-arrow-trend-up text-blue-500"></i>
+<span class="">{% if a.percent > prev.percent %}تحسّنت من <span class="font-num">{{ prev.percent }}%</span> إلى <span class="font-num">{{ a.percent }}%</span> 🎉{% elif a.percent < prev.percent %}آخر مرة كانت نتيجتك <span class="font-num">{{ prev.percent }}%</span>{% else %}نفس نتيجتك السابقة{% endif %}</span>
+</div>{% endif %}
+</div>
+<p class="text-sm font-semibold {% if passed %}text-emerald-600 bg-emerald-50/70 border-emerald-100{% else %}text-rose-600 bg-rose-50/70 border-rose-100{% endif %} p-2.5 rounded-xl border inline-block w-fit mt-1">
+                {% if a.percent == 100 %}ممتاز! أجبت عن كل الأسئلة إجابة صحيحة.{% elif passed %}أحسنت! استمر في التعلم، فأنت على الطريق الصحيح.{% else %}لا بأس، راجع أخطاءك ثم أعد المحاولة، فأنت على الطريق الصحيح.{% endif %}
+              </p>
+<!-- Final Score Showcase Box -->
+<div class="flex items-center gap-4 mt-2 p-3 bg-blue-50/50 rounded-2xl border border-blue-100">
+<div class="relative w-16 h-16 flex items-center justify-center shrink-0"><svg class="w-full h-full -rotate-90" viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" fill="transparent" stroke="#E6EEF9" stroke-width="6"></circle>{% if a.percent %}<circle cx="32" cy="32" r="26" fill="transparent" stroke="url(#hero-grad)" stroke-width="6" stroke-dasharray="163.36" stroke-dashoffset="{{ ring_small|stringformat:'.2f' }}" stroke-linecap="round"></circle>{% endif %}<defs><linearGradient id="hero-grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="{% if passed %}#2DD4BF{% else %}#FB7185{% endif %}"></stop><stop offset="100%" stop-color="{% if passed %}#10B981{% else %}#F43F5E{% endif %}"></stop></linearGradient></defs></svg><div class="absolute inset-0 flex items-center justify-center pointer-events-none"><span class="font-extrabold text-slate-800 text-sm font-num">{{ a.percent }}%</span></div></div>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-sm font-bold text-slate-700">درجتك النهائية</span>
+<i class="fa-solid fa-star text-amber-400 text-sm"></i>
+</div>
+<div class="text-xl font-extrabold text-[#163A78]"><span class="font-num">{{ a.score }}</span> <span class="text-sm font-medium text-slate-500">من <span class="font-num">{{ a.total }}</span></span></div>
+</div>
+</div>
+</div>
+</div>
+<!-- 4 Quick Stats Grid -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mt-8 pt-6 border-t border-slate-100">
+<!-- Stat 1: Total Questions -->
+<div class="bg-[#F8FAFC] border border-slate-200/80 rounded-2xl p-3.5 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-base font-bold shrink-0">
+<i class="fa-solid fa-question"></i>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-extrabold text-slate-800 font-num">{{ question_count }}</span>
+<span class="text-[11px] font-bold text-slate-500">إجمالي الأسئلة</span>
+</div>
+</div>
+<!-- Stat 2: Time Taken -->
+<div class="bg-[#F8FAFC] border border-slate-200/80 rounded-2xl p-3.5 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-base font-bold shrink-0">
+<i class="fa-regular fa-clock"></i>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-extrabold text-slate-800 font-num">{{ a.started_at|duration_between:a.submitted_at }}</span>
+<span class="text-[11px] font-bold text-slate-500">الوقت المستغرق</span>
+</div>
+</div>
+<!-- Stat 3: Wrong Answers -->
+<div class="bg-[#FFF5F5] border border-rose-200/70 rounded-2xl p-3.5 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-base font-bold shrink-0">
+<i class="fa-solid fa-xmark"></i>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-extrabold text-rose-700 font-num">{{ wrong_only }}</span>
+<span class="text-[11px] font-bold text-rose-600/80">إجابة خاطئة</span>
+</div>
+</div>
+<!-- Stat 4: Correct Answers -->
+<div class="bg-[#F0FDF4] border border-emerald-200/70 rounded-2xl p-3.5 flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-base font-bold shrink-0">
+<i class="fa-solid fa-check"></i>
+</div>
+<div class="flex flex-col">
+<span class="text-base font-extrabold text-emerald-700 font-num">{{ a.correct_count }}</span>
+<span class="text-[11px] font-bold text-emerald-600/80">إجابة صحيحة</span>
+</div>
+</div>
+</div>
+<!-- Bottom Action Buttons -->
+<div class="flex flex-wrap items-center justify-center sm:justify-start gap-4 mt-6" data-no-print>
+{% if problem_count %}<button type="button" id="btn-wrong-only" class="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl text-sm font-bold shadow-md shadow-blue-500/20 hover:opacity-95 transition flex items-center justify-center gap-2">
+<i class="fa-regular fa-eye"></i>
+<span id="btn-wrong-only-label" class="">مراجعة الأخطاء فقط</span>
+</button>{% endif %}
+<button type="button" id="btn-print" class="flex-1 sm:flex-none px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2">
+<i class="fa-solid fa-arrow-down-to-bracket text-blue-600"></i>
+<span class="">تحميل النتيجة PDF</span>
+</button>
+{% if can_retry %}<a href="{% url 'student:quiz' t.teacher_code q.pk %}" class="flex-1 sm:flex-none px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2">
+<i class="fa-solid fa-rotate-right text-blue-600"></i>
+<span class="">إعادة المحاولة</span>
+</a>{% endif %}
+{% if q.lesson %}<a href="{% url 'student:lesson' t.teacher_code q.lesson.pk %}" class="flex-1 sm:flex-none px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2">
+<i class="fa-solid fa-book text-blue-600"></i>
+<span class="">مراجعة الدرس</span>
+</a>{% endif %}
+<a href="{% url 'student:workspace' t.teacher_code %}" class="flex-1 sm:flex-none px-6 py-3 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-bold hover:bg-slate-50 transition flex items-center justify-center gap-2">
+<i class="fa-solid fa-arrow-left text-blue-600"></i>
+<span class="">العودة للدورات</span>
+</a>
+</div>
+</section>
+<!-- Section: Question Reviews Navigation & Content -->
+<section class="bg-white rounded-3xl p-6 sm:p-8 border border-[#E3EDFB] shadow-sm flex flex-col gap-6">
+<!-- Header and Instruction -->
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2.5 text-[#163A78]">
+<i class="fa-solid fa-book-open-reader text-xl text-blue-600"></i>
+<h2 class="text-xl font-black">مراجعة جميع الأسئلة</h2>
+</div>
+<p class="text-xs sm:text-sm font-semibold text-slate-500">
+              يمكنك من خلال هذه الصفحة الاطلاع على جميع أسئلة الاختبار ومعرفة إجابتك الصحيحة والتصحيح مع الشرح.
+            </p>
+</div>
+<!-- Question Number Pills Navigation -->
+<div class="flex flex-wrap items-center gap-2 pb-2" data-no-print>
+{% for it in items %}<button type="button" data-pill="{{ it.n }}" data-status="{{ it.status }}" class="q-pill w-8 h-8 rounded-lg {% if forloop.first %}bg-blue-600 text-white shadow-sm{% else %}border border-slate-200 text-slate-600 hover:bg-slate-100{% endif %} font-bold text-xs font-num flex items-center justify-center">{{ it.n }}</button>
+{% endfor %}
+</div>
+{% if not problem_count and items %}<div class="rounded-2xl border-2 border-dashed border-emerald-200 bg-emerald-50/70 p-6 text-center text-emerald-700 font-bold text-sm"><div class="text-3xl mb-1">🎉</div>أجبت عن كل الأسئلة إجابة صحيحة!</div>{% endif %}
+{% for it in items %}{% with q2=it.q %}
+<!-- QUESTION {{ it.n }} -->
+<article id="q-{{ it.n }}" data-q="{{ it.n }}" data-status="{{ it.status }}" class="q-card p-6 rounded-2xl border {% if it.status == 'correct' %}border-emerald-200{% elif it.status == 'wrong' %}border-rose-200{% else %}border-slate-200{% endif %} bg-white relative flex flex-col gap-4 shadow-sm">
+<!-- Badges Bar -->
+<div class="flex items-center justify-between"><div class="flex items-center gap-1.5 text-xs font-black {% if it.status == 'correct' %}text-emerald-700 bg-emerald-50{% elif it.status == 'wrong' %}text-rose-700 bg-rose-50{% else %}text-slate-700 bg-slate-100{% endif %} px-3 py-1.5 rounded-full"><span class="">السؤال <span class="font-num">{{ it.n }}</span></span><span class="px-4 py-1.5 border {% if it.status == 'correct' %}border-emerald-500 text-emerald-600{% elif it.status == 'wrong' %}border-rose-500 text-rose-600{% else %}border-slate-400 text-slate-600{% endif %} rounded-full text-sm font-black flex items-center gap-1.5"><i class="fa-solid {% if it.status == 'correct' %}fa-check text-emerald-600{% elif it.status == 'wrong' %}fa-xmark text-rose-600{% else %}fa-minus text-slate-500{% endif %} text-xs"></i>{% if it.status == 'correct' %}صحيح{% elif it.status == 'wrong' %}خاطئ{% elif it.status == 'essay' %}مقالي{% else %}لم يُجب{% endif %}</span></div><div class="flex flex-col items-end gap-1.5"><span class="px-4 py-1.5 border {% if it.status == 'correct' %}border-emerald-500 text-emerald-600{% elif it.status == 'wrong' %}border-rose-500 text-rose-600{% else %}border-slate-400 text-slate-600{% endif %} rounded-full text-sm font-black flex items-center gap-1.5"><i class="fa-solid {% if it.status == 'correct' %}fa-check text-emerald-600{% elif it.status == 'wrong' %}fa-xmark text-rose-600{% else %}fa-minus text-slate-500{% endif %} text-xs"></i>{% if it.status == 'correct' %}صحيح{% elif it.status == 'wrong' %}خاطئ{% elif it.status == 'essay' %}مقالي{% else %}لم يُجب{% endif %}</span><span class="px-4 py-1.5 bg-slate-100 text-slate-800 rounded-full text-sm font-extrabold flex items-center gap-1.5 shadow-sm"><i class="fa-regular fa-clock text-xs text-slate-400"></i><i class="fa-solid fa-star {% if it.status == 'correct' %}text-amber-400{% else %}text-slate-300{% endif %} text-sm"></i><span class="">الدرجة: <span class="font-num text-base font-black {% if it.status == 'correct' %}text-[#163A78]{% elif it.status == 'wrong' %}text-rose-600{% else %}text-slate-500{% endif %}">{% if it.status == 'essay' %}— / {{ q2.points }}{% else %}{{ it.earned }} / {{ q2.points }}{% endif %}</span></span></span></div></div>
+<!-- Question Title -->
+<h3 class="text-base font-bold text-slate-800">
+              {{ q2.text }}
+            </h3>
+{% if it.status == 'essay' %}
+<div class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700 whitespace-pre-line" dir="auto"><span class="block text-xs font-extrabold text-slate-500 mb-1">إجابتك:</span>{% if it.a.text_answer %}{{ it.a.text_answer }}{% else %}<span class="text-slate-400">لم تكتب إجابة.</span>{% endif %}</div>
+<div class="text-xs font-bold text-slate-500">سؤال مقالي — يراجع المدرّس إجابتك ولا يدخل في الدرجة الآلية.</div>
+{% else %}
+<!-- Options Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+{% for c in it.choices %}{% if it.chosen and c.id == it.chosen.id %}{% if it.status == 'correct' %}<div class="p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50/60 text-emerald-800 text-xs font-bold text-center flex items-center justify-center gap-2">
+<i class="fa-solid fa-check text-emerald-600"></i>
+<span class="">{{ forloop.counter0|letter }}) {{ c.text }}</span>
+</div>{% else %}<div class="p-3 rounded-xl border-2 border-rose-400 bg-rose-50 text-rose-700 text-xs font-bold text-center flex items-center justify-center gap-2">
+<i class="fa-solid fa-xmark text-rose-600"></i>
+<span class="">{{ forloop.counter0|letter }}) {{ c.text }}</span>
+</div>{% endif %}{% else %}<div class="p-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-600 text-xs font-bold text-center">
+                {{ forloop.counter0|letter }}) {{ c.text }}
+              </div>{% endif %}{% endfor %}
+</div>
+{% if it.status == 'correct' %}
+<!-- Explanation Callout -->
+<div class="bg-emerald-50/80 border border-emerald-200 p-4 rounded-xl flex items-start gap-2 text-xs">
+<i class="fa-solid fa-circle-check text-emerald-600 mt-0.5 text-sm"></i>
+<div class="flex flex-col gap-1">
+<span class="font-extrabold text-emerald-900">الإجابة الصحيحة: {{ it.correct.text }}</span>
+{% if q2.explanation %}<p class="text-emerald-800 leading-relaxed font-semibold">
+                  {{ q2.explanation }}
+                </p>{% endif %}
+</div>
+</div>
+{% else %}
+<!-- Detailed Explanation & Remediation Card -->
+<div class="{% if it.status == 'wrong' %}bg-rose-50/70{% else %}bg-slate-50{% endif %} border border-[#DCE8F8] p-4 rounded-xl flex flex-col gap-3 text-xs">
+<div class="flex items-start gap-2">
+<i class="fa-solid fa-circle-check {% if it.status == 'wrong' %}text-rose-600{% else %}text-slate-500{% endif %} mt-0.5 text-sm"></i>
+<div class="flex flex-col gap-1 flex-1">
+<span class="font-extrabold {% if it.status == 'wrong' %}text-rose-900{% else %}text-slate-800{% endif %}">الإجابة الصحيحة: {{ it.correct.text }}</span>
+{% if q2.explanation %}<p class="{% if it.status == 'wrong' %}text-rose-800{% else %}text-slate-600{% endif %} leading-relaxed font-semibold">
+                    {{ q2.explanation }}
+                  </p>{% endif %}
+</div>
+</div>
+{% if it.chosen.why_wrong %}<div class="flex items-start gap-2">
+<i class="fa-solid fa-circle-xmark text-rose-600 mt-0.5 text-sm"></i>
+<div class="flex flex-col gap-1 flex-1">
+<span class="font-extrabold text-rose-900">سبب الخطأ</span>
+<p class="text-rose-800 leading-relaxed font-semibold">{{ it.chosen.why_wrong }}</p>
+</div>
+</div>{% endif %}
+{% if q2.section %}<details class="q-section">
+<summary class="cursor-pointer text-xs font-bold text-blue-600 flex items-center gap-2"><i class="fa-solid fa-book-open text-blue-600"></i>عرض هذا الجزء من الشرح مباشرة</summary>
+<div class="mt-2 rounded-xl bg-white border border-[#DCE8F8] p-4"><h5 class="font-bold text-xs text-[#163A78] mb-1">{{ q2.section.get_kind_display }}: {{ q2.section.title }}</h5><div class="text-xs text-slate-600 leading-relaxed font-semibold whitespace-pre-line">{{ q2.section.content|truncatewords:120 }}</div></div>
+</details>{% endif %}
+{% if it.lesson or it.sim or it.ai %}<div class="mt-3 p-3.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 border border-blue-200 bg-[#E1EDFD] shadow-sm" data-no-print>
+<div class="flex items-center gap-2.5 text-[#163A78]">
+<div class="w-8 h-8 rounded-xl bg-blue-600/10 flex items-center justify-center text-blue-600 shrink-0">
+<i class="fa-solid fa-book text-sm"></i>
+</div>
+<div class="flex flex-wrap items-center gap-1.5">
+{% if it.lesson %}<span class="font-black text-xs text-[#163A78]">راجع الدرس: {{ it.lesson.title }}</span>
+<span class="text-[11px] font-bold text-slate-500">({{ it.lesson.unit.title }} - {{ it.lesson.unit.course.title }})</span>{% elif it.ai %}<span class="font-black text-xs text-[#163A78]">شرح تفصيلي للسؤال</span>{% else %}<span class="font-black text-xs text-[#163A78]">تدرّب على سؤال مشابه</span>{% endif %}
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-2">
+{% if it.sim %}<a class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-blue-200 text-[#163A78] rounded-full font-bold text-xs transition hover:bg-blue-50 active:scale-95" href="{% url 'student:bank_question' t.teacher_code it.sim.pk %}">
+<i class="fa-solid fa-repeat text-blue-600 text-[11px]"></i>
+<span class="">حل سؤالًا مشابهًا</span>
+</a>{% endif %}
+{% if it.ai %}<button type="button" class="ai-toggle inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white rounded-full font-bold text-xs transition hover:brightness-105 active:scale-95 shadow-[0_4px_12px_rgba(37,99,235,0.25)]" data-ai-target="ai-{{ it.n }}" aria-expanded="false" aria-controls="ai-{{ it.n }}">
+<i class="fa-solid fa-wand-magic-sparkles text-[11px]"></i>
+<span class="ai-toggle-label">مراجعة الدرس</span>
+<i class="fa-solid fa-chevron-down ai-chev text-[11px]"></i>
+</button>{% elif it.lesson %}<a class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#3B82F6] to-[#2563EB] text-white rounded-full font-bold text-xs transition hover:brightness-105 active:scale-95 shadow-[0_4px_12px_rgba(37,99,235,0.25)]" href="{% url 'student:lesson' t.teacher_code it.lesson.pk %}{% if q2.section_id %}#section-{{ q2.section_id }}{% endif %}">
+<span class="">الانتقال للدرس</span>
+<i class="fa-solid fa-arrow-left text-white text-[11px]"></i>
+</a>{% endif %}
+</div>
+</div>{% endif %}
+{% if it.ai %}<div id="ai-{{ it.n }}" class="ai-wrap" data-no-print><div class="ai-inner"><div class="ai-card">
+<div class="ai-head"><span class="ai-badge"><i class="fa-solid fa-wand-magic-sparkles"></i></span><div><div class="ai-title">شرح تفصيلي بالمصري</div><div class="ai-sub">فهّمها خطوة خطوة، ومن غير ما تحتاج تسأل حد 😊</div></div></div>
+{% if it.ai.idea %}<div class="ai-block ai-idea"><div class="ai-h"><i class="fa-solid fa-lightbulb"></i>الفكرة اللي السؤال بيختبرها</div><p>{{ it.ai.idea }}</p></div>{% endif %}
+{% if it.ai.why_correct %}<div class="ai-block ai-ok"><div class="ai-h"><i class="fa-solid fa-circle-check"></i>ليه الإجابة الصح هي الصح؟</div><p>{{ it.ai.why_correct }}</p></div>{% endif %}
+{% if it.ai.merged_options %}<div class="ai-block"><div class="ai-h"><i class="fa-solid fa-list-check"></i>الاختيارات واحد واحد</div><div class="ai-opts">
+{% for o in it.ai.merged_options %}<div class="ai-opt {% if o.correct %}is-ok{% elif o.chosen %}is-bad{% endif %}"><div class="ai-opt-top"><i class="fa-solid {% if o.correct %}fa-circle-check{% else %}fa-circle-xmark{% endif %}"></i><span class="ai-opt-text">{{ o.text }}</span>{% if o.chosen %}<span class="ai-pill">اختيارك</span>{% endif %}{% if o.correct %}<span class="ai-pill ok">الصح</span>{% endif %}</div>{% if o.why %}<p>{{ o.why }}</p>{% endif %}</div>{% endfor %}
+</div></div>{% endif %}
+{% if it.ai.rule %}<div class="ai-block"><div class="ai-h"><i class="fa-solid fa-book-open"></i>القاعدة من الدرس</div><p>{{ it.ai.rule }}</p></div>{% endif %}
+{% if it.ai.steps %}<div class="ai-block"><div class="ai-h"><i class="fa-solid fa-list-ol"></i>تعالى نفكّر فيها خطوة خطوة</div><ol class="ai-steps">{% for st in it.ai.steps %}<li><span class="ai-n">{{ forloop.counter }}</span><span>{{ st }}</span></li>{% endfor %}</ol></div>{% endif %}
+{% if it.ai.mistakes %}<div class="ai-block ai-warn"><div class="ai-h"><i class="fa-solid fa-triangle-exclamation"></i>غلطات شائعة خد بالك منها</div><ul>{% for m in it.ai.mistakes %}<li>{{ m }}</li>{% endfor %}</ul></div>{% endif %}
+{% if it.ai.memory or it.ai.tip %}<div class="ai-two">{% if it.ai.memory %}<div class="ai-block ai-mem"><div class="ai-h"><i class="fa-solid fa-brain"></i>حيلة تفتكر بيها</div><p>{{ it.ai.memory }}</p></div>{% endif %}{% if it.ai.tip %}<div class="ai-block ai-tip"><div class="ai-h"><i class="fa-solid fa-bullseye"></i>نصيحة للامتحان</div><p>{{ it.ai.tip }}</p></div>{% endif %}</div>{% endif %}
+{% if it.lesson %}<a class="ai-open" href="{% url 'student:lesson' t.teacher_code it.lesson.pk %}{% if q2.section_id %}#section-{{ q2.section_id }}{% endif %}"><i class="fa-solid fa-arrow-up-right-from-square"></i>افتح الدرس كامل</a>{% endif %}
+</div></div></div>{% endif %}
+</div>
+{% endif %}
+{% endif %}
+</article>
+{% endwith %}{% endfor %}
+</section>
+</div>
+<!-- END: CenterRightColumn -->
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: MainFooter -->
+<footer class="bg-gradient-to-b from-[#133060] to-[#0F2347] text-white pt-14 pb-8 mt-16 border-t border-blue-900">
+<div class="max-w-[1440px] mx-auto px-4 lg:px-8"><div class="flex flex-col items-center text-center max-w-3xl mx-auto py-4"><div class="w-12 h-12 rounded-2xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-blue-300 text-xl mb-4"><i class="fa-solid fa-graduation-cap"></i></div><h3 class="text-xl sm:text-2xl font-black text-white mb-4">معاً .. نحو مستقبل واعد ومشرق</h3><p class="text-sm sm:text-base text-blue-100 font-semibold leading-relaxed mb-6">«كل جهد تبذله اليوم هو بذرة لمستقبل مشرق تصنعه بيديك.. رحلة الألف ميل تبدأ بشغف، والتميز الحقيقي يُبنى بالاستمرار والإصرار على بلوغ القمة»</p><div class="flex flex-wrap items-center justify-center gap-3 mb-8"><span class="px-4 py-1.5 rounded-full bg-blue-800/60 border border-blue-500/30 text-xs font-bold text-blue-200 flex items-center gap-2"><i class="fa-solid fa-heart text-blue-400 text-[10px]"></i>شغف التعلم</span><span class="px-4 py-1.5 rounded-full bg-blue-800/60 border border-blue-500/30 text-xs font-bold text-blue-200 flex items-center gap-2"><i class="fa-solid fa-star text-amber-400 text-[10px]"></i>همة نحو القمة</span><span class="px-4 py-1.5 rounded-full bg-blue-800/60 border border-blue-500/30 text-xs font-bold text-blue-200 flex items-center gap-2"><i class="fa-solid fa-seedling text-emerald-400 text-[10px]"></i>استثمار في المستقبل</span></div><div class="w-full border-t border-blue-800/60 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 font-semibold gap-3"><div class="text-slate-300">© جميع الحقوق محفوظة - معاً نصنع مستقبلاً استثنائياً</div><div class="text-slate-400">منصة التميز التعليمية الذكية</div></div></div></div>
+</footer>
+<!-- END: MainFooter -->
+<script>
+(function(){
+  var pills=[].slice.call(document.querySelectorAll('.q-pill'));
+  var cards=[].slice.call(document.querySelectorAll('.q-card'));
+  var ON='bg-blue-600 text-white shadow-sm', OFF='border border-slate-200 text-slate-600 hover:bg-slate-100';
+  function setActive(n){
+    pills.forEach(function(p){
+      var on=p.getAttribute('data-pill')===String(n);
+      (on?OFF:ON).split(' ').forEach(function(c){p.classList.remove(c)});
+      (on?ON:OFF).split(' ').forEach(function(c){p.classList.add(c)});
+    });
+  }
+  pills.forEach(function(p){p.addEventListener('click',function(){
+    var n=p.getAttribute('data-pill'),el=document.getElementById('q-'+n);
+    setActive(n);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+  })});
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(e.isIntersecting&&!e.target.classList.contains('hidden'))setActive(e.target.getAttribute('data-q'));
+    })},{rootMargin:'-120px 0px -65% 0px'});
+    cards.forEach(function(c){io.observe(c)});
+  }
+  // مراجعة الأخطاء فقط
+  var btn=document.getElementById('btn-wrong-only'),lbl=document.getElementById('btn-wrong-only-label'),only=false;
+  if(btn)btn.addEventListener('click',function(){
+    only=!only;
+    cards.forEach(function(c){c.classList.toggle('hidden',only&&c.getAttribute('data-status')==='correct')});
+    pills.forEach(function(p){p.classList.toggle('hidden',only&&p.getAttribute('data-status')==='correct')});
+    lbl.textContent=only?'عرض جميع الأسئلة':'مراجعة الأخطاء فقط';
+    var first=document.querySelector('.q-card:not(.hidden)');
+    if(first){setActive(first.getAttribute('data-q'));first.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+  // تحميل النتيجة PDF (حفظ كـ PDF من نافذة الطباعة)
+  var pr=document.getElementById('btn-print');
+  if(pr)pr.addEventListener('click',function(){
+    document.querySelectorAll('details.q-section').forEach(function(d){d.setAttribute('open','')});
+    window.print();
+  });
+  // إخفاء التنبيهات تلقائيًا
+  setTimeout(function(){document.querySelectorAll('.toast').forEach(function(t){t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(function(){t.remove()},600)})},5200);
+})();
+</script>
+<script>
+(function(){
+  // مراجعة الدرس: فتح/إغلاق الشرح التفصيلي داخل نفس الصفحة
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('.ai-toggle');
+    if(!b)return;
+    var box=document.getElementById(b.getAttribute('data-ai-target'));
+    if(!box)return;
+    var open=!box.classList.contains('open');
+    box.classList.toggle('open',open);
+    b.classList.toggle('is-open',open);
+    b.setAttribute('aria-expanded',open?'true':'false');
+    var lbl=b.querySelector('.ai-toggle-label');if(lbl)lbl.textContent=open?'إخفاء المراجعة':'مراجعة الدرس';
+    if(open){setTimeout(function(){var r=box.getBoundingClientRect();if(r.bottom>window.innerHeight||r.top<80){box.scrollIntoView({behavior:'smooth',block:'nearest'});}},120);}
+  });
+})();
+</script>
+</body>
+</html>

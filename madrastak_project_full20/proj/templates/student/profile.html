@@ -1,0 +1,376 @@
+{% load ui_extras %}{% student_profile_stats user as PS %}<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>مدرستك - منصة التعليم الذكية | الملف الشخصي</title>
+<!-- Tailwind CSS v3 with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            sidebarDark: '#13192e',
+            sidebarActive: '#545be8',
+            brandBlue: '#2563eb',
+            pageBg: '#f3f6fc'
+          },
+          fontFamily: {
+            tajawal: ['Tajawal', 'Cairo', 'sans-serif'],
+            number: ['Plus Jakarta Sans', 'Inter', 'Tajawal', 'sans-serif']
+          }
+        }
+      }
+    }
+</script>
+<!-- Google Fonts: Tajawal & Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: #f3f6fc;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .num-display {
+      font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+</style>
+<style>
+  body, body.font-tajawal {font-family: "Plus Jakarta Sans", "Tajawal", sans-serif;}
+  .num-display {font-family: "Plus Jakarta Sans", "Tajawal", sans-serif;}
+  [data-edit-profile]{cursor:pointer}
+  #ps-modal .ps-field{margin-bottom:.9rem}
+  #ps-modal label{display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:.35rem}
+  #ps-modal .input{width:100%;border:1px solid #e2e8f0;border-radius:.85rem;padding:.55rem .9rem;font-size:14px;background:#fff;color:#1e293b}
+  #ps-modal .input:focus{outline:none;border-color:#545be8;box-shadow:0 0 0 3px rgba(84,91,232,.15)}
+  #ps-modal .ps-err{color:#e11d48;font-size:12px;font-weight:600;margin:.3rem 0 0}
+  #ps-modal .errorlist{list-style:none;margin:.3rem 0 0;padding:0;color:#e11d48;font-size:12px;font-weight:600}
+</style>
+</head>
+<body class="min-h-screen bg-[#f3f6fc] text-slate-800 antialiased selection:bg-indigo-100 selection:text-indigo-900 font-tajawal p-6 lg:p-10">
+{% if messages %}
+<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">
+  {% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}
+</div>
+{% endif %}
+{% if impersonating %}<div class="max-w-6xl mx-auto mb-6"><div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div></div>{% endif %}
+
+<!-- BEGIN: MainContainer -->
+<div class="max-w-6xl mx-auto flex flex-col gap-6">
+
+  <!-- 1. TOP HERO SKY-BLUE BANNER (Sidebar & Header removed; decorative plant & book vectors replaced with provided 3D cap & books image) -->
+  <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#d9ebff] via-[#e6f1ff] to-[#d6e7ff] border border-blue-100/80 p-8 shadow-xs min-h-[140px] flex items-center justify-between" data-purpose="hero-banner">
+    <!-- Subtle decorative soft glow shapes -->
+    <div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full bg-blue-300/30 blur-2xl pointer-events-none"></div>
+    <div class="absolute right-1/3 -top-12 w-48 h-48 rounded-full bg-indigo-200/30 blur-2xl pointer-events-none"></div>
+
+    <!-- Right Side: Title & Subtitle -->
+    <div class="relative z-10 text-right">
+      <h2 class="text-3xl font-black text-[#192f5d] tracking-tight">الملف الشخصي</h2>
+      <p class="text-sm font-medium text-slate-500 mt-1.5">معلوماتك وبياناتك الدراسية</p>
+    </div>
+
+    <!-- Left Side: Provided Image replacing previous SVG elements -->
+    <div class="relative z-10 flex items-center justify-center pl-4">
+      <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGlF6DV8W5H-QuXqxx6SQJLB2r9aLPeVFCwRV_zeBf-gHEhEOITdJox7S2WxY4VcWcsCoGzyvfTC-b2lYnRJBG7ZujDaka1-gtwlLH_NMyb_Q-0R2wTcCRLFqAWqfUuTauKEJAEjwCGmoay4Y3TgwUDCdSWxev5ZBq5ZIOss4GkvetE5oCduXw-0F2H0z-EAFtIoZP-lAHtXm00APdlPh_VnDdwFfq_t9pY1SQdwPCC1aRWDQTXKzqaw11vJmHj-98N0Q" alt="البيانات الدراسية" class="w-28 sm:w-36 h-auto object-contain drop-shadow-md"/>
+    </div>
+  </section>
+
+  <!-- 2. UPPER SECTION: Personal Info Card stretched to match Combined Height of [Profile Card + Learning Stats] -->
+  <div class="grid grid-cols-12 gap-6 items-stretch">
+    <!-- Right Side: [Profile Card ("أحمد محمد") + Learning Statistics ("إحصائيات التعلم")] -->
+    <div class="col-span-12 lg:col-span-8 flex flex-col gap-6">
+      <!-- Student Profile Summary Card -->
+      <div data-edit-profile title="تعديل البيانات" class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 flex items-center justify-between flex-wrap gap-4">
+        <div class="flex items-center gap-5">
+          <!-- Avatar: Replaced with provided user icon -->
+          <div class="w-20 h-20 rounded-full ring-4 ring-indigo-50 bg-indigo-50/50 overflow-hidden flex-shrink-0 shadow-xs flex items-center justify-center p-1.5">
+            {% if sp.avatar %}<img alt="{{ user.full_name }}" class="w-full h-full object-cover rounded-full" src="{{ sp.avatar.url }}"/>{% else %}<img alt="{{ user.full_name }}" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1y7YCGbImBTikuMnr79YM6AU-WhWTkzSIUHyfzbMF2JGIVBrM4LxmHVzYWrLbsZHsiBR5wVIDE3ctDgP3cMqYF2MHrkCk5xiNRXvr_ATPPvgE9iSYVNdedqwq9v3nL1w1Hre1vNDGzZq-Y59Gf6zAPw7Z2sVj_k703Wy21aFmdOud0P1ZUQFmtCsuZUPtszYELv-5IkwEAmpc-rzj_u2gyukLTQ3QpEtr33El6PUwQObrqCbI1s29tFHeezYWtI__09g"/>{% endif %}
+          </div>
+          <!-- Student Info -->
+          <div>
+            <h3 class="text-xl font-black text-slate-800 leading-tight">{{ user.full_name }}</h3>
+            <p class="text-xs text-slate-400 font-semibold mt-1">طالب - {{ sp.get_grade_display }}</p>
+            <span class="inline-block mt-3 px-3.5 py-1 rounded-full bg-indigo-50 text-[#545be8] text-xs font-bold border border-indigo-100/80">
+              {{ sp.get_grade_display }}
+            </span>
+          </div>
+        </div>
+        <!-- Average Score Pill / Box -->
+        <div class="flex flex-col items-center justify-center bg-slate-50/70 border border-slate-100 rounded-2xl px-6 py-3 min-w-[130px]">
+          <div class="flex items-center gap-1.5">
+            <span class="text-2xl text-slate-700 num-display font-semibold">{% if PS.avg is not None %}{{ PS.avg }}%{% else %}—{% endif %}</span>
+            <svg class="w-5 h-5 text-amber-400 fill-current" viewbox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+            </svg>
+          </div>
+          <span class="text-[11px] text-slate-400 font-bold mt-1">متوسط الدرجات</span>
+        </div>
+      </div>
+
+      <!-- Learning Statistics Section with 3 distinct pastel tinted cards -->
+      <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100">
+        <h4 class="text-base font-black text-slate-800 mb-4 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+          إحصائيات التعلم
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <!-- Card 1: وقت التعلم (Amber / Warm pastel tint) -->
+          <div class="flex flex-col items-center text-center p-5 rounded-2xl border transition-all hover:-translate-y-0.5" style="background-color: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.22);">
+            <div class="w-12 h-12 flex items-center justify-center mb-2">
+              <img alt="وقت التعلم" class="w-10 h-10 object-contain drop-shadow-xs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAsZ33OIvHR4I06WdbYArdRdUjMPJL09GaHLiwgO7L9AivRRPZE_fcEwovivq_Egs_acgZQxHH0KPF45m9USqjDqeFq95prTR4ShhkL1Gx4iiy-e3afNXcf3wEqAFGlyiwk4RNxuKvyYWpaUrn_4nCWeb28UQwOO-VHI682Ayl3DyqkyUpFmBctE2VgkUsmRJbOU3lpuJRXxLNpeMo_qd7iXWkID0mqCWWYZWKw6CiX_XPr8QLuaUXPg"/>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl text-slate-800 num-display font-semibold">{{ PS.hours }}</span>
+              <span class="text-xs font-semibold text-slate-600">ساعة</span>
+            </div>
+            <span class="text-xs font-semibold text-slate-500 mt-1">وقت التعلم</span>
+          </div>
+          <!-- Card 2: اختبار تم اجتيازه (Teal / Emerald pastel tint) -->
+          <div class="flex flex-col items-center text-center p-5 rounded-2xl border transition-all hover:-translate-y-0.5" style="background-color: rgba(16, 185, 129, 0.08); border-color: rgba(16, 185, 129, 0.22);">
+            <div class="w-12 h-12 flex items-center justify-center mb-2">
+              <img alt="اختبار تم اجتيازه" class="w-10 h-10 object-contain drop-shadow-xs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgg8fOU0yGrFDHyy9deJWokMb2OWRL_x2D-VNrDCpx6unYoESLHsCr9yng8759O1BnkQkfi9N2GPZN1kgbeDx7bMR9zjSlykoPcPpKsN0TbgyA-JC43l-T2CPOJj9zCROaS3srL4kG_dAH1U-oYrM1ZobHZtxZJmLYIQJFWZHCEWpQKV7fZDjx1jDCZRm0DJtQn7Hu03vF5rAUXLh1I1_V7zQ9xAhGbVb1WgdA89jxboQUhgN3DCyTJA"/>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl text-slate-800 num-display font-semibold">{{ PS.passed }}</span>
+              <span class="text-xs font-semibold text-slate-600">اختبار</span>
+            </div>
+            <span class="text-xs font-semibold text-slate-500 mt-1">اختبار تم اجتيازه</span>
+          </div>
+          <!-- Card 3: دروس مكتملة (Violet / Indigo pastel tint) -->
+          <div class="flex flex-col items-center text-center p-5 rounded-2xl border transition-all hover:-translate-y-0.5" style="background-color: rgba(139, 92, 246, 0.08); border-color: rgba(139, 92, 246, 0.22);">
+            <div class="w-12 h-12 flex items-center justify-center mb-2">
+              <img alt="دروس مكتملة" class="w-10 h-10 object-contain drop-shadow-xs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwptds4xJ717OZpnOE0yhrAxx_ZKOovRSa8ZntiP0futp2T0fs_mrTUmns-syeizACNx5JXsQziAaqOqIKSGxnzhYDm8rvGjz5DFg5SvUEhm2fA13G6_YCrH_2KuCH2pJ8WeLisjxl_Wbuvb4zL0l30IZiLoR14HQEKLv_Z1Xy2G82qqFJVjQU99bgVYavXRKwBYd-3iepdNIAkQkZdICbWNWw9TLwRf2A4sEi7Fq1Ii-48gK0yRMSvg"/>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl text-slate-800 num-display font-semibold">{{ PS.lessons }}</span>
+              <span class="text-xs font-semibold text-slate-600">دروس</span>
+            </div>
+            <span class="text-xs font-semibold text-slate-500 mt-1">دروس مكتملة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Left Side: Personal Information Card -->
+    <div class="col-span-12 lg:col-span-4 flex flex-col">
+      <div data-edit-profile title="تعديل البيانات" class="bg-white rounded-3xl p-7 shadow-xs border border-slate-100 flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center gap-2.5 mb-6 border-b border-slate-100 pb-3.5">
+            <div class="w-7 h-7 flex items-center justify-center">
+              <img alt="المعلومات الشخصية" class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8FHJXxg1JNvFxKLRm_XOx_USUExjypspHjBet0uIqUWeanqqZhGJurmKQnndU9ex0_ds4PAMa7ELR8hV8q5X_jLEtpgoLufAcL8wCLCfXTo0K6ythhSgrg8XiBIvHN9P07RwAvTMe8co4WxV05JeRwDxmYIq6n1pnrwsldmTL8iLRP2kVnkeT2oGHiWJXjNrdpdG_iu53UaexsAPD7g6ZHZyRlcUT-vkC2AATRS3PWjO97lBre6tUblPz5CAtUsJA-1w"/>
+            </div>
+            <h4 class="text-base font-black text-slate-800">المعلومات الشخصية</h4>
+          </div>
+          <div class="flex flex-col justify-around gap-4 text-xs">
+            {% if sp.student_number %}<div class="flex items-center justify-between py-2 border-b border-dashed border-slate-100">
+              <span class="text-slate-400 font-semibold">رقم الطالب (ID):</span>
+              <span class="font-bold text-slate-800 num-display text-sm">{{ sp.student_number }}</span>
+            </div>
+            {% endif %}<div class="flex items-center justify-between py-2 border-b border-dashed border-slate-100">
+              <span class="text-slate-400 font-semibold">الاسم:</span>
+              <span class="font-bold text-slate-800 text-sm">{{ user.full_name }}</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-dashed border-slate-100">
+              <span class="text-slate-400 font-semibold">البريد الإلكتروني:</span>
+              <span class="font-semibold text-slate-700 font-mono text-xs">—</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-dashed border-slate-100">
+              <span class="text-slate-400 font-semibold">رقم الهاتف:</span>
+              <span class="font-semibold text-slate-800 num-display text-sm tracking-normal">{{ user.phone }}</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-dashed border-slate-100">
+              <span class="text-slate-400 font-semibold">تاريخ الميلاد:</span>
+              <span class="font-bold text-slate-800">—</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-dashed border-slate-100">
+              <span class="text-slate-400 font-semibold">النوع:</span>
+              <span class="font-bold text-slate-800">—</span>
+            </div>
+            <div class="flex items-center justify-between py-2">
+              <span class="text-slate-400 font-semibold">الصف:</span>
+              <span class="font-bold text-slate-800">{{ sp.get_grade_display|cut:"الصف " }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="pt-4 border-t border-slate-100/70 text-center">
+          <span class="text-[11px] text-slate-400 font-medium">تم التحقق من البيانات المسجلة بنجاح</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MIDDLE SECTION: Notifications & Settings (Right, 8 cols) vs Subscriptions & Package (Left, 4 cols) -->
+  <div class="grid grid-cols-12 gap-6 items-stretch">
+    <!-- Right: Notifications & Settings (8 cols) -->
+    <div class="col-span-12 lg:col-span-8 flex flex-col">
+      <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 h-full flex flex-col justify-between">
+        <div>
+          <h4 class="text-base font-black text-slate-800 mb-5 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+            الإشعارات والإعدادات
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5">
+            <!-- Toggle 1: استقبال الإشعارات -->
+            <div class="flex items-center justify-between py-1">
+              <span class="text-sm font-semibold text-slate-700">استقبال الإشعارات</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input checked="" class="sr-only peer" type="checkbox"/>
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#545be8]"></div>
+              </label>
+            </div>
+            <!-- Toggle 2: إشعارات الامتحانات -->
+            <div class="flex items-center justify-between py-1">
+              <span class="text-sm font-semibold text-slate-700">إشعارات الامتحانات</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input checked="" class="sr-only peer" type="checkbox"/>
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#545be8]"></div>
+              </label>
+            </div>
+            <!-- Toggle 3: إشعارات الواجبات -->
+            <div class="flex items-center justify-between py-1">
+              <span class="text-sm font-semibold text-slate-700">إشعارات الواجبات</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input checked="" class="sr-only peer" type="checkbox"/>
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#545be8]"></div>
+              </label>
+            </div>
+            <!-- Toggle 4: البريد الإلكتروني -->
+            <div class="flex items-center justify-between py-1">
+              <span class="text-sm font-semibold text-slate-700">البريد الإلكتروني</span>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input checked="" class="sr-only peer" type="checkbox"/>
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:right-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#545be8]"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400">
+          <span>تحديث التفضيلات يتم حفظه تلقائياً</span>
+          <span class="text-indigo-600 font-semibold cursor-pointer hover:underline">إعادة ضبط الإعدادات</span>
+        </div>
+      </div>
+    </div>
+    <!-- Left: Subscriptions & Package Card (4 cols) -->
+    <div class="col-span-12 lg:col-span-4 flex flex-col">
+      <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 flex flex-col justify-between h-full">
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-2">
+              <img alt="الاشتراكات والباقة" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCl9Sao7pMydck34dFAuWy9LyH4ElOsUHlUXkh3dcFtC-SqHAstuMVd69OsDzGUL4TTGU2VzTuE15PumL4nt9b1WgABnL5BFyzNOG7iB4eLEgdi2yS8GTWmpDtQCqbAPdUNyqyZpj0fcJG8x2zcHdYexy_i9iEnpLVltXgSWEyavSTP9Y0KjeXaXdNToO6oQwXq2NozRn3sBZWLte5YmkkUUwGRywkfATI_RK0r3dFdmVGBfF7-vm2dVXwvu-6imbdK5Ds"/>
+              <h4 class="text-base font-black text-slate-800">الاشتراكات والباقة</h4>
+            </div>
+            {% if has_active_enrollment %}<span class="px-3 py-0.5 rounded-full bg-emerald-50 text-emerald-600 text-xs font-bold border border-emerald-200">
+              نشط
+            </span>{% else %}<span class="px-3 py-0.5 rounded-full bg-amber-50 text-amber-600 text-xs font-bold border border-amber-200">
+              {% if my_enrollments %}{{ my_enrollments.0.display_label }}{% else %}غير مشترك{% endif %}
+            </span>{% endif %}
+          </div>
+          {% for e in my_enrollments %}<p class="text-xs text-slate-600 font-bold mb-1"><a href="{% url 'student:subscribe' e.teacher.teacher_code %}" class="hover:underline">{{ e.teacher.display_label }} — {{ e.teacher.subject }}</a></p>
+          <p class="text-[11px] text-slate-400 font-medium mb-4">{% if e.display_status == 'active' %}تنتهي في: <span class="num-display font-medium">{{ e.expires_at|date:"j" }}</span> {{ e.expires_at|date:"F" }} <span class="num-display font-medium">{{ e.expires_at|date:"Y" }}</span>{% else %}{{ e.display_label }}{% endif %}</p>
+          {% empty %}<p class="text-xs text-slate-600 font-bold mb-1">لا توجد اشتراكات حالياً</p>
+          <p class="text-[11px] text-slate-400 font-medium mb-4">لم تشترك مع أي معلم بعد</p>
+          {% endfor %}
+        </div>
+        <button class="w-full py-2.5 rounded-2xl bg-[#545be8] hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all" type="button" onclick="location.href='{% url 'student:subscriptions' %}'">
+          إدارة الاشتراك
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. BOTTOM SECTION: SIDE-BY-SIDE HORIZONTAL CARDS (Account Balance + Account Status) -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+    <!-- Card 1: رصيد الحساب (Account Balance) -->
+    <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <img alt="رصيد الحساب" class="w-5 h-5 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMn5hEXm9aGkpi_QsJfKiKo8TVSO_nhKOcHY2q9Nucd6qynPasSNA59IjBBJQqbVe9MDe8VC8z0iPyWBHjPpVDRYxssnGc4jEKHIYLJIlNJ_guwkYfzDMMlp4KiQBpz8loQ_MdZ5M2iPqJ_JW8AcEuinC5HN_z9pNAxnz_HJoCEOL9X8dUY4afVvRW5XO2nGV8T_P60N1v6Q0icrZqUhvbYFIQs748UA5wd0tWcSUP-nvsr_46c4RR3A"/>
+            <h4 class="text-base font-black text-slate-800">رصيد الحساب</h4>
+          </div>
+          <span class="text-xs text-slate-400 font-medium">الرصيد المتاح</span>
+        </div>
+        <!-- Balance box -->
+        <div class="w-full py-3 px-4 rounded-xl bg-slate-50 border border-slate-100 text-center mb-4">
+          <div class="flex items-baseline justify-center gap-1.5">
+            <span class="text-3xl text-slate-800 num-display font-semibold">0</span>
+            <span class="text-sm font-semibold text-slate-600">جنية</span>
+          </div>
+        </div>
+      </div>
+      <button class="w-full py-2.5 rounded-2xl bg-[#545be8] hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2" type="button">
+        <span>شحن الرصيد</span>
+      </button>
+    </div>
+
+    <!-- Card 2: حالة الحساب (Account Status) -->
+    <div class="bg-white rounded-3xl p-6 shadow-xs border border-slate-100 flex flex-col items-center justify-center text-center py-8">
+      <h4 class="text-xs font-bold text-slate-400 mb-3">حالة الحساب</h4>
+      <div class="flex items-center gap-2.5 mb-2">
+        <span class="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center ring-4 ring-emerald-100 shadow-xs">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+            <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+          </svg>
+        </span>
+        <span class="text-lg font-black text-emerald-600">الحساب مفعل</span>
+      </div>
+      <p class="text-xs text-slate-500 font-medium mt-1">يمكنك الآن الوصول إلى جميع المحاضرات والاختبارات المتاحة</p>
+    </div>
+  </div>
+
+</div>
+<!-- END: MainContainer -->
+
+<!-- Edit profile / change password (opens when the profile card or the personal-info card is clicked) -->
+<div id="ps-modal" class="{% if form.is_bound or pform.is_bound %}{% else %}hidden {% endif %}fixed inset-0 z-[90] flex items-start sm:items-center justify-center p-4 overflow-y-auto" style="background:rgba(15,23,42,.45)" role="dialog" aria-modal="true">
+  <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 w-full max-w-lg my-6 p-6 relative" dir="rtl">
+    <button type="button" data-ps-close aria-label="إغلاق" class="absolute top-4 left-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 font-bold">✕</button>
+    <h4 class="text-base font-black text-slate-800 mb-4 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-600"></span>تعديل المعلومات الشخصية</h4>
+    <form method="post" enctype="multipart/form-data" data-once>{% csrf_token %}
+      {% if not pform.is_bound %}{% for e in form.non_field_errors %}<p class="ps-err">{{ e }}</p>{% endfor %}{% endif %}
+      {% for f in form %}<div class="ps-field"><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{% if not pform.is_bound %}{% for e in f.errors %}<p class="ps-err">{{ e }}</p>{% endfor %}{% endif %}</div>{% endfor %}
+      <button type="submit" class="w-full py-2.5 rounded-2xl bg-[#545be8] hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all">حفظ التعديلات</button>
+    </form>
+    <h4 class="text-base font-black text-slate-800 mt-7 mb-4 pt-5 border-t border-slate-100 flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-indigo-600"></span>تغيير كلمة المرور</h4>
+    <form method="post" data-once>{% csrf_token %}
+      {% for e in pform.non_field_errors %}<p class="ps-err">{{ e }}</p>{% endfor %}
+      {% for f in pform %}<div class="ps-field"><label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{% for e in f.errors %}<p class="ps-err">{{ e }}</p>{% endfor %}</div>{% endfor %}
+      <button type="submit" class="w-full py-2.5 rounded-2xl bg-[#545be8] hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all">تغيير كلمة المرور</button>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  var m=document.getElementById('ps-modal');
+  function open(){m.classList.remove('hidden');}
+  function close(){m.classList.add('hidden');}
+  document.querySelectorAll('[data-edit-profile]').forEach(function(el){el.addEventListener('click',open);});
+  m.addEventListener('click',function(e){if(e.target===m||e.target.closest('[data-ps-close]'))close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+  setTimeout(function(){document.querySelectorAll('.toast').forEach(function(t){t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(function(){t.remove()},600)})},5200);
+  document.querySelectorAll('form[data-once]').forEach(function(fm){fm.addEventListener('submit',function(){var b=fm.querySelector('button[type=submit]');if(b){setTimeout(function(){b.disabled=true;},10);}});});
+})();
+</script>
+
+</body>
+</html>

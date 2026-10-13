@@ -1,0 +1,128 @@
+{% extends "ui/document.html" %}
+{% load static %}
+{% block title %}{{ q.title }}{% endblock %}
+{% block body_class %}bg-[#f0f4f9] text-slate-800 min-h-screen flex antialiased select-none{% endblock %}
+{% block body %}
+<!-- BEGIN: MainContentArea (التصميم الجديد — بدون اللوحة الجانبية) -->
+<main class="flex-1 flex flex-col p-4 sm:p-6 max-w-7xl mx-auto w-full gap-5 min-w-0">
+
+{% if impersonating %}<div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div>{% endif %}
+{% if preview %}<div class="rounded-2xl border border-blue-200 bg-blue-50 text-blue-900 text-sm px-5 py-3">👁️ وضع المعاينة — الإجابات لن تُحفظ.</div>{% endif %}
+
+<!-- Top Header Bar -->
+{% if user.role == 'student' %}{% include "ui/_student_header.html" with hstyle="margin:0 .5rem .25rem .5rem" hcss="@media (min-width:640px){#student-top-header{margin:-.5rem 0 .25rem 0}}" %}{% else %}<header class="flex flex-wrap items-center justify-between gap-4 bg-white/70 backdrop-blur-sm px-4 sm:px-6 py-3.5 rounded-2xl border border-blue-50/80 shadow-sm" data-purpose="top-navigation-bar">
+  <div class="flex items-center gap-3.5" data-purpose="user-info">
+    {% if ui_student_profile and ui_student_profile.avatar %}
+    <img src="{{ ui_student_profile.avatar.url }}" alt="" class="w-12 h-12 rounded-full object-cover border-2 border-blue-500 shadow-sm flex-shrink-0">
+    {% else %}
+    <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-500 shadow-sm flex-shrink-0 bg-blue-100 flex items-center justify-center">
+      <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path clip-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" fill-rule="evenodd"></path></svg>
+    </div>
+    {% endif %}
+    <div class="flex flex-col">
+      <h2 class="text-base font-bold text-slate-800 leading-tight m-0">{{ user.full_name }}</h2>
+      <span class="text-xs font-semibold text-slate-400 mt-0.5">{% if user.role == 'student' %}طالب{% if ui_student_profile %} - {{ ui_student_profile.get_grade_display }}{% endif %}{% else %}معاينة المدرّس{% endif %}</span>
+    </div>
+  </div>
+  <div class="flex items-center gap-4 flex-1 max-w-md justify-end">
+    <form action="{% if user.role == 'student' %}{% url 'uikit:student_search' %}{% else %}{% url 'uikit:teacher_search' %}{% endif %}" method="get" class="relative w-full max-w-xs">
+      <input name="q" class="w-full bg-white text-xs text-slate-700 placeholder:text-slate-400 pr-10 pl-4 py-2 rounded-full border border-slate-200 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm" placeholder="ابحث في الدروس أو المحتوى .." type="search">
+      <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </div>
+    </form>
+    <a href="{% if user.role == 'student' %}{% url 'student:notifications' %}{% else %}{% url 'teacher:messages' %}{% endif %}" class="relative hover:scale-105 transition-transform" aria-label="الإشعارات">
+      <div class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-blue-600 shadow-sm">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+      </div>
+      {% if ui_unread %}<span class="absolute -top-1 -right-1 bg-red-500 text-white font-num font-bold text-[11px] min-w-[16px] h-4 px-1 rounded-full flex items-center justify-center border-2 border-white">{{ ui_unread }}</span>{% endif %}
+    </a>
+  </div>
+</header>{% endif %}
+
+<!-- BEGIN: QuizHeaderBanner -->
+<section class="bg-white rounded-3xl px-5 sm:px-8 py-6 min-h-[110px] border border-slate-100 shadow-sm flex flex-wrap items-center justify-between gap-6" data-purpose="quiz-progress-banner">
+  <div class="flex flex-col gap-2.5 flex-1 min-w-[220px] max-w-lg">
+    <p class="text-xs font-bold text-slate-400 m-0 truncate">{{ q.title }}{% if q.location %} — {{ q.location }}{% endif %}</p>
+    <div class="text-right">
+      <h1 class="text-2xl font-black text-[#193a6f] tracking-tight flex items-center gap-1.5 m-0">
+        <span>السؤال</span>
+        <span id="qcur" class="font-num text-[26px] font-extrabold text-[#245ce6]">1</span>
+        <span class="text-slate-500 font-semibold text-lg mx-0.5">من</span>
+        <span id="qtotal" class="font-num text-[26px] font-extrabold text-slate-700">{{ questions|length }}</span>
+      </h1>
+    </div>
+    <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex shadow-inner" style="direction: rtl;"><div id="qbar" class="h-full rounded-full transition-all duration-300" style="width: 0%; background: linear-gradient(to left, #4ade80, #22c55e); margin-right: 0; margin-left: auto;"></div></div>
+  </div>
+  {% if seconds %}
+  <div class="flex items-center justify-end">
+    <div class="bg-gradient-to-r from-[#ebf3ff] to-[#f2f7ff] text-[#1d5bf0] px-7 py-3 rounded-2xl flex items-center gap-3.5 border-2 border-blue-200/80 shadow-md shadow-blue-500/5 min-h-[70px]">
+      <img alt="مؤقت الاختبار" class="w-8 h-8 object-contain flex-shrink-0 drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAGFWPf2f5918FVFE-JoGsPVyMDe_gn5TeCIVfRWscY8T0adHG9eCT56_yk-2kH2nVkqhHAJ1MB9D6iQBwpw-WqDALrmeAHG7SjqlXhDT5TDMRZxcbKa5gWvdQ4bOuXQ3v8G6p1ebysQSV1ErtxuapRa4mk5qOYRZi4mZEqKc_GF_D1VgcgiWJYCEY420rWw9vwEhofIrR2iWVjvBNgLhtEhyZPF2peZ-GaWpEAJ3XfJeiEa_6S3AxStEpQOo3U_kzxWkI"/>
+      <span id="qtimer" class="font-num text-3xl font-extrabold tracking-wider text-[#1d5bf0]">--:--</span>
+    </div>
+  </div>
+  {% endif %}
+</section>
+<!-- END: QuizHeaderBanner -->
+
+<!-- BEGIN: MainQuizWorkspace -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+  <!-- Active Question Container -->
+  <form method="post" id="quizForm" class="lg:col-span-8 flex flex-col gap-5" data-purpose="question-area" data-seconds="{{ seconds }}" {% if preview %}data-preview="1"{% endif %}>{% csrf_token %}
+    {% for qq in questions %}
+    <div class="qitem bg-white rounded-3xl p-5 sm:p-7 border border-slate-100 shadow-sm min-h-[420px] flex-col {% if forloop.first %}flex{% else %}hidden{% endif %}">
+      <div class="flex flex-wrap items-center gap-2 mb-6">
+        <span class="inline-block bg-[#e8f1fd] text-[#2b66ff] px-4 py-1.5 rounded-xl font-bold text-xs">{% if qq.qtype == 'tf' %}صح / خطأ{% elif qq.qtype == 'essay' %}سؤال مقالي{% else %}اختيار من متعدد{% endif %}</span>
+        <span class="inline-block bg-purple-50 text-purple-700 px-3 py-1.5 rounded-xl font-bold text-xs">{{ qq.get_difficulty_display }}</span>
+        <span class="inline-block bg-slate-100 text-slate-600 px-3 py-1.5 rounded-xl font-bold text-xs"><span class="font-num">{{ qq.points }}</span> درجة</span>
+      </div>
+      {% if qq.image %}<img src="{{ qq.image.url }}" class="max-h-56 rounded-xl mb-5 self-start" alt="">{% endif %}
+      <div class="mb-8" dir="auto">
+        <p class="text-slate-800 text-lg font-bold tracking-tight font-num m-0" style="font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif;">{{ qq.text }}</p>
+      </div>
+      {% if qq.qtype == 'essay' %}
+      <div class="flex flex-col gap-3.5" data-purpose="essay-answer">
+        <textarea name="q_{{ qq.id }}" rows="7" dir="auto" placeholder="اكتب إجابتك هنا..." class="essay-input w-full rounded-2xl border-2 border-slate-200 bg-white p-4 text-base font-semibold text-slate-700 focus:outline-none focus:border-[#2b66ff]" {% if preview %}disabled{% endif %}></textarea>
+      </div>
+      {% else %}
+      <div class="flex flex-col gap-3.5" data-purpose="options-list">
+        {% for c in qq.choices.all %}
+        <label class="flex items-center gap-4 p-3.5 rounded-2xl border-2 border-slate-200 bg-white hover:border-slate-300 has-[:checked]:border-[#2b66ff] has-[:checked]:bg-[#f8fbff] cursor-pointer transition-all">
+          <input type="radio" class="sr-only peer" name="q_{{ qq.id }}" value="{{ c.id }}" {% if preview %}disabled{% endif %}>
+          <span class="w-10 h-10 rounded-full bg-[#edf3fc] text-[#345995] peer-checked:bg-[#2b66ff] peer-checked:text-white flex items-center justify-center font-num font-extrabold text-base flex-shrink-0 transition-colors">{% cycle 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' %}</span>
+          <span class="text-base font-semibold text-slate-700 peer-checked:font-bold peer-checked:text-slate-800" dir="auto" style="font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif;">{{ c.text }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if qq.hint %}<details class="text-sm text-slate-500 mt-6"><summary class="cursor-pointer font-bold text-blue-600">💡 تلميح</summary><p class="mt-2 mb-0">{{ qq.hint }}</p></details>{% endif %}
+    </div>
+    {% endfor %}
+
+    <!-- Navigation Buttons -->
+    <div class="flex items-center justify-between pt-1" data-purpose="quiz-controls">
+      <div class="flex items-center">
+        <button class="bg-[#245ce6] hover:bg-[#1c4fd3] text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 shadow-lg shadow-blue-500/25 transition-all text-sm" type="button" id="qnext">
+          <span>التالي</span>
+          <svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+        </button>
+        <button class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-2xl font-bold items-center gap-2 shadow-lg shadow-emerald-600/25 transition-all text-sm disabled:opacity-50" type="submit" id="qsubmit" {% if preview %}disabled{% endif %}>تسليم الاختبار ✓</button>
+      </div>
+      <button class="bg-white border-2 border-blue-200 text-[#245ce6] hover:bg-blue-50 px-8 py-3 rounded-2xl font-bold flex items-center gap-2 transition-all text-sm shadow-sm disabled:opacity-40 disabled:cursor-not-allowed" type="button" id="qprev" disabled>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+        <span>السابق</span>
+      </button>
+    </div>
+  </form>
+
+  <!-- Question Palette / Grid -->
+  <section class="lg:col-span-4 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm flex flex-col items-center" data-purpose="questions-grid-palette">
+    <h3 class="text-center font-extrabold text-lg text-[#163a70] mb-6 mt-0">قائمة الأسئلة</h3>
+    <div id="qdots" class="grid grid-cols-3 gap-3.5 w-full max-w-[240px]" dir="ltr"></div>
+    <p class="text-[11px] text-slate-500 mt-5 mb-0 text-center" id="qcount"></p>
+  </section>
+</div>
+<!-- END: MainQuizWorkspace -->
+</main>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/quiz.js' %}"></script>{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "owner/base.html" %}
+{% block title %}الإشعارات والإعلانات{% endblock %}
+{% block topbar_title %}الإشعارات والإعلانات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>الإشعارات والإعلانات العامة</h1></div>
+<div class="card mb"><h3>إعلان جديد لكل المنصة</h3>
+<form method="post" action="{% url 'owner:notification_new' %}" data-once>{% csrf_token %}
+  <div class="field"><label>الجمهور</label><select class="input" name="audience"><option value="all">الجميع</option><option value="students">الطلاب فقط</option><option value="teachers">المدرّسون فقط</option></select></div>
+  <div class="field"><label>العنوان</label><input class="input" name="title" required></div>
+  <div class="field"><label>النص</label><textarea class="input" name="body" rows="3" required></textarea></div>
+  <button class="btn" type="submit">إرسال الإعلان</button>
+</form></div>
+<h3>الإعلانات السابقة</h3>
+{% for a in items %}<div class="card mb"><div class="row spread"><b>{{ a.title }}</b><span class="badge">{{ a.get_audience_display }}</span></div><p class="small muted">{{ a.body|truncatechars:120 }}</p></div>{% empty %}<p class="muted">لا توجد إعلانات بعد.</p>{% endfor %}
+{% if contacts %}<h3 class="mt">رسائل التواصل الواردة</h3>{% for c in contacts %}<div class="card mb"><div class="row spread"><b>{{ c.name|default:c.phone }}</b><span class="small muted">{{ c.created_at|date:"Y-m-d" }} — {{ c.get_kind_display }}</span></div><p class="small">{{ c.message|truncatechars:150 }}</p></div>{% endfor %}{% endif %}
+{% endblock %}

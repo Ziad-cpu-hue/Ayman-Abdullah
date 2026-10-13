@@ -1,0 +1,17 @@
+{% extends "owner/base.html" %}
+{% block title %}التحليلات{% endblock %}
+{% block topbar_title %}التحليلات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>تحليلات المنصة</h1></div>
+<div class="grid g3 mb">
+  <div class="card stat"><span>طلاب جدد (30 يوم)</span><b>{{ stats.new_students_30 }}</b></div>
+  <div class="card stat teal"><span>طلاب نشطون</span><b>{{ stats.active_students }}</b></div>
+  <div class="card stat red"><span>اشتراكات متوقفة مؤخرًا</span><b>{{ stats.stopped }}</b></div>
+</div>
+<div class="split">
+  <div class="card mb"><h3>أنشط المدرّسين (بعدد الطلاب النشطين)</h3>{% for t in top_teachers %}<div class="row spread small" style="padding:6px 0;border-bottom:1px dashed var(--line)"><span>{{ t.name }}</span><span class="badge">{{ t.n }} طالب</span></div>{% empty %}<p class="muted small">لا توجد بيانات.</p>{% endfor %}</div>
+  <div class="card mb"><h3>الدروس الأكثر إكمالًا</h3>{% for l in top_lessons %}<div class="row spread small" style="padding:6px 0;border-bottom:1px dashed var(--line)"><span>{{ l.lesson__title }}</span><span class="badge">{{ l.n }}</span></div>{% empty %}<p class="muted small">لا توجد بيانات.</p>{% endfor %}</div>
+</div>
+<div class="card"><h3>الأسئلة الأكثر خطأً على مستوى المنصة</h3>{% for q in hardest_q %}<div class="row spread small" style="padding:6px 0;border-bottom:1px dashed var(--line)"><span>{{ q.text|truncatechars:70 }}</span><span class="badge red">{{ q.wrong }}</span></div>{% empty %}<p class="muted small">لا توجد بيانات كافية.</p>{% endfor %}</div>
+<div class="grid g2 mt"><div class="card stat"><span>دروس أُكملت</span><b>{{ completion_avg }}</b></div><div class="card stat"><span>محاولات اختبار مسلَّمة</span><b>{{ exam_completion }}</b></div></div>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "owner/base.html" %}
+{% block title %}المساعد الذكي — مفاتيح الذكاء الاصطناعي{% endblock %}
+{% block topbar_title %}المساعد الذكي{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>المساعد الذكي — مفاتيح الذكاء الاصطناعي</h1><a class="btn" href="{% url 'assistant:owner_key_new' %}">+ إضافة مفتاح</a></div>
+
+<div class="grid mb" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px">
+  <div class="stat teal"><div class="small muted">المفاتيح المتاحة الآن</div><div style="font-size:28px;font-weight:800">{{ n_active }} <span class="small muted">/ {{ keys|length }}</span></div></div>
+  <div class="stat"><div class="small muted">حالة المساعد</div><div style="font-size:18px;font-weight:800;margin-top:6px">{% if cfg.is_enabled %}<span class="badge green">يعمل</span>{% else %}<span class="badge red">متوقف</span>{% endif %}</div></div>
+</div>
+
+<div class="card mb">
+  <p class="small muted" style="margin-top:0">يوزّع النظام الطلبات تلقائيًا على كل المفاتيح المفعّلة بالتناوب (الأقل استخدامًا أولًا). إذا نفد حدّ مفتاح أو فشل يتوقف مؤقتًا ويتحول الطلب فورًا إلى مفتاح آخر دون أن يلاحظ الطالب. أضف عدة مفاتيح لتتحمل الضغط المرتفع.
+  {% if not keys %}<br><b>لا توجد مفاتيح هنا بعد:</b> سيستخدم المساعد مفتاحي Groq/Anthropic القديمين من «الإعدادات» إن وُجدا.{% endif %}</p>
+  <form method="post" action="{% url 'assistant:owner_settings' %}" class="row" style="gap:14px;align-items:flex-end;flex-wrap:wrap">{% csrf_token %}
+    <label class="row" style="gap:8px;align-items:center"><input type="checkbox" name="is_enabled" value="1" {% if cfg.is_enabled %}checked{% endif %}> تشغيل المساعد للطلاب والمدرّسين</label>
+    <div class="field" style="margin:0"><label>حدّ الرسائل لكل مستخدم في الساعة (0 = بلا حدّ)</label><input class="input" type="number" min="0" max="1000" name="hourly_limit" value="{{ cfg.hourly_limit }}" style="width:120px"></div>
+    <button class="btn sm" type="submit">حفظ</button>
+  </form>
+</div>
+
+<div class="card mb">
+  <h3 style="margin-top:0">شروحات الأسئلة بالعامية المصرية (تُولَّد مرة واحدة ويراها كل الطلاب)</h3>
+  <div class="row" style="gap:16px;flex-wrap:wrap;align-items:center">
+    <div><b style="font-size:22px">{{ ex_ready }}</b> <span class="muted">/ {{ ex_total }} سؤال جاهز ({{ ex_pct }}%)</span></div>
+    {% if ex_busy %}<span class="badge amber">{{ ex_busy }} بالانتظار/قيد التوليد</span>{% endif %}
+    {% if ex_failed %}<span class="badge red">{{ ex_failed }} فشل</span>{% endif %}
+    {% if ex_running %}<span class="badge teal">التوليد يعمل الآن...</span>{% endif %}
+  </div>
+  <div style="background:#e5e7eb;border-radius:99px;height:8px;margin:12px 0;overflow:hidden"><div style="background:#16a34a;height:100%;width:{{ ex_pct }}%"></div></div>
+  <p class="small muted" style="margin:0 0 10px">تبدأ تلقائيًا عند إضافة سؤال أو تعديله في اختبار منشور. للأسئلة الموجودة مسبقًا اضغط «توليد الناقص» مرة واحدة.{% if ex_last_error %}<br><span style="color:#b91c1c">آخر خطأ: {{ ex_last_error }}</span>{% endif %}</p>
+  <form method="post" action="{% url 'assistant:owner_explain_run' %}" class="row" style="gap:8px;flex-wrap:wrap">{% csrf_token %}
+    <button class="btn sm" name="mode" value="missing" type="submit">توليد الناقص</button>
+    {% if ex_failed %}<button class="btn sm ghost" name="mode" value="retry" type="submit">إعادة محاولة الفاشل</button>{% endif %}
+    <button class="btn sm ghost" name="mode" value="force" type="submit" onclick="return confirm('إعادة توليد شروح كل الأسئلة ستستهلك طلبات كثيرة. متأكد؟')">إعادة توليد الكل</button>
+  </form>
+</div>
+
+<div class="tablewrap"><table class="t"><thead><tr>
+  <th>الاسم</th><th>المزوّد / النموذج</th><th>المفتاح</th><th>الحالة</th><th>اليوم</th><th>الإجمالي</th><th>آخر خطأ</th><th></th>
+</tr></thead><tbody>
+{% for k in keys %}<tr>
+  <td><b>{{ k.name }}</b></td>
+  <td>{{ k.get_provider_display }}<div class="small muted ltr">{{ k.effective_model|default:"—" }}</div></td>
+  <td class="ltr small">{{ k.masked_key }}</td>
+  <td>{% if k.state == 'active' %}<span class="badge green">يعمل</span>{% elif k.state == 'cooldown' %}<span class="badge amber">متوقف مؤقتًا</span><div class="small muted">حتى {{ k.cooldown_until|time:"H:i" }}</div>{% elif k.state == 'limit' %}<span class="badge amber">بلغ الحدّ اليومي</span>{% else %}<span class="badge gray">معطّل</span>{% endif %}</td>
+  <td>{{ k.used_today_count }}{% if k.daily_limit %} / {{ k.daily_limit }}{% endif %}</td>
+  <td>{{ k.total_requests }}{% if k.total_failures %} <span class="small" style="color:#b91c1c">({{ k.total_failures }} فشل)</span>{% endif %}</td>
+  <td class="small" style="max-width:240px">{% if k.last_error %}<span style="color:#b91c1c">{{ k.last_error|truncatechars:90 }}</span>{% else %}<span class="muted">—</span>{% endif %}</td>
+  <td style="white-space:nowrap">
+    <form method="post" action="{% url 'assistant:owner_key_test' k.pk %}" style="display:inline">{% csrf_token %}<button class="btn sm teal" type="submit">اختبار</button></form>
+    <form method="post" action="{% url 'assistant:owner_key_toggle' k.pk %}" style="display:inline">{% csrf_token %}<button class="btn sm ghost" type="submit">{% if k.is_active %}إيقاف{% else %}تفعيل{% endif %}</button></form>
+    {% if k.in_cooldown %}<form method="post" action="{% url 'assistant:owner_key_reset' k.pk %}" style="display:inline">{% csrf_token %}<button class="btn sm ghost" type="submit">استئناف</button></form>{% endif %}
+    <a class="btn sm ghost" href="{% url 'assistant:owner_key_edit' k.pk %}">تعديل</a>
+    <form method="post" action="{% url 'assistant:owner_key_delete' k.pk %}" style="display:inline" onsubmit="return confirm('حذف هذا المفتاح نهائيًا؟')">{% csrf_token %}<button class="btn sm danger" type="submit">حذف</button></form>
+  </td>
+</tr>{% empty %}<tr><td colspan="8" class="center muted">لم تُضف مفاتيح بعد.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

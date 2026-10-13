@@ -1,0 +1,39 @@
+{% extends "owner/base.html" %}
+{% block title %}إعدادات المنصة{% endblock %}
+{% block topbar_title %}إعدادات المنصة{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>إعدادات المنصة</h1></div>
+<div class="card mb">
+  <form method="post" data-once>{% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-error">{% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}</div>{% endif %}
+    {% for f in form %}{% if f.name != 'groq_api_key' and f.name != 'anthropic_api_key' %}{% if f.is_hidden %}{{ f }}{% else %}
+    <div class="field {% if f.field.widget.input_type == 'checkbox' %}checkrow{% endif %}">
+      {% if f.field.widget.input_type == 'checkbox' %}{{ f }} <label for="{{ f.id_for_label }}">{{ f.label }}</label>
+      {% else %}<label for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}{% endif %}
+      {% if f.help_text %}<div class="help">{{ f.help_text }}</div>{% endif %}
+      {{ f.errors }}
+    </div>{% endif %}{% endif %}{% endfor %}
+
+    <h3 class="mt row spread" style="align-items:center">
+      <span>🤖 مفاتيح الذكاء الاصطناعي</span>
+      {% if ai_status == 'groq' %}<span class="badge" style="background:#dcfce7;color:#15803d">مفعّل — Groq</span>
+      {% elif ai_status == 'anthropic' %}<span class="badge" style="background:#dcfce7;color:#15803d">مفعّل — Anthropic</span>
+      {% else %}<span class="badge" style="background:#fef9c3;color:#a16207">غير مفعّل بعد</span>{% endif %}
+    </h3>
+    <p class="small muted">هذا المفتاح يشغّل ميزتَي «استيراد المفردات» و«هيكلة شرح الدرس» بالذكاء الاصطناعي في لوحة كل معلم على المنصة. بدونه تعمل الميزتان بمحلّل نصي بسيط تلقائيًا دون توليد أمثلة ذكية. احصل على مفتاح Groq مجانًا من <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> ثم الصقه هنا واحفظ — يعمل فورًا دون الحاجة لإعادة تشغيل الخادم.</p>
+    <div class="field"><label for="{{ form.groq_api_key.id_for_label }}">{{ form.groq_api_key.label }}</label>{{ form.groq_api_key }}
+      {% if form.groq_api_key.help_text %}<div class="help">{{ form.groq_api_key.help_text }}</div>{% endif %}{{ form.groq_api_key.errors }}</div>
+    <div class="field"><label for="{{ form.anthropic_api_key.id_for_label }}">{{ form.anthropic_api_key.label }}</label>{{ form.anthropic_api_key }}
+      {% if form.anthropic_api_key.help_text %}<div class="help">{{ form.anthropic_api_key.help_text }}</div>{% endif %}{{ form.anthropic_api_key.errors }}</div>
+
+    <button class="btn mt" type="submit">حفظ الإعدادات</button>
+  </form>
+</div>
+
+{% if user.role == 'owner' %}
+<div class="row spread mb"><h3 style="margin:0">فريق العمل (الموظفون)</h3><div class="row"><a class="btn sm ghost" href="{% url 'owner:staff_permissions' %}">🔑 صلاحيات الفريق</a><a class="btn sm" href="{% url 'owner:staff_new' %}">+ إضافة عضو</a></div></div>
+<div class="tablewrap"><table class="t"><thead><tr><th>الاسم</th><th>الهاتف</th><th>الصلاحية</th></tr></thead><tbody>
+{% for u in staff %}<tr><td>{{ u.full_name }}</td><td class="ltr">{{ u.phone }}</td><td>{{ u.get_staff_role_display }}</td></tr>{% empty %}<tr><td colspan="3" class="center muted">لا يوجد أعضاء فريق بعد.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endif %}
+{% endblock %}

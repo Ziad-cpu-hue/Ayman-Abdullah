@@ -1,0 +1,15 @@
+{% extends "site/public_base.html" %}
+{% block title %}الأسعار{% endblock %}
+{% block main %}
+<section class="section"><div class="wrap">
+  <h2>سعر واضح وبسيط</h2><p class="sub">تدفع اشتراكًا شهريًا صغيرًا لكل مدرّس تشترك معه. لا رسوم خفية.</p>
+  <div class="card price-card">
+    <span class="badge">اشتراك شهري</span>
+    <div class="amount mt">{{ site.default_monthly_price|floatformat:"-2" }} <small style="font-size:1.1rem">جنيه / شهر</small></div>
+    <p class="muted">لكل مدرّس (قد يختلف السعر من مدرّس لآخر وسيظهر لك قبل الاشتراك)</p>
+    <ul><li>وصول كامل لكل دورات المدرّس ودروسه</li><li>كويزات وواجبات مع تصحيح فوري</li><li>تحليل الأخطاء وسجل «أخطائي»</li><li>بنك الأسئلة والمفردات</li><li>متابعة التقدّم والتواصل مع المدرّس</li><li>معاينة مجانية قبل الاشتراك</li></ul>
+    <a class="btn lg block" href="{% url 'register' %}">ابدأ الآن</a>
+    <p class="small muted mt">هذا الرسم ثمن الخدمة الرقمية وليس ثمن الدرس أو الحصة نفسها.</p>
+  </div>
+</div></section>
+{% endblock %}

@@ -1,0 +1,302 @@
+{% extends "student/base.html" %}
+{% load ui_extras %}
+{% block title %}{{ label }} — {{ l.title }}{% endblock %}
+{% block head %}
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ألوان وخطوط التصميم الجديد لصفحة الاختبارات (محصورة داخل .qt-page) */
+.qt-page .text-brand-navy{color:#173A73}
+.qt-page .text-brand-gray{color:#6F7F9A}
+.qt-page .font-num{font-family:'Barlow Condensed','Rajdhani',sans-serif;font-feature-settings:"tnum" 1,"lnum" 1;letter-spacing:.02em}
+.qt-page{color:#173A73}
+</style>
+{% endblock %}
+{% block page %}
+{% if kind_name == 'tests' %}{# NEW DESIGN: صفحة الاختبارات #}
+<div class="qt-page w-full max-w-[1440px] mx-auto">
+<!-- BEGIN: PageTitleArea -->
+<section class="flex flex-col items-start gap-1 mb-8">
+<div class="flex items-center gap-3">
+<h1 class="text-3xl lg:text-4xl font-black text-brand-navy">الاختبارات</h1>
+<!-- Large Clipboard Test Icon -->
+<div class="text-blue-600">
+<svg class="w-8 h-8 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path>
+<rect height="4" rx="2" width="6" x="9" y="3"></rect>
+<line x1="9" x2="15" y1="12" y2="12"></line>
+<line x1="9" x2="13" y1="16" y2="16"></line>
+</svg>
+</div>
+</div>
+<p class="text-brand-gray text-base font-medium">اختر الاختبار الذي تريد البدء به أو عرض نتائجك السابقة.</p>
+</section>
+<!-- END: PageTitleArea -->
+<!-- BEGIN: StatsOverviewGrid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+<!-- Stat Card 1: Total Tests (Purple Soft Tinted) -->
+<div class="bg-[rgba(139,92,246,0.08)] rounded-2xl border border-[#DDD6FE] p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition">
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-purple-600 mb-3">
+<!-- Trophy Icon -->
+<svg class="w-6 h-6 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2"></path>
+<path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2"></path>
+<path d="M4 3h16v6a8 8 0 0 1-16 0V3z"></path>
+<path d="M12 17v4"></path>
+<path d="M8 21h8"></path>
+</svg>
+</div>
+<span class="font-num text-4xl font-bold text-brand-navy mb-1 leading-none">{{ stats.total }}</span>
+<span class="text-brand-gray font-medium text-sm">إجمالي الاختبارات</span>
+</div>
+<!-- Stat Card 2: Completed Tests (Emerald Soft Tinted) -->
+<div class="bg-[rgba(34,197,94,0.08)] rounded-2xl border border-[#A7F3D0] p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition">
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-emerald-500 mb-3">
+<!-- Checkmark Icon -->
+<svg class="w-6 h-6 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<span class="font-num text-4xl font-bold text-brand-navy mb-1 leading-none">{{ stats.done }}</span>
+<span class="text-brand-gray font-medium text-sm">الاختبارات التي تم أداؤها</span>
+</div>
+<!-- Stat Card 3: In Progress Tests (Blue Soft Tinted) -->
+<div class="bg-[rgba(59,130,246,0.08)] rounded-2xl border border-[#BFDBFE] p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition">
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-blue-500 mb-3">
+<!-- Clock Icon -->
+<svg class="w-6 h-6 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</div>
+<span class="font-num text-4xl font-bold text-brand-navy mb-1 leading-none">{{ stats.in_progress }}</span>
+<span class="text-brand-gray font-medium text-sm">الاختبارات قيد المحاولة</span>
+</div>
+<!-- Stat Card 4: Not Taken Tests (Rose Soft Tinted) -->
+<div class="bg-[rgba(244,63,94,0.08)] rounded-2xl border border-[#FECDD3] p-6 flex flex-col items-center justify-center text-center shadow-sm hover:shadow-md transition">
+<div class="w-12 h-12 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-rose-500 mb-3">
+<!-- Close / Cross Icon -->
+<svg class="w-6 h-6 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<line x1="18" x2="6" y1="6" y2="18"></line>
+<line x1="6" x2="18" y1="6" y2="18"></line>
+</svg>
+</div>
+<span class="font-num text-4xl font-bold text-rose-500 mb-1 leading-none">{{ stats.not_taken }}</span>
+<span class="text-brand-gray font-medium text-sm">الاختبارات لم يتم أداؤها</span>
+</div>
+</section>
+
+{% if not can_take %}<div class="rounded-2xl border border-blue-200 bg-blue-50 text-blue-900 text-sm px-5 py-3 mb-5">تحتاج اشتراكاً نشطاً لحل {{ label }}. <a class="font-bold text-blue-700" href="{% url 'student:subscribe' t.teacher_code %}">اشترك الآن ←</a></div>{% endif %}
+<!-- BEGIN: TestListContainer -->
+<section class="bg-white rounded-3xl border border-[#E2EAF8] p-6 lg:p-8 shadow-sm">
+<!-- Container Header -->
+<div class="mb-6">
+<h2 class="text-xl lg:text-2xl font-black text-brand-navy">قائمة الاختبارات</h2>
+</div>
+<div class="space-y-4">
+{% for r in rows %}
+<!-- ======================= {{ r.q.title }} ======================= -->
+<article class="border border-[#E2EAF8] rounded-2xl p-5 lg:p-6 bg-white hover:border-blue-200 transition-all">
+<div class="flex flex-col xl:flex-row items-center justify-between gap-6">
+<!-- 1. Right Info: Icon, Title, Description, Date -->
+<div class="flex items-start gap-4 flex-1 w-full xl:w-auto">
+<div class="w-14 h-14 rounded-2xl {% cycle 'bg-blue-50 text-blue-600' 'bg-purple-50 text-purple-600' 'bg-teal-50 text-emerald-500' %} flex items-center justify-center flex-shrink-0">
+<svg class="w-7 h-7 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<polyline points="14 2 14 8 20 8"></polyline>
+<line x1="16" x2="8" y1="13" y2="13"></line>
+<line x1="16" x2="8" y1="17" y2="17"></line>
+<polyline points="10 9 9 9 8 9"></polyline>
+</svg>
+</div>
+<div class="flex flex-col">
+<h3 class="text-lg font-bold text-brand-navy leading-snug">{{ r.q.title }}</h3>
+{% if r.q.description %}<p class="text-sm text-brand-gray mt-0.5">{{ r.q.description }}</p>{% endif %}
+<div class="flex items-center gap-1.5 text-xs text-blue-500 font-medium mt-2">
+<svg class="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+<line x1="16" x2="16" y1="2" y2="6"></line>
+<line x1="8" x2="8" y1="2" y2="6"></line>
+<line x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+<span class="flex items-center gap-1">تاريخ الإضافة: <span class="font-num text-sm tracking-wider font-semibold">{{ r.q.created_at|date:"Y/m/d" }}</span></span>
+</div>
+</div>
+</div>
+<!-- 2. Middle Stats (Attempts, Total Score, Questions Count) -->
+<div class="bg-[#F8FAFD] border border-[#E8EFF9] rounded-2xl px-6 py-3 flex items-center justify-between gap-6 sm:gap-10 w-full xl:w-auto">
+<!-- Attempts -->
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1 text-xs text-brand-gray mb-1">
+<svg class="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+</svg>
+<span class="">عدد المحاولات</span>
+</div>
+<span class="font-num text-2xl font-bold text-brand-navy leading-none">{{ r.tries }}{% if r.q.max_attempts %}<span class="text-base text-brand-gray">/{{ r.q.max_attempts }}</span>{% endif %}</span>
+</div>
+<div class="w-px h-8 bg-slate-200"></div>
+<!-- Total Score -->
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1 text-xs text-brand-gray mb-1">
+<svg class="w-3.5 h-3.5 fill-current text-blue-500" viewBox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+<span class="">الدرجة الكلية</span>
+</div>
+<span class="font-num text-2xl font-bold text-brand-navy leading-none">{{ r.points }}</span>
+</div>
+<div class="w-px h-8 bg-slate-200"></div>
+<!-- Question Count -->
+<div class="flex flex-col items-center">
+<div class="flex items-center gap-1 text-xs text-brand-gray mb-1">
+<svg class="w-3.5 h-3.5 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+<line x1="12" x2="12.01" y1="17" y2="17"></line>
+</svg>
+<span class="">عدد الأسئلة</span>
+</div>
+<span class="font-num text-2xl font-bold text-brand-navy leading-none">{{ r.n }}</span>
+</div>
+</div>
+<!-- 3. Circular Progress Ring -->
+{% if r.last %}
+<div class="flex-shrink-0 flex items-center justify-center p-2.5 rounded-2xl bg-[#ECFDF5]/70 border border-[#A7F3D0]/60 shadow-sm">
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
+<defs>
+<linearGradient id="grad{{ forloop.counter }}" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#22C55E"></stop>
+<stop offset="100%" stop-color="{% if forloop.counter|divisibleby:2 %}#10B981{% else %}#14B8A6{% endif %}"></stop>
+</linearGradient>
+</defs>
+<!-- Track -->
+<circle cx="40" cy="40" fill="none" r="32" stroke="#E2E8F0" stroke-width="8.5"></circle>
+<!-- Progress Bar -->
+<circle cx="40" cy="40" fill="none" r="32" stroke="url(#grad{{ forloop.counter }})" stroke-dasharray="201.06" stroke-dashoffset="{{ r.ring_offset|stringformat:'s'|cut:',' }}" stroke-linecap="round" stroke-width="8.5"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-num text-xl font-bold text-brand-navy leading-none">{{ r.last_pct }}%</span>
+<span class="text-[10px] text-brand-gray font-semibold mt-0.5">آخر نتيجة</span>
+</div>
+</div>
+</div>
+{% else %}
+<div class="flex-shrink-0 flex items-center justify-center p-2.5 rounded-2xl bg-slate-100/70 border border-slate-200 shadow-sm">
+<div class="relative w-20 h-20 flex items-center justify-center">
+<svg class="w-20 h-20 transform -rotate-90" viewBox="0 0 80 80">
+<!-- Track only -->
+<circle cx="40" cy="40" fill="none" r="32" stroke="#E2E8F0" stroke-width="8.5"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-num text-2xl font-bold text-brand-gray leading-none">—</span>
+<span class="text-[10px] text-brand-gray font-semibold mt-0.5">لم يتم الأداء</span>
+</div>
+</div>
+</div>
+{% endif %}
+<!-- 4. Action Buttons -->
+<div class="flex flex-col gap-2 w-full xl:w-44 flex-shrink-0">
+{% if r.last %}
+<a href="{% url 'student:result' t.teacher_code r.last.pk %}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow-sm transition no-underline">
+<svg class="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<span class="">عرض النتيجة</span>
+</a>
+{% if r.startable and can_take %}
+<a href="{% url 'student:quiz' t.teacher_code r.q.pk %}" class="w-full bg-white hover:bg-blue-50 border border-blue-600 text-blue-600 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm transition no-underline">
+<svg class="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+</svg>
+<span class="">إعادة المحاولة</span>
+</a>
+{% else %}
+<span class="w-full bg-slate-100 border border-slate-200 text-slate-400 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm">{% if r.exhausted %}استنفدت المحاولات{% elif r.closed %}انتهى الموعد{% elif not r.n %}لا توجد أسئلة بعد{% else %}يتطلب اشتراكاً{% endif %}</span>
+{% endif %}
+{% else %}
+{% if r.startable and can_take %}
+<a href="{% url 'student:quiz' t.teacher_code r.q.pk %}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow-sm transition no-underline">
+<svg class="w-4 h-4 fill-current rotate-180" viewBox="0 0 24 24"><path d="M7.05 3.606c-.84-.504-1.92.1-1.92 1.082v14.624c0 .982 1.08 1.586 1.92 1.082l12.19-7.312a1.25 1.25 0 0 0 0-2.164L7.05 3.606z"></path></svg>
+<span class="">بدء الاختبار</span>
+</a>
+{% else %}
+<span class="w-full bg-slate-100 border border-slate-200 text-slate-400 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm">{% if not r.n %}لا توجد أسئلة بعد{% elif r.exhausted %}استنفدت المحاولات{% elif r.closed %}انتهى الموعد{% else %}يتطلب اشتراكاً{% endif %}</span>
+{% endif %}
+{% endif %}
+</div>
+<!-- 5. Status Badge & Results Link -->
+{% if r.last %}
+<div class="bg-[#F0FDF4] border border-[#DCFCE7] rounded-2xl p-4 flex flex-col items-center justify-center text-center w-full xl:w-36 flex-shrink-0">
+<div class="flex items-center gap-1.5 text-emerald-600 font-bold text-xs mb-1">
+<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
+</svg>
+<span class="">تم الأداء</span>
+</div>
+<span class="text-xs text-brand-gray font-medium mb-1">النتيجة: <span class="font-num text-sm font-bold text-emerald-700">{{ r.best }}%</span></span>
+<a class="text-xs text-emerald-600 font-bold hover:underline flex items-center gap-1 no-underline" href="{% url 'student:result' t.teacher_code r.last.pk %}">
+<span class="">عرض النتيجة</span>
+<span class="text-[10px]">&gt;</span>
+</a>
+</div>
+{% else %}
+<div class="bg-[#F8FAFD] border border-[#E2EAF8] rounded-2xl p-4 flex flex-col items-center justify-center text-center w-full xl:w-36 flex-shrink-0">
+<div class="flex items-center gap-1.5 text-blue-600 font-bold text-xs mb-1">
+<svg class="w-4 h-4 stroke-current stroke-2 fill-none" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+<span class="">{% if r.in_progress %}قيد المحاولة{% else %}لم يتم الأداء بعد{% endif %}</span>
+</div>
+<span class="text-[11px] text-brand-gray font-medium">{% if r.startable and can_take %}{% if r.in_progress %}لديك محاولة لم تكتمل بعد{% else %}يمكنك البدء في الاختبار الآن{% endif %}{% else %}الاختبار غير متاح حاليًا{% endif %}</span>
+</div>
+{% endif %}
+</div>
+</article>
+{% empty %}
+<div class="rounded-2xl border-2 border-dashed border-[#E2EAF8] bg-white p-10 text-center text-brand-gray"><div class="text-4xl mb-2">🗒️</div>لم يضف المعلم اختبارات لهذا الدرس بعد.</div>
+{% endfor %}
+</div>
+</section>
+<!-- END: TestListContainer -->
+<div class="mt-6 flex items-center gap-4 flex-wrap text-sm font-bold text-blue-600">
+<a href="{% url 'student:lesson' t.teacher_code l.pk %}" class="no-underline hover:underline">→ العودة إلى الدرس</a>
+<a href="{% url 'student:unit' t.teacher_code l.unit.pk %}" class="no-underline hover:underline">العودة إلى الوحدة</a>
+</div>
+</div>
+{% else %}{# باقي الأنواع (التدريبات) تبقى بتصميمها الحالي #}
+<nav class="text-xs text-slate-500 mb-4 flex items-center gap-2 flex-wrap"><a href="{% url 'student:unit' t.teacher_code l.unit.pk %}" class="hover:text-blue-600">{{ l.unit.title }}</a><i class="fa-solid fa-chevron-left text-[9px]"></i><a href="{% url 'student:lesson' t.teacher_code l.pk %}" class="hover:text-blue-600">{{ l.title }}</a><i class="fa-solid fa-chevron-left text-[9px]"></i><span class="font-bold text-slate-700">{{ label }}</span></nav>
+<div class="rounded-3xl p-6 md:p-8 mb-6 border border-[#DCE8F8] card-shadow" style="background:linear-gradient(135deg,{% if kind_name == 'tests' %}#f5f3ff,#eef2ff{% else %}#fffbeb,#fff7ed{% endif %})">
+  <h1 class="text-2xl md:text-3xl font-black text-[#173A73] m-0">{{ label }} — {{ l.title }}</h1>
+  <p class="text-sm text-slate-600 mt-2 mb-0"><span class="num-font font-bold">{{ rows|length }}</span> {% if kind_name == 'tests' %}اختبار{% else %}تدريب{% endif %} أضافها المعلم لهذا الدرس</p>
+</div>
+{% if not can_take %}<div class="rounded-2xl border border-blue-200 bg-blue-50 text-blue-900 text-sm px-5 py-3 mb-5">تحتاج اشتراكاً نشطاً لحل {{ label }}. <a class="font-bold text-blue-700" href="{% url 'student:subscribe' t.teacher_code %}">اشترك الآن ←</a></div>{% endif %}
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+  {% for r in rows %}
+  <div class="bg-white rounded-3xl border border-[#DCE8F8] card-shadow p-5 flex flex-col justify-between gap-4">
+    <div>
+      <div class="flex items-center justify-between mb-3"><span class="text-[11px] font-bold px-3 py-1 rounded-full {% if r.q.kind == 'exam' %}bg-purple-100 text-purple-700{% elif r.q.kind == 'homework' %}bg-amber-100 text-amber-700{% else %}bg-blue-100 text-blue-700{% endif %}">{{ r.q.get_kind_display }}</span>
+        {% if r.best is not None %}<span class="text-[11px] font-bold text-emerald-600">أفضل نتيجة <span class="num-font">{{ r.best }}%</span></span>{% endif %}</div>
+      <h3 class="font-black text-slate-800 text-base m-0">{{ r.q.title }}</h3>
+      {% if r.q.description %}<p class="text-xs text-slate-500 mt-1 mb-0 line-clamp-2">{{ r.q.description }}</p>{% endif %}
+      <div class="grid grid-cols-2 gap-2 mt-4 text-center">
+        <div class="rounded-xl bg-slate-50 p-2.5"><b class="num-font text-lg text-slate-800">{{ r.n }}</b><p class="text-[11px] text-slate-500 m-0">سؤال</p></div>
+        <div class="rounded-xl bg-slate-50 p-2.5"><b class="num-font text-lg text-slate-800">{{ r.points }}</b><p class="text-[11px] text-slate-500 m-0">الدرجة الكلية</p></div>
+        <div class="rounded-xl bg-slate-50 p-2.5"><b class="num-font text-lg text-slate-800">{% if r.q.duration_minutes %}{{ r.q.duration_minutes }}{% else %}∞{% endif %}</b><p class="text-[11px] text-slate-500 m-0">{% if r.q.duration_minutes %}دقيقة{% else %}بلا حد زمني{% endif %}</p></div>
+        <div class="rounded-xl bg-slate-50 p-2.5"><b class="num-font text-lg text-slate-800">{{ r.tries }}{% if r.q.max_attempts %}/{{ r.q.max_attempts }}{% endif %}</b><p class="text-[11px] text-slate-500 m-0">المحاولات</p></div>
+      </div>
+      {% if r.q.deadline %}<p class="text-[11px] mt-3 mb-0 {% if r.closed %}text-rose-600{% else %}text-slate-500{% endif %}"><i class="fa-regular fa-clock ml-1"></i>آخر موعد: <span class="num-font">{{ r.q.deadline|date:"Y-m-d H:i" }}</span>{% if r.closed %} — انتهى الموعد{% endif %}</p>{% endif %}
+    </div>
+    <div class="flex gap-2">
+      {% if r.startable and can_take %}<a href="{% url 'student:quiz' t.teacher_code r.q.pk %}" class="flex-1 text-center py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold no-underline">{% if r.tries %}إعادة المحاولة{% else %}ابدأ الآن{% endif %}</a>
+      {% else %}<span class="flex-1 text-center py-2.5 rounded-xl bg-slate-100 text-slate-400 text-sm font-bold">{% if not r.n %}لا توجد أسئلة بعد{% elif r.exhausted %}استنفدت المحاولات{% elif r.closed %}انتهى الموعد{% else %}يتطلب اشتراكاً{% endif %}</span>{% endif %}
+      {% if r.last %}<a href="{% url 'student:result' t.teacher_code r.last.pk %}" class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold no-underline">النتيجة</a>{% endif %}
+    </div>
+  </div>
+  {% empty %}<div class="md:col-span-2 xl:col-span-3 rounded-3xl border-2 border-dashed border-slate-200 bg-white p-10 text-center text-slate-500"><div class="text-4xl mb-2">🗒️</div>لم يضف المعلم {% if kind_name == 'tests' %}اختبارات{% else %}تدريبات{% endif %} لهذا الدرس بعد.</div>{% endfor %}
+</div>
+<a href="{% url 'student:unit' t.teacher_code l.unit.pk %}" class="text-sm font-bold text-blue-600">→ العودة إلى الوحدة</a>
+{% endif %}
+{% endblock %}

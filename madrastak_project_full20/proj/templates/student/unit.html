@@ -1,0 +1,433 @@
+{% load ui_extras %}
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>{{ un.title }} — لوحة الطالب</title>
+
+  <!-- Tailwind CSS v3 with plugins -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <!-- Google Fonts: Plus Jakarta Sans & Tajawal -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0b1638',
+              sidebar: '#0c183a',
+              blue: '#2563eb',
+              sky: '#38bdf8',
+              accent: '#4f46e5',
+              green: '#10b981'
+            }
+          },
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+            en: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style data-purpose="custom-typography">
+    html, body {
+      font-family: "Plus Jakarta Sans", 'Tajawal', sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      min-height: 100vh;
+      background-color: #f8fbfe;
+      -webkit-font-smoothing: antialiased;
+    }
+    html { overflow-x: hidden; }
+    body { overflow-x: clip; }
+    .font-en {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+
+  <style data-purpose="card-decorations">
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .glow-purple { box-shadow: 0 4px 18px 0 rgba(112, 60, 240, 0.4); }
+  </style>
+</head>
+
+<body class="w-full min-h-screen m-0 p-0 flex flex-col lg:flex-row bg-[#f8fbfe]">
+{% unit_stats un user as US %}
+
+<!-- BEGIN: Main Content Area -->
+<main class="flex-1 bg-[#f8fbfe] p-6 md:p-8 lg:p-10 flex flex-col gap-6 min-h-screen custom-scroll">
+
+  <!-- BEGIN: Header & Top Bar -->
+  {% include "ui/_student_header.html" with hstyle="margin:-.5rem 0 0 0" hcss="@media (min-width:768px){#student-top-header{margin:-1rem 0 0 0}}@media (min-width:1024px){#student-top-header{margin:-1.5rem 0 0 0}}" %}
+  <!-- END: Header & Top Bar -->
+
+  <!-- Breadcrumbs -->
+  <nav aria-label="مسار التصفح" class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+    <a href="{% url 'student:workspace' t.teacher_code %}" class="hover:text-blue-600 no-underline text-slate-500">محتوى الدروس</a>
+    <svg class="w-3.5 h-3.5 text-slate-400 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+    </svg>
+    <a href="{% url 'student:course' t.teacher_code un.course.pk %}" class="hover:text-blue-600 no-underline text-slate-500">{{ un.course.title }}</a>
+    <svg class="w-3.5 h-3.5 text-slate-400 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+    </svg>
+    <span class="text-blue-600 font-en font-bold">{{ un.title }}</span>
+  </nav>
+
+  <!-- BEGIN: Hero Welcome Banner -->
+  <section class="relative overflow-hidden rounded-3xl text-white p-7 md:p-10 shadow-xl shadow-blue-600/15" style="background: linear-gradient(135deg, rgb(30, 58, 138) 0%, rgb(37, 99, 235) 45%, rgb(14, 165, 233) 100%); border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: rgba(37, 99, 235, 0.25) 0px 16px 36px -10px;">
+    <div class="absolute -top-20 -left-20 w-72 h-72 rounded-full bg-sky-400/20 blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-20 right-10 w-80 h-80 rounded-full bg-amber-300/15 blur-3xl pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-l from-blue-950/40 via-transparent to-sky-900/20 pointer-events-none"></div>
+
+    <div class="relative z-10 w-full flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
+      <div class="flex-1 max-w-xl text-right">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-blue-100 text-xs font-semibold mb-3">
+          <span class="w-2 h-2 rounded-full bg-amber-300 animate-pulse"></span>
+          <span>{% if pr.percent == 100 %}أحسنت! أنهيت الوحدة 🎉{% elif pr.percent > 0 %}استمر — أنت تتقدم بشكل رائع ✨{% else %}بداية موفقة وممتعة ✨{% endif %}</span>
+        </div>
+        <h1 style="font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif;" class="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 text-white ">{{ un.title }}</h1>
+        <h3 class="text-xl md:text-2xl font-bold text-amber-200 mb-3 font-en tracking-wide drop-shadow-sm">Welcome to the course! 🎉</h3>
+        {% if un.description %}
+        <p class="text-base md:text-lg text-blue-50/95 leading-relaxed font-normal">{{ un.description }}</p>
+        {% else %}
+        <p class="text-base md:text-lg text-blue-50/95 leading-relaxed font-normal">استكمل دروس هذه الوحدة وتابع تقدّمك خطوة بخطوة مع محتوى الدورة.</p>
+        {% endif %}
+      </div>
+
+      <div class="flex-shrink-0 flex items-center justify-center relative">
+        <img src="{{ ICONS.st_unit_art }}" alt="طالب يدرس بجد وسعادة" class="h-64 md:h-72 lg:h-80 w-auto object-contain drop-shadow-xl select-none pointer-events-none transition-transform hover:scale-105 duration-300">
+      </div>
+    </div>
+  </section>
+  <!-- END: Hero Welcome Banner -->
+
+  <!-- BEGIN: Key Metrics Bar -->
+  <section class="bg-white rounded-2xl py-8 px-6 md:px-10 border border-slate-100 shadow-sm min-h-[150px] flex items-center">
+    <div class="w-full grid grid-cols-2 md:grid-cols-4 gap-6 items-center text-center divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-slate-100">
+      <!-- Progress Circular Gauge Metric -->
+      <div class="flex flex-col items-center justify-center">
+        <div class="relative w-[100px] h-[100px] flex items-center justify-center">
+          <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" fill="transparent" r="42" stroke="#e2e8f0" stroke-width="7"></circle>
+            <circle cx="50" cy="50" fill="transparent" r="42" stroke="#10b981" stroke-dasharray="263.89" stroke-dashoffset="{{ 263.89|add:'0' }}" stroke-linecap="round" stroke-width="7" pathLength="263.89" style="stroke-dashoffset: calc(263.89 - (263.89 * {{ pr.percent }}) / 100);"></circle>
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-xl md:text-2xl font-extrabold text-[#10b981] font-en tracking-tight">{{ pr.percent }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Lessons Metric -->
+      <div class="pt-4 md:pt-0 flex flex-col items-center justify-center">
+        <span class="text-4xl md:text-5xl font-black text-[#10b981] font-en leading-tight">{{ US.lessons }}</span>
+        <span class="text-sm md:text-base font-bold text-[#10b981] mt-1">دروس</span>
+      </div>
+
+      <!-- Exams Metric -->
+      <div class="pt-4 md:pt-0 flex flex-col items-center justify-center">
+        <span class="text-4xl md:text-5xl font-black text-[#10b981] font-en leading-tight">{{ US.tests }}</span>
+        <span class="text-sm md:text-base font-bold text-[#10b981] mt-1">اختبارات</span>
+      </div>
+
+      <!-- Estimated Hours Metric -->
+      <div class="pt-4 md:pt-0 flex flex-col items-center justify-center">
+        <span class="text-4xl md:text-5xl font-black text-[#10b981] font-en leading-tight">{% if US.minutes %}{{ US.minutes|hours_only }}{% else %}0{% endif %}</span>
+        <span class="text-sm md:text-base font-bold text-[#10b981] mt-1">ساعات تقديرية</span>
+      </div>
+    </div>
+  </section>
+  <!-- END: Key Metrics Bar -->
+
+  {% if not open %}
+  <div class="rounded-2xl border border-blue-200 bg-blue-50 text-blue-900 text-sm px-5 py-3">
+    بعض دروس هذه الوحدة تتطلب اشتراكًا نشطًا مع المعلم. <a class="font-bold text-blue-700 no-underline" href="{% url 'student:subscribe' t.teacher_code %}">اشترك الآن ←</a>
+  </div>
+  {% endif %}
+
+  <!-- BEGIN: Lessons List Section -->
+  <section class="flex flex-col gap-4">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h2 class="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
+          <span>دروس الوحدة</span>
+          <svg class="w-4 h-4 text-blue-600 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+          </svg>
+        </h2>
+      </div>
+      <a href="{% url 'student:course' t.teacher_code un.course.pk %}" class="text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-1 transition-colors no-underline">
+        <span>تفاصيل الوحدة</span>
+        <svg class="w-3.5 h-3.5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Lessons Cards Container -->
+    <div class="flex flex-col gap-3.5">
+      {% for r in rows %}
+      {% lesson_info r.l user as LI %}
+      <div class="accordion-item bg-white {% if r.locked %}bg-white/90{% endif %} border border-slate-200/80 rounded-2xl shadow-sm transition-all overflow-hidden" data-lesson="{{ r.l.pk }}">
+        <!-- Accordion Header Row -->
+        <div class="accordion-header p-5 md:px-6 min-h-[86px] flex items-center justify-between cursor-pointer hover:bg-slate-50/80 transition-colors select-none">
+          <div class="flex items-center gap-4 min-w-0">
+            <!-- Lesson Icon Badge -->
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 border {% if r.locked %}bg-slate-100 text-slate-400 border-slate-200{% elif LI.status == 'done' %}bg-emerald-50 text-emerald-600 border-emerald-100{% elif LI.status == 'progress' or LI.status == 'review' %}bg-blue-50 text-blue-600 border-blue-100{% else %}bg-slate-100 text-slate-500 border-slate-200{% endif %}">
+              {% if r.locked %}
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              {% elif LI.status == 'done' %}
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+              {% else %}
+              <span class="font-en font-bold">{{ r.n }}</span>
+              {% endif %}
+            </div>
+
+            <!-- Lesson Title & Meta -->
+            <div class="min-w-0">
+              <h4 class="text-base md:text-lg font-bold text-slate-800 leading-snug truncate" style="font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif;">{{ r.n }} – {{ r.l.title }}</h4>
+              <p class="text-xs text-slate-400 font-medium mt-0.5">
+                <span class="font-en font-bold">{{ LI.percent }}%</span> إنجاز{% if LI.minutes %} • ≈ {{ LI.minutes|fmt_minutes }}{% endif %}{% if r.l.is_free_preview %} • معاينة مجانية{% endif %}
+              </p>
+            </div>
+          </div>
+
+          <!-- Status and Interactive Chevron Arrow -->
+          <div class="flex items-center gap-3.5 flex-shrink-0">
+            <span class="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full border {% if r.locked %}text-slate-400 bg-slate-50 border-slate-100{% elif LI.status == 'done' %}text-emerald-600 bg-emerald-50 border-emerald-100{% elif LI.status == 'review' %}text-rose-600 bg-rose-50 border-rose-100{% elif LI.status == 'progress' %}text-amber-600 bg-amber-50 border-amber-100{% else %}text-slate-400 bg-slate-50 border-slate-100{% endif %}">
+              {% if r.locked %}
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              يتطلب اشتراكًا
+              {% elif LI.status == 'done' %}
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+              مكتمل
+              {% elif LI.status == 'review' %}
+              يحتاج مراجعة
+              {% elif LI.status == 'progress' %}
+              قيد الدراسة
+              {% else %}
+              لم يبدأ
+              {% endif %}
+            </span>
+            <button aria-label="تبديل عرض محتوى الدرس" class="accordion-arrow p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-all cursor-pointer {% if forloop.first %}-rotate-90{% endif %}" type="button">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Expandable Sub-section Content -->
+        <div class="accordion-content {% if not forloop.first %}hidden{% endif %} border-t border-slate-100 bg-[#f9fbfe] p-6 md:p-8">
+          {% if r.locked %}
+          <div class="text-center py-6">
+            <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center mx-auto mb-3 border border-slate-200">
+              <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+            <p class="text-slate-500 text-sm mb-3">هذا الدرس يتطلب اشتراكًا نشطًا مع المعلم.</p>
+            <a href="{% url 'student:subscribe' t.teacher_code %}" class="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold no-underline">
+              اشترك الآن — <span class="font-en mx-1">{{ t.monthly_price|floatformat:'-2' }}</span> ج / شهر
+            </a>
+          </div>
+          {% else %}
+          <div class="text-right mb-6">
+            <h3 class="text-xl md:text-2xl font-bold text-[#1e3a8a] mb-1">اختر ما تريد البدء به</h3>
+            <p class="text-xs md:text-sm text-slate-500 font-medium">يمكنك اختيار أي عنصر من عناصر الدرس في أي وقت</p>
+          </div>
+
+          <!-- Modular Activity Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- Card 1: النص التعليمي -->
+            <div class="bg-white rounded-2xl p-6 border-2 border-purple-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between items-center text-center {% if not LI.has_text %}opacity-60{% endif %}">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3">
+                  <img alt="النص التعليمي" class="w-14 h-14 object-contain" src="{{ ICONS.u_text }}">
+                </div>
+                <h4 class="text-lg font-bold text-purple-700 mb-2">النص التعليمي</h4>
+                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-[240px]">اقرأ الشرح التفصيلي للدرس مع الأمثلة والتوضيحات.</p>
+              </div>
+              <div class="mt-5 w-full flex justify-center">
+                {% if LI.has_text %}
+                <a href="{% url 'student:lesson' t.teacher_code r.l.pk %}" class="w-full max-w-[140px] py-2 px-4 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors shadow-xs no-underline">
+                  <span>فتح</span>
+                  <svg class="w-3.5 h-3.5 text-purple-600 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                </a>
+                {% else %}
+                <span class="w-full max-w-[140px] py-2 px-4 rounded-full bg-slate-50 text-slate-400 border border-slate-200 font-bold text-xs md:text-sm text-center">لم يُضف الشرح بعد</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Card 2: فيديو الدرس -->
+            <div class="bg-white rounded-2xl p-6 border-2 border-rose-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between items-center text-center {% if not LI.has_video %}opacity-60{% endif %}">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3">
+                  <img alt="فيديو الدرس" class="w-14 h-14 object-contain" src="{{ ICONS.u_video }}">
+                </div>
+                <h4 class="text-lg font-bold text-rose-600 mb-2">فيديو الدرس</h4>
+                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-[240px]">شاهد شرح الدرس من المعلم مع إمكانية التحكم في التثبيت/التشغيل.</p>
+              </div>
+              <div class="mt-5 w-full flex justify-center">
+                {% if LI.has_video %}
+                <a href="{% url 'uikit:lesson_video' t.teacher_code r.l.pk %}" class="w-full max-w-[140px] py-2 px-4 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors shadow-xs no-underline">
+                  <span>فتح</span>
+                  <svg class="w-3.5 h-3.5 fill-current text-rose-600" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                </a>
+                {% else %}
+                <span class="w-full max-w-[140px] py-2 px-4 rounded-full bg-slate-50 text-slate-400 border border-slate-200 font-bold text-xs md:text-sm text-center">لا يوجد فيديو لهذا الدرس</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Card 3: الاختبار -->
+            <div class="bg-white rounded-2xl p-6 border-2 border-emerald-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between items-center text-center {% if not LI.tests %}opacity-60{% endif %}">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3">
+                  <img alt="الاختبار" class="w-14 h-14 object-contain" src="{{ ICONS.u_quiz }}">
+                </div>
+                <h4 class="text-lg font-bold text-emerald-600 mb-2">الاختبار</h4>
+                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-[240px]">اختبر فهمك للدرس من خلال مجموعة من الأسئلة المتنوعة{% if LI.tests %} — <span class="font-en font-bold">{{ LI.tests }}</span> اختبار{% endif %}.</p>
+              </div>
+              <div class="mt-5 w-full flex justify-center">
+                {% if LI.tests %}
+                <a href="{% url 'uikit:lesson_tests' t.teacher_code r.l.pk %}" class="w-full max-w-[140px] py-2 px-4 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors shadow-xs no-underline">
+                  <span>فتح</span>
+                  <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a3 3 0 003 3h0a3 3 0 003-3M9 5a2 2 0 012-2h2a2 2 0 012 2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+                </a>
+                {% else %}
+                <span class="w-full max-w-[140px] py-2 px-4 rounded-full bg-slate-50 text-slate-400 border border-slate-200 font-bold text-xs md:text-sm text-center">لا توجد اختبارات بعد</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Card 4: المفردات -->
+            <div class="bg-white rounded-2xl p-6 border-2 border-amber-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between items-center text-center {% if not LI.vocab %}opacity-60{% endif %}">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3">
+                  <img alt="المفردات" class="w-14 h-14 object-contain" src="{{ ICONS.u_vocab }}">
+                </div>
+                <div class="flex items-center justify-center gap-1.5 mb-2">
+                  <h4 class="text-lg font-bold text-amber-600">المفردات</h4>
+                  <span class="text-[10px] font-extrabold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded uppercase font-en">AI</span>
+                </div>
+                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-[240px]">تعرف على الكلمات والتعبيرات مع النطق والمعنى{% if LI.vocab %} — <span class="font-en font-bold">{{ LI.vocab }}</span> كلمة{% endif %}.</p>
+              </div>
+              <div class="mt-5 w-full flex justify-center">
+                {% if LI.vocab %}
+                <a href="{% url 'student:vocabulary' t.teacher_code %}?lesson={{ r.l.pk }}" class="w-full max-w-[140px] py-2 px-4 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors shadow-xs no-underline">
+                  <span>فتح</span>
+                  <svg class="w-3.5 h-3.5 fill-current text-amber-600" viewBox="0 0 24 24"><path d="M12 2l2.4 7.2h7.6l-6.1 4.5 2.3 7.3-6.2-4.5-6.2 4.5 2.3-7.3-6.1-4.5h7.6z"></path></svg>
+                </a>
+                {% else %}
+                <span class="w-full max-w-[140px] py-2 px-4 rounded-full bg-slate-50 text-slate-400 border border-slate-200 font-bold text-xs md:text-sm text-center">لا توجد مفردات بعد</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Card 5: التدريبات -->
+            <div class="bg-white rounded-2xl p-6 border-2 border-sky-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between items-center text-center {% if not LI.exercises %}opacity-60{% endif %}">
+              <div class="flex flex-col items-center">
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-3">
+                  <img alt="التدريبات" class="w-14 h-14 object-contain" src="{{ ICONS.u_ex }}">
+                </div>
+                <h4 class="text-lg font-bold text-blue-600 mb-2">التدريبات</h4>
+                <p class="text-xs md:text-sm text-slate-500 leading-relaxed max-w-[240px]">حل مجموعة من التدريبات على الدرس{% if LI.exercises %} — <span class="font-en font-bold">{{ LI.exercises }}</span> تدريب{% endif %}.</p>
+              </div>
+              <div class="mt-5 w-full flex justify-center">
+                {% if LI.exercises %}
+                <a href="{% url 'uikit:lesson_exercises' t.teacher_code r.l.pk %}" class="w-full max-w-[140px] py-2 px-4 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors shadow-xs no-underline">
+                  <span>فتح</span>
+                  <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path></svg>
+                </a>
+                {% else %}
+                <span class="w-full max-w-[140px] py-2 px-4 rounded-full bg-slate-50 text-slate-400 border border-slate-200 font-bold text-xs md:text-sm text-center">لا توجد تدريبات بعد</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="rounded-2xl border-2 border-dashed border-slate-200 bg-white p-10 text-center text-slate-500">
+        <div class="text-4xl mb-2">📖</div>
+        لم يُنشر أي درس في هذه الوحدة بعد.
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  <!-- END: Lessons List Section -->
+
+  <!-- Unit-level quizzes: kept available when the unit contains standalone tests -->
+  {% if unit_quizzes %}
+  <section class="flex flex-col gap-4 pb-2">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg md:text-xl font-bold text-slate-800">اختبارات الوحدة</h2>
+      <span class="text-xs font-bold text-slate-400">{{ US.tests }} اختبار</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for q in unit_quizzes %}
+      <div class="bg-white rounded-2xl p-6 border-2 border-emerald-200/90 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+        <div>
+          <h4 class="text-lg font-bold text-emerald-600 mb-2">{{ q.title }}</h4>
+          <p class="text-xs md:text-sm text-slate-500 leading-relaxed">{{ q.get_kind_display }}{% if q.questions.count %} • <span class="font-en font-bold">{{ q.questions.count }}</span> سؤال{% endif %}{% if q.duration_minutes %} • <span class="font-en font-bold">{{ q.duration_minutes }}</span> دقيقة{% endif %}</p>
+        </div>
+        <div class="mt-5 flex justify-center">
+          {% if open %}
+          <a class="w-full max-w-[160px] py-2 px-4 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors no-underline" href="{% url 'student:quiz' t.teacher_code q.pk %}">
+            <span>ابدأ الاختبار</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </a>
+          {% else %}
+          <a class="w-full max-w-[160px] py-2 px-4 rounded-full bg-slate-50 text-slate-500 border border-slate-200 font-bold text-xs md:text-sm flex items-center justify-center gap-2 transition-colors no-underline" href="{% url 'student:subscribe' t.teacher_code %}">
+            <span>يتطلب اشتراكًا</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</main>
+<!-- END: Main Content Area -->
+
+<!-- BEGIN: Interactive Accordion Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const accordionItems = document.querySelectorAll('.accordion-item');
+
+    accordionItems.forEach(item => {
+      const header = item.querySelector('.accordion-header');
+      const content = item.querySelector('.accordion-content');
+      const arrow = item.querySelector('.accordion-arrow');
+
+      if (!header || !content || !arrow) return;
+
+      header.addEventListener('click', (e) => {
+        if (e.target.closest('a')) return;
+        const isHidden = content.classList.contains('hidden');
+
+        if (isHidden) {
+          content.classList.remove('hidden');
+          arrow.classList.add('-rotate-90');
+        } else {
+          content.classList.add('hidden');
+          arrow.classList.remove('-rotate-90');
+        }
+      });
+    });
+  });
+</script>
+<!-- END: Interactive Accordion Script -->
+</body>
+</html>

@@ -1,0 +1,7 @@
+{% extends "auth/auth_base.html" %}
+{% block title %}استعادة كلمة المرور{% endblock %}
+{% block box %}
+<h1>نسيت كلمة المرور؟</h1><p class="muted">اكتب رقم هاتفك المسجّل وسيتواصل معك فريق الدعم لإعادة تعيينها.</p>
+<form method="post" data-once>{% csrf_token %}{% include "partials/form.html" %}<button class="btn lg block" type="submit">إرسال الطلب</button></form>
+<p class="center mt"><a href="{% url 'login' %}">العودة لتسجيل الدخول</a></p>
+{% endblock %}

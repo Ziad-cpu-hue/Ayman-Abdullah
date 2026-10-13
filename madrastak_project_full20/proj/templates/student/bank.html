@@ -1,0 +1,25 @@
+{% extends "student/base.html" %}
+{% block title %}بنك الأسئلة{% endblock %}
+{% block topbar_title %}بنك الأسئلة{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>{{ t.subject }} — بنك الأسئلة</h1><span class="badge">{{ count }} سؤال</span></div>
+<form class="card mb"><div class="grid g4">
+  <div class="field"><label>الوحدة</label><select class="input" name="unit"><option value="">الكل</option>{% for u in units %}<option value="{{ u.pk }}" {% if g.unit == u.pk|stringformat:'s' %}selected{% endif %}>{{ u.title }}</option>{% endfor %}</select></div>
+  <div class="field"><label>الدرس</label><select class="input" name="lesson"><option value="">الكل</option>{% for l in lessons %}<option value="{{ l.pk }}" {% if g.lesson == l.pk|stringformat:'s' %}selected{% endif %}>{{ l.title }}</option>{% endfor %}</select></div>
+  <div class="field"><label>الصعوبة</label><select class="input" name="difficulty"><option value="">الكل</option><option value="easy" {% if g.difficulty == 'easy' %}selected{% endif %}>سهل</option><option value="medium" {% if g.difficulty == 'medium' %}selected{% endif %}>متوسط</option><option value="hard" {% if g.difficulty == 'hard' %}selected{% endif %}>صعب</option></select></div>
+  <div class="field"><label>النوع</label><select class="input" name="qtype"><option value="">الكل</option><option value="mcq" {% if g.qtype == 'mcq' %}selected{% endif %}>اختيار من متعدد</option><option value="tf" {% if g.qtype == 'tf' %}selected{% endif %}>صح/خطأ</option></select></div>
+</div>
+<div class="row mt"><label class="row small"><input type="checkbox" class="check" name="saved" value="1" {% if g.saved == '1' %}checked{% endif %}> المحفوظة فقط</label>
+  <label class="row small"><input type="checkbox" class="check" name="wrong" value="1" {% if g.wrong == '1' %}checked{% endif %}> أخطائي فقط</label>
+  <button class="btn sm">تصفية</button></div>
+</form>
+<a class="btn lg block mb" href="{% url 'student:bank_start' t.teacher_code %}?{{ qstr }}">🎯 ابدأ التدريب</a>
+<div class="grid gauto">
+{% for q in questions %}
+<a class="card" href="{% url 'student:bank_question' t.teacher_code q.pk %}?{{ qstr }}" style="text-decoration:none;color:inherit">
+  <div class="row spread"><span class="badge purple">{{ q.get_difficulty_display }}</span>{% if q.id in saved %}<span>⭐</span>{% endif %}{% if q.id in solved %}<span class="badge green">تم الحل</span>{% endif %}</div>
+  <p class="mt" style="margin-bottom:0">{{ q.text|truncatechars:80 }}</p>
+</a>
+{% empty %}<div class="empty">لا توجد أسئلة مطابقة.</div>{% endfor %}
+</div>
+{% endblock %}

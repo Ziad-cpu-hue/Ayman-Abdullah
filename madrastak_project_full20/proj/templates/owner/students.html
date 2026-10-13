@@ -1,0 +1,14 @@
+{% extends "owner/base.html" %}
+{% block title %}الطلاب{% endblock %}
+{% block topbar_title %}الطلاب{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>الطلاب</h1></div>
+<form class="row mb"><input class="input grow" name="q" value="{{ q }}" placeholder="بحث بالاسم أو الهاتف…"><button class="btn ghost">بحث</button></form>
+<div class="tablewrap"><table class="t"><thead><tr><th>الطالب</th><th>الصف</th><th>المدرّسون</th><th>النشطة</th><th>الحالة</th><th></th></tr></thead><tbody>
+{% for s in page %}<tr><td>{{ s.full_name }}</td><td>{{ s.student_profile.get_grade_display }}</td><td>{{ s.n_teachers }}</td><td>{{ s.n_active }}</td>
+<td><span class="badge {% if s.is_active %}green{% else %}red{% endif %}">{% if s.is_active %}نشط{% else %}موقوف{% endif %}</span></td>
+<td><a class="btn sm ghost" href="{% url 'owner:student_detail' s.pk %}">عرض</a></td></tr>
+{% empty %}<tr><td colspan="6" class="center muted">لا يوجد طلاب.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "partials/pager.html" with page=page qs=qs %}
+{% endblock %}

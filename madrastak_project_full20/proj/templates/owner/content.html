@@ -1,0 +1,9 @@
+{% extends "owner/base.html" %}
+{% block title %}المحتوى{% endblock %}
+{% block topbar_title %}المحتوى العام{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>المحتوى على المنصة</h1></div>
+<div class="tablewrap"><table class="t"><thead><tr><th>الدورة</th><th>المدرّس</th><th>الحالة</th><th>الدروس</th></tr></thead><tbody>
+{% for c in courses %}<tr><td>{{ c.title }}</td><td>{{ c.teacher.name }}</td><td><span class="badge {% if c.status == 'published' %}green{% else %}gray{% endif %}">{{ c.status_label }}</span></td><td>{{ c.n_lessons }}</td></tr>{% empty %}<tr><td colspan="4" class="center muted">لا يوجد محتوى بعد.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

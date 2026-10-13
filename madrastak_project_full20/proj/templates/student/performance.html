@@ -1,0 +1,538 @@
+{% extends "ui/document.html" %}
+{% load static %}
+{% block title %}تقارير الأداء{% endblock %}
+{% block body_class %}min-h-screen flex flex-col antialiased selection:bg-cyan-500 selection:text-white font-tajawal{% endblock %}
+{% block head %}<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style data-purpose="base-styling">
+    body { font-family: 'Cairo', 'Tajawal', sans-serif !important; background-color: #f4f8fc; color: #1e293b; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    .font-tajawal { font-family: 'Tajawal', sans-serif; }
+    .font-numeric { font-family: 'Outfit', sans-serif; }
+    /* كل نصوص الصفحة بخط Tajawal (الأيقونات مستثناة) */
+    body, body *:not(i):not([class*="fa-"]):not(svg):not(svg *) { font-family: "Plus Jakarta Sans", 'Tajawal', sans-serif !important; }
+  </style>{% endblock %}
+{% block body %}
+<!-- صفحة «تقارير الأداء» — التصميم الجديد كما هو، بدون القائمة الجانبية. -->
+{% comment %}ملاحظة: اللوغو والفوتر من التصميم كما هما.{% endcomment %}
+<!-- BEGIN: MainHeader -->
+{% include "ui/_student_header.html" with hstyle="margin-bottom:0" %}
+<!-- END: MainHeader -->
+<!-- BEGIN: DashboardContainer -->
+<main class="flex-grow max-w-[1440px] w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+<!-- BEGIN: PageTitleBanner -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(63, 139, 249, 0.08) 0%, rgba(54, 206, 143, 0.08) 100%); backdrop-filter: blur(8px); border: 1px solid rgba(63, 139, 249, 0.15);"><!-- Right Side: Title & 3D Illustration aligned -->
+<div class="flex items-center gap-4 w-full md:w-auto text-right">
+
+<div>
+<h1 class="text-2xl lg:text-3xl font-extrabold text-[#0d2847] flex items-center gap-2">
+          تقرير الطالب
+        </h1>
+<p class="text-slate-500 text-sm mt-1">اطلع على أداءك وتقدمك في المنصة</p>
+</div>
+</div>
+<!-- Left Side: Date Range Filter Dropdown -->
+<div class="flex flex-wrap items-center justify-between md:justify-start gap-6 w-full md:w-auto">
+<div class="flex items-center gap-3 bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-2.5 text-xs lg:text-sm font-semibold text-slate-700 shadow-sm cursor-pointer hover:border-cyan-400 transition-colors">
+<i class="fa-regular fa-calendar text-cyan-600 text-base"></i>
+<span class="">من <span class="font-bold">{{ range_from|date:"Y/m/d" }}</span> إلى <span class="font-bold">{{ range_to|date:"Y/m/d" }}</span></span>
+<i class="fa-solid fa-chevron-down text-slate-400 text-xs mr-2"></i>
+</div>
+</div></div>
+<!-- END: PageTitleBanner -->
+<!-- BEGIN: TopKPISection -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" data-purpose="top-kpi-cards"><!-- KPI 1: أيام الاشتراك المتبقية (Cheerful Vibrant Azure Blue) -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(2, 132, 199) 0%, rgb(14, 165, 233) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm">
+      <i class="fa-regular fa-calendar-days text-white"></i>
+    </div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm" style="font-family: 'Outfit', sans-serif;">
+      <span class="">{{ sub_badge }}</span>
+    </span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">أيام الاشتراك المتبقية</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold font-numeric text-white" style="font-family: 'Outfit', sans-serif;">{{ days_left }}</span>
+      <span class="text-xs text-white/80">من أصل <span style="font-family: 'Outfit', sans-serif;" class="">{{ days_total }}</span> يوم</span>
+    </div>
+  </div>
+</div>
+<!-- KPI 2: عدد الدروس المكتملة (Cheerful Fresh Vibrant Emerald Green) -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(16, 185, 129) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm">
+      <i class="fa-solid fa-circle-check text-white"></i>
+    </div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm" style="font-family: 'Outfit', sans-serif;">
+      <span class="">{{ lessons_pct }}%</span>
+    </span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">عدد الدروس المكتملة</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold font-numeric text-white" style="font-family: 'Outfit', sans-serif;">{{ lessons_done }}</span>
+      <span class="text-xs text-white/80">من إجمالي <span style="font-family: 'Outfit', sans-serif;" class="">{{ lessons_total }}</span> درس</span>
+    </div>
+  </div>
+</div>
+<!-- KPI 3: عدد الاختبارات (Cheerful Vibrant Indigo / Violet) -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(139, 92, 246) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm">
+      <i class="fa-solid fa-clipboard-check text-white"></i>
+    </div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm" style="font-family: 'Outfit', sans-serif;">
+      <span class="">{{ quizzes_pct }}%</span>
+    </span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">عدد الاختبارات</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold font-numeric text-white" style="font-family: 'Outfit', sans-serif;">{{ quizzes_done }}</span>
+      <span class="text-xs text-white/80">من إجمالي <span style="font-family: 'Outfit', sans-serif;" class="">{{ quizzes_total }}</span> اختبار</span>
+    </div>
+  </div>
+</div>
+<!-- KPI 4: عدد المحاضرات المشاهدة (Cheerful Vibrant Warm Orange / Amber) -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(234, 88, 12) 0%, rgb(245, 158, 11) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm">
+      <i class="fa-solid fa-circle-play text-white"></i>
+    </div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm" style="font-family: 'Outfit', sans-serif;">
+      <span class="">{{ lectures_pct }}%</span>
+    </span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">عدد المحاضرات المشاهدة</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold font-numeric text-white" style="font-family: 'Outfit', sans-serif;">{{ lectures_done }}</span>
+      <span class="text-xs text-white/80">من إجمالي <span style="font-family: 'Outfit', sans-serif;" class="">{{ lectures_total }}</span> محاضرة</span>
+    </div>
+  </div>
+</div></section>
+<!-- END: TopKPISection -->
+<!-- BEGIN: MainContentGrid (Left Charts & Right Profile Sidebar) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left Column: Graphs & Activity Center (8 Cols) -->
+<aside class="lg:col-span-4 space-y-6">
+<!-- Card: معلومات الطالب (Student Profile Information) -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm text-center">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+<h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+<i class="fa-regular fa-user text-cyan-600"></i>
+              معلومات الطالب
+            </h3>
+</div>
+<!-- Avatar & Name -->
+<div class="flex flex-col items-center">
+<div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-cyan-400 to-blue-600 mb-3 shadow">
+<div class="w-full h-full bg-sky-50 rounded-full overflow-hidden flex items-center justify-center">
+<img alt="{{ request.user.full_name }}" class="w-full h-full object-cover" src="{{ avatar_url }}">
+</div>
+</div>
+<h2 class="text-xl font-extrabold text-slate-800">{{ request.user.full_name }}</h2>
+<p class="text-xs text-slate-400 font-medium mt-0.5">{{ grade_label }}</p>
+</div>
+<!-- Detailed Info List -->
+<div class="mt-6 space-y-3.5 text-right text-xs text-slate-600">
+<!-- Email -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-semibold text-slate-700 font-mono">{{ parent_phone|default:"—" }}</span>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="text-[11px]">رقم ولي الأمر</span>
+<i class="fa-solid fa-user-shield text-cyan-600"></i>
+</div>
+</div>
+<!-- Phone -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-semibold text-slate-700 font-mono">{{ request.user.phone }}</span>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="text-[11px]">رقم الهاتف</span>
+<i class="fa-solid fa-phone text-cyan-600"></i>
+</div>
+</div>
+<!-- Join Date -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-semibold text-slate-700">{{ range_from|date:"Y/m/d" }}</span>
+<div class="flex items-center gap-2 text-slate-400">
+<span class="text-[11px]">تاريخ الانضمام</span>
+<i class="fa-regular fa-calendar-check text-cyan-600"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- Card: إحصائيات سريعة (Quick Overview) -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-chart-line" style="color: #3F8BF9;"></i>
+    إحصائيات سريعة
+  </h3>
+</div>
+<div class="space-y-3.5 text-xs">
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ lectures_done }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;">
+<span class="">عدد المحاضرات المشاهدة</span>
+<i class="fa-regular fa-circle-play" style="color: #3F8BF9;"></i>
+</div>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ n_attempts }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;">
+<span class="">عدد الاختبارات</span>
+<i class="fa-regular fa-clipboard" style="color: #8299DF;"></i>
+</div>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ lessons_done }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;">
+<span class="">الدروس المكتملة</span>
+<i class="fa-regular fa-circle-check" style="color: #36CE8F;"></i>
+</div>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #3F8BF9;"><span style="font-family: 'Outfit', sans-serif;" class="">{{ dur_h }}</span> ساعة و <span style="font-family: 'Outfit', sans-serif;" class="">{{ dur_m }}</span> دقيقة</span>
+<div class="flex items-center gap-2" style="color: #4C658D;">
+<span class="">المدة الكلية</span>
+<i class="fa-regular fa-clock" style="color: #4AC7C2;"></i>
+</div>
+</div>
+</div></div>
+<!-- Card: تحفيز وتقدير (Trophy & Motivation) -->
+<div class="bg-gradient-to-b from-sky-50 via-white to-blue-50 rounded-2xl p-6 border border-sky-100 shadow-sm text-center relative overflow-hidden">
+<div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-2xl mx-auto shadow-inner mb-3">
+<i class="fa-solid fa-trophy"></i>
+</div>
+<h3 class="text-base font-extrabold text-slate-800 mb-1">أنت تسير بشكل رائع!</h3>
+<p class="text-xs text-slate-500 max-w-[220px] mx-auto leading-relaxed">
+            استمر في هذا الأداء المتميز لتحقيق المزيد من الإنجازات.
+          </p>
+<!-- 3D Stack of books & Mortarboard Graphic -->
+<div class="mt-4 flex items-center justify-center">
+<div class="relative py-2">
+<i class="fa-solid fa-graduation-cap text-5xl text-blue-900 drop-shadow-md"></i>
+<div class="flex justify-center -space-x-1 mt-1 text-sky-400">
+<i class="fa-solid fa-book-bookmark text-2xl text-blue-500"></i>
+<i class="fa-solid fa-book text-2xl text-cyan-400"></i>
+<i class="fa-solid fa-book text-2xl text-sky-300"></i>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm flex flex-col justify-between"><div>
+<div class="flex items-center justify-between pb-3 border-b mb-5" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-star" style="color: #FBB459;"></i>
+      أقوى نقاطك
+    </h3>
+</div>
+<div class="space-y-4 text-xs font-semibold" style="color: #4C658D;">
+{% for sl, sp in strengths %}
+<div>
+<div class="flex justify-between items-center mb-1.5">
+<span class="font-bold font-numeric" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ sp }}%</span>
+<span class="">{{ sl }}</span>
+</div>
+<div class="w-full rounded-full h-2 overflow-hidden" style="background-color: #D7E1ED;">
+<div class="h-2 rounded-full" style="width: {{ sp }}%; background-color: #36CE8F;"></div>
+</div>
+</div>
+{% endfor %}
+</div>
+</div></div>
+<!-- تفاصيل الأداء (إضافة وظيفية): أفضل نتيجة / الاتجاه / الأخطاء المفتوحة / نقاط تحتاج تركيزاً — بنفس أسلوب بطاقات التصميم -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-bullseye" style="color: #E87881;"></i>
+    نقاط تحتاج تركيزاً
+  </h3>
+</div>
+<div class="space-y-3.5 text-xs">
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{% if best is not None %}{{ best }}%{% else %}—{% endif %}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">أفضل نتيجة</span><i class="fa-solid fa-medal" style="color: #FBB459;"></i></div>
+</div>
+{% if trend is not None %}<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: {% if trend >= 0 %}#36CE8F{% else %}#E87881{% endif %}; font-family: 'Outfit', sans-serif;">{% if trend >= 0 %}↑ +{% else %}↓ {% endif %}{{ trend }}%</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">التغيّر عن بداية محاولاتك</span><i class="fa-solid fa-arrow-trend-up" style="color: #3F8BF9;"></i></div>
+</div>{% endif %}
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ open_errors }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">أخطاء تحتاج مراجعة</span><i class="fa-solid fa-circle-exclamation" style="color: #E87881;"></i></div>
+</div>
+{% for w in weak %}<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50 border-t" style="border-color: #D7E1ED;">
+<span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold border" style="background-color: #fdf0f1; color: #E87881; border-color: #E87881; font-family: 'Outfit', sans-serif;">{{ w.n }} خطأ</span>
+<div class="min-w-0 text-right"><p class="font-bold m-0 truncate" style="color: #133664;">{{ w.title }}</p><p class="m-0 text-[11px]" style="color: #4C658D;">{{ w.teacher }}</p></div>
+</div>{% empty %}<p class="text-center m-0 pt-2 font-semibold" style="color: #36CE8F;">لا توجد أخطاء مفتوحة 🎉</p>{% endfor %}
+</div></div>
+
+</aside><div class="lg:col-span-8 space-y-6">
+<!-- Row 1 of Charts: Bar Chart & Donut Performance Summary -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Card: أدائك في المواد الدراسية (Bar Chart) -->
+<!-- Card: ملخص الأداء العام (Overall Gauge) -->
+<div class="md:col-span-5 bg-white rounded-2xl p-5 border border-[#e2edf8] shadow-sm flex flex-col justify-between items-center text-center"><div class="w-full flex items-center justify-between mb-2">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-chart-pie" style="color: #3F8BF9;"></i>
+    ملخص الأداء العام
+  </h3>
+</div>
+<div class="my-3 relative flex items-center justify-center"><div class="relative w-40 h-40 flex items-center justify-center">
+  <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
+    <!-- Background track: thick, bold, matching thickness (16px) -->
+    <circle cx="80" cy="80" r="64" fill="none" stroke="#E2E8F0" stroke-width="16"></circle>
+    <!-- Active progress arc (78% of 2 * pi * 64 ≈ 402.12 -> 313.65), bold stroke-width=16 with rounded ends -->
+    <circle cx="80" cy="80" r="64" fill="none" stroke="#00B4D8" stroke-width="16" stroke-dasharray="402.12" stroke-dashoffset="{{ gauge_off }}" stroke-linecap="round" class="transition-all duration-1000"></circle>
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+    <span class="text-3xl font-black tracking-tight leading-none" style="color: #133664; font-family: 'Outfit', sans-serif;">{% if avg is not None %}{{ avg }}%{% else %}—{% endif %}</span>
+    <span class="text-xs font-semibold mt-1" style="color: #4C658D;">النسبة الكلية</span>
+  </div>
+</div></div>
+<div class="grid grid-cols-2 gap-3 w-full mt-2">
+<div class="rounded-xl p-2.5 text-center border" style="background-color: #F2F8FD; border-color: #D7E1ED;">
+<span class="text-xs font-medium block" style="color: #4C658D;">النقاط المكتسبة</span>
+<span class="text-xl font-bold mt-0.5 block" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ pts_earned }}</span>
+</div>
+<div class="rounded-xl p-2.5 text-center border" style="background-color: #F2F8FD; border-color: #D7E1ED;">
+<span class="text-xs font-medium block" style="color: #4C658D;">إجمالي النقاط</span>
+<span class="text-xl font-bold mt-0.5 block" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ pts_total }}</span>
+</div>
+</div></div><div class="md:col-span-7 bg-white rounded-2xl p-5 border border-[#e2edf8] shadow-sm flex flex-col justify-between"><div class="flex items-center justify-between mb-4">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-chart-simple" style="color: #3F8BF9;"></i>
+    أدائك في المواد الدراسية
+  </h3>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-4">
+<div class="w-full flex-1">
+<div class="h-48 flex items-end justify-between gap-2 px-2 pt-6 pb-2 border-b border-l relative" style="border-color: #D7E1ED;">
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div>
+<div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div>
+<div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div>
+<div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div>
+</div>
+{% for s in subjects %}
+<!-- Bar: {{ s.label }} -->
+<a class="flex-1 flex flex-col items-center h-full justify-end group no-underline" href="{% url 'student:progress' s.code %}" title="{{ s.tip }}">
+<span class="text-[11px] font-bold mb-1" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ s.p }}%</span>
+<div class="w-full max-w-[28px] rounded-t-md transition-all duration-500 group-hover:brightness-110" style="height: {{ s.p }}%; background-color: {{ s.color }};"></div>
+</a>
+{% empty %}<p class="w-full text-center text-xs font-semibold self-center" style="color: #4C658D;">لا توجد اشتراكات بعد.</p>{% endfor %}
+</div>
+<div class="flex justify-between text-[10px] font-semibold mt-2 px-1 text-center" style="color: #4C658D;">
+{% for s in subjects %}<span class="flex-1 truncate">{{ s.label }}</span>{% endfor %}
+</div>
+</div>
+<div class="flex flex-col gap-1.5 text-[11px] font-medium min-w-[100px] border-r pr-3" style="color: #4C658D; border-color: #D7E1ED;">
+{% for s in subjects %}<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background-color: {{ s.color }};"></span>{{ s.label }}</div>{% endfor %}
+</div>
+</div></div>
+<!-- Card: ملخص الأداء العام (Overall Gauge) -->
+</div>
+<!-- Row 2 of Charts: Platform Activity Line & Donut Activity Distribution -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6"><!-- Card: توزيع الأنشطة (Activity Breakdown Donut) -->
+<div class="md:col-span-6 bg-[#FEFEFE] rounded-2xl p-5 border border-[#D7E1ED] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-chart-donut" style="color: #3F8BF9;"></i>
+      توزيع الأنشطة
+    </h3>
+</div>
+<div class="flex items-center justify-between gap-4 py-2">
+<div class="relative w-36 h-36 flex-shrink-0 flex items-center justify-center"><div class="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
+  <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
+    <!-- Background Track (16px bold thickness) -->
+    <circle cx="80" cy="80" r="64" fill="none" stroke="#E2E8F0" stroke-width="16"></circle>
+    <!-- Total circumference C = 2 * pi * 64 = 402.12; Total = 48 items -->
+    <!-- 1. مشاهدة محاضرات: 22 (184.30) - start 0 -->
+{% for d in donut %}{% if d.n %}<circle cx="80" cy="80" r="64" fill="none" stroke="{{ d.color }}" stroke-width="16" stroke-dasharray="{{ d.len|stringformat:'.2f' }} 402.12" stroke-dashoffset="{{ d.off|stringformat:'.2f' }}" stroke-linecap="round"></circle>{% endif %}{% endfor %}
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+    <span class="text-2xl font-black leading-none" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ donut_total }}</span>
+    <span class="text-[10px] font-semibold mt-1" style="color: #4C658D;">إجمالي الأنشطة</span>
+  </div>
+</div></div>
+<div class="flex-1 space-y-2 text-xs font-semibold pr-2" style="color: #4C658D;">
+{% for d in donut %}
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full" style="background-color: {{ d.color }};"></span>
+<span class="">{{ d.label }}</span>
+</div>
+<span class="font-bold" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ d.n }}</span>
+</div>
+{% endfor %}
+</div>
+</div>
+</div>
+<!-- Card: نشاطك على المنصة (Activity Timeline with Tabs) -->
+<div class="md:col-span-6 bg-[#FEFEFE] rounded-2xl p-5 border border-[#D7E1ED] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-solid fa-wave-square" style="color: #3F8BF9;"></i>
+      نشاطك على المنصة
+    </h3>
+<div class="p-1 rounded-xl flex items-center text-xs font-semibold" style="background-color: #F2F8FD;" id="actTabs">
+<button type="button" data-days="7" class="text-white px-3 py-1 rounded-lg shadow-sm" style="background-color: #3F8BF9;">أسبوع</button>
+<button type="button" data-days="30" class="px-2.5 py-1 hover:opacity-80" style="color: #4C658D;">شهر</button>
+<button type="button" data-days="90" class="px-2.5 py-1 hover:opacity-80" style="color: #4C658D;"><span style="font-family: 'Outfit', sans-serif;" class="">3</span> أشهر</button>
+</div>
+</div>
+<div class="h-44 w-full relative pt-2">
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 350 140">
+<line stroke="#D7E1ED" stroke-dasharray="3" stroke-width="1" x1="0" x2="350" y1="20" y2="20"></line>
+<line stroke="#D7E1ED" stroke-dasharray="3" stroke-width="1" x1="0" x2="350" y1="60" y2="60"></line>
+<line stroke="#D7E1ED" stroke-dasharray="3" stroke-width="1" x1="0" x2="350" y1="100" y2="100"></line>
+<g id="actArea"></g>
+</svg>
+</div>
+<div class="flex justify-between text-[11px] font-semibold mt-2 px-1" id="actLabels" style="color: #4C658D; font-family: 'Outfit', sans-serif;">
+</div>
+</div></div>
+<section class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-4 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-lg font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-regular fa-clock" style="color: #3F8BF9;"></i>
+    أحدث الأنشطة
+  </h3>
+<a class="text-xs font-bold flex items-center gap-1 transition-colors hover:underline" href="#" id="evToggle" style="color: #3F8BF9;">
+    عرض الكل
+    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-right border-collapse">
+<thead>
+<tr class="text-xs font-semibold border-b" style="background-color: #F2F8FD; color: #4C658D; border-color: #D7E1ED;">
+<th class="py-3 px-4 rounded-r-xl">التاريخ والوقت</th>
+<th class="py-3 px-4">النشاط</th>
+<th class="py-3 px-4">المادة</th>
+<th class="py-3 px-4 rounded-l-xl">التفاصيل</th>
+</tr>
+</thead>
+<tbody class="text-xs divide-y" style="border-color: #D7E1ED;">
+{% for ev in events %}<tr class="hover:bg-slate-50/50 transition-colors{% if forloop.counter > 5 %} ev-extra hidden{% endif %}" style="border-color: #D7E1ED;">
+<td class="py-3.5 px-4" style="color: #4C658D; font-family: 'Outfit', sans-serif;">{{ ev.dt|date:"Y/m/d - H:i" }}</td>
+<td class="py-3.5 px-4 font-bold flex items-center gap-2" style="color: #133664;">
+{% if ev.kind == "quiz" %}<i class="fa-regular fa-clipboard-check text-sm" style="color: #8299DF;"></i>{% elif ev.kind == "lesson" %}<i class="fa-solid fa-circle-play text-sm" style="color: #3F8BF9;"></i>{% else %}<i class="fa-regular fa-comment-dots text-sm" style="color: #FBB459;"></i>{% endif %}
+          {{ ev.label }}
+        </td>
+<td class="py-3.5 px-4 font-semibold" style="color: #4C658D;">{{ ev.subject }}</td>
+<td class="py-3.5 px-4" style="color: #4C658D;">{% if ev.kind == "quiz" %}<a class="hover:underline" style="color: #4C658D;" href="{% url 'student:result' ev.teacher ev.pk %}">{{ ev.text }}</a>{% elif ev.kind == "lesson" %}<a class="hover:underline" style="color: #4C658D;" href="{% url 'student:lesson' ev.teacher ev.pk %}">{{ ev.text }}</a>{% else %}<a class="hover:underline" style="color: #4C658D;" href="{% url 'student:messages' ev.teacher %}">{{ ev.text }}</a>{% endif %}</td>
+</tr>
+{% empty %}<tr class="transition-colors" style="border-color: #D7E1ED;"><td colspan="4" class="py-6 px-4 text-center font-semibold" style="color: #4C658D;">لا توجد أنشطة بعد.</td></tr>{% endfor %}
+</tbody>
+</table>
+</div></section>
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm flex flex-col justify-between"><div>
+<div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;">
+<i class="fa-regular fa-comments" style="color: #3F8BF9;"></i>
+      تواصل مع معلمك
+    </h3>
+<a class="text-xs font-bold flex items-center gap-1 hover:underline" href="{% if msg_code %}{% url 'student:messages' msg_code %}{% else %}{% url 'student:teachers' %}{% endif %}" style="color: #3F8BF9;">
+      عرض الكل
+      <i class="fa-solid fa-chevron-left text-[10px]"></i>
+</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-right text-xs">
+<thead>
+<tr class="font-semibold border-b" style="background-color: #F2F8FD; color: #4C658D; border-color: #D7E1ED;">
+<th class="py-2.5 px-3">التاريخ</th>
+<th class="py-2.5 px-3">المعلم</th>
+<th class="py-2.5 px-3">الرسالة</th>
+<th class="py-2.5 px-3">الحالة</th>
+</tr>
+</thead>
+<tbody class="divide-y font-medium" style="border-color: #D7E1ED;">
+{% for m in recent_msgs %}<tr class="hover:bg-slate-50/50" style="border-color: #D7E1ED;">
+<td class="py-3 px-3" style="color: #4C658D; font-family: 'Outfit', sans-serif;">{{ m.created_at|date:"Y/m/d" }}</td>
+<td class="py-3 px-3 font-bold" style="color: #133664;">{{ m.conversation.teacher.display_label }}</td>
+<td class="py-3 px-3 truncate max-w-[200px]" style="color: #4C658D;"><a class="hover:underline" style="color: #4C658D;" href="{% url 'student:messages' m.conversation.teacher.teacher_code %}">{% if m.sender_id == request.user.id %}أنت: {% endif %}{{ m.text|default:"صورة"|truncatechars:60 }}</a></td>
+<td class="py-3 px-3">
+{% if m.is_read %}<span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold border" style="background-color: #eafaf3; color: #36CE8F; border-color: #36CE8F;">مقروء</span>{% else %}<span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold border" style="background-color: #fff6e9; color: #FBB459; border-color: #FBB459;">غير مقروء</span>{% endif %}
+</td>
+</tr>
+{% empty %}<tr class="hover:bg-slate-50/50" style="border-color: #D7E1ED;"><td colspan="4" class="py-6 px-3 text-center" style="color: #4C658D;">لا توجد رسائل بعد.</td></tr>{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+<div class="mt-4 pt-3 border-t flex justify-end" style="border-color: #D7E1ED;">
+<a href="{% if msg_code %}{% url 'student:messages' msg_code %}{% else %}{% url 'student:teachers' %}{% endif %}" class="no-underline text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all hover:opacity-95" style="background-color: #3F8BF9; box-shadow: 0 4px 14px rgba(63, 139, 249, 0.25);">
+<i class="fa-solid fa-paper-plane"></i>
+    إرسال رسالة جديدة
+  </a>
+</div></div></div>
+<!-- Right Column: Student Profile Sidebar (4 Cols) -->
+</div>
+<!-- END: MainContentGrid -->
+<!-- BEGIN: RecentActivitiesTableSection -->
+<!-- END: RecentActivitiesTableSection -->
+<!-- BEGIN: TeacherChatAndStrengthsRow -->
+<!-- END: TeacherChatAndStrengthsRow -->
+</main>
+<!-- END: DashboardContainer -->
+<!-- BEGIN: MainFooter -->
+<footer class="bg-[#081c33] text-white border-t border-slate-800 mt-12 pt-12 pb-6" style="background-color: #133664; border-color: #1e4579;"><div class="max-w-[1440px] mx-auto px-4 lg:px-8 py-10 flex flex-col items-center justify-center text-center space-y-5"><div class="inline-flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvJg-rD-VHRgk_NCm9QH09MrovMMFp-FvZVROue6Wf9Dujl5hCmB079AIgRTmm-UMvNPO419a69N8JcjHDmr5t0-DKvO9vdyi5MHbXcKI7sz87vlV6202JJK4IQA1tKckBJe-ybk64NQeglB07FEKqqVNFJ-5beiMGr5GVC4z2WwtrBuh536j2ytRxgxHilwE9mmsSuGCv3KXubTzHHXRe-ST6iEgQfnWFp2WJEFqd0EuyE7ZrMNPnbPrp88me4GsCgi8" alt="مدرستك" class="h-16 md:h-20 w-auto object-contain transition-all"></div><p class="text-sm md:text-base font-medium text-slate-200 max-w-2xl leading-relaxed">النجاح يبدأ بخطوة، والتميز رحلة مستمرة تصنعها باجتهادك وعزيمتك كل يوم. منصة مدرستك معك دائماً نحو القمة.</p></div></footer>
+<!-- END: MainFooter -->
+{% endblock %}
+
+{% block scripts %}
+{{ activity|json_script:"act-data" }}
+<script>
+(function(){
+  var data = JSON.parse(document.getElementById('act-data').textContent || '[]');
+  var area = document.getElementById('actArea'), labels = document.getElementById('actLabels');
+  var NS = 'http://www.w3.org/2000/svg';
+  function mk(tag, attrs){ var e = document.createElementNS(NS, tag); for (var k in attrs) e.setAttribute(k, attrs[k]); return e; }
+  function draw(days){
+    var slice = data.slice(-days), n = days <= 7 ? 7 : 7;       // 7 نقاط دائمًا كما في التصميم
+    var size = slice.length / n, pts = [];
+    for (var i = 0; i < n; i++){
+      var a = Math.round(i * size), b = Math.round((i + 1) * size), sum = 0;
+      for (var j = a; j < b; j++) sum += slice[j] ? slice[j][1] : 0;
+      pts.push({v: sum, d: slice[Math.min(b, slice.length) - 1] ? slice[Math.min(b, slice.length) - 1][0] : ''});
+    }
+    var max = Math.max.apply(null, pts.map(function(p){ return p.v; })); if (max < 1) max = 1;
+    var xs = [10, 60, 115, 170, 225, 280, 340];
+    var coords = pts.map(function(p, i){ return [xs[i], 135 - (p.v / max) * 90]; });
+    var line = coords.map(function(c, i){ return (i ? 'L ' : 'M ') + c[0] + ' ' + c[1]; }).join(' ');
+    while (area.firstChild) area.removeChild(area.firstChild);
+    area.appendChild(mk('path', {d: line + ' L 340 135 L 10 135 Z', fill: 'rgba(63, 139, 249, 0.12)'}));
+    area.appendChild(mk('path', {d: line, fill: 'none', stroke: '#3F8BF9', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'stroke-width': '2.5'}));
+    coords.forEach(function(c, i){
+      var last = i === coords.length - 1;
+      var el = mk('circle', {cx: c[0], cy: c[1], fill: last ? '#3F8BF9' : '#FEFEFE', r: last ? 5 : 4, stroke: last ? '#FEFEFE' : '#3F8BF9', 'stroke-width': 2});
+      var t = mk('title', {}); t.textContent = (pts[i].d || '') + ' — ' + pts[i].v; el.appendChild(t); area.appendChild(el);
+    });
+    labels.innerHTML = '';
+    pts.forEach(function(p){
+      var s = document.createElement('span'); var d = (p.d || '').split('-');
+      s.textContent = d.length === 3 ? d[1] + '/' + d[2] : ''; labels.appendChild(s);
+    });
+  }
+  var tabs = document.querySelectorAll('#actTabs button');
+  tabs.forEach(function(b){
+    b.addEventListener('click', function(){
+      tabs.forEach(function(x){ x.className = 'px-2.5 py-1 hover:opacity-80'; x.style.backgroundColor = ''; x.style.color = '#4C658D'; });
+      b.className = 'text-white px-3 py-1 rounded-lg shadow-sm'; b.style.backgroundColor = '#3F8BF9'; b.style.color = '';
+      draw(parseInt(b.getAttribute('data-days'), 10));
+    });
+  });
+  draw(7);
+  var tg = document.getElementById('evToggle'), open = false;
+  if (tg) tg.addEventListener('click', function(e){
+    e.preventDefault(); open = !open;
+    document.querySelectorAll('.ev-extra').forEach(function(r){ r.classList.toggle('hidden', !open); });
+    tg.firstChild.textContent = open ? '\n    عرض أقل\n    ' : '\n    عرض الكل\n    ';
+  });
+})();
+</script>
+{% endblock %}

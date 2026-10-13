@@ -1,0 +1,10 @@
+{% extends "owner/base.html" %}
+{% block title %}سجل التدقيق{% endblock %}
+{% block topbar_title %}سجل التدقيق{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>سجل التدقيق</h1></div>
+<div class="tablewrap"><table class="t"><thead><tr><th>الوقت</th><th>من</th><th>الإجراء</th><th>الهدف</th><th>ملاحظة</th></tr></thead><tbody>
+{% for a in page %}<tr><td class="small">{{ a.created_at|date:"Y-m-d H:i" }}</td><td>{{ a.actor.full_name|default:"—" }}</td><td>{{ a.action }}</td><td class="ltr">{{ a.target }}</td><td class="small muted">{{ a.detail }}</td></tr>{% empty %}<tr><td colspan="5" class="center muted">لا يوجد سجل بعد.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "partials/pager.html" with page=page qs=qs %}
+{% endblock %}

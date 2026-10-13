@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="pub-header">
+  <a class="brand" href="{% url 'landing' %}">{% include "partials/logo.html" %}<span>{{ site.platform_name }}</span></a>
+  <nav aria-label="التنقل الرئيسي">
+    <a href="{% url 'landing' %}#features">المميزات</a>
+    <a href="{% url 'landing' %}#how">كيف تعمل</a>
+    <a href="{% url 'pricing' %}">الأسعار</a>
+    <a href="{% url 'teachers' %}">المدرّسون</a>
+    <a href="{% url 'about' %}">من نحن</a>
+    <a href="{% url 'contact' %}">تواصل معنا</a>
+  </nav>
+  <div class="row">
+    {% if user.is_authenticated %}<a class="btn" href="{% url 'go' %}">لوحتي</a>
+    {% else %}<a class="btn ghost" href="{% url 'login' %}">تسجيل الدخول</a><a class="btn" href="{% url 'register' %}">إنشاء حساب</a>{% endif %}
+  </div>
+</header>
+{% block main %}{% endblock %}
+<footer class="pub-footer">
+  <div class="wrap cols">
+    <div><div class="brand" style="color:#fff;padding:0 0 8px">{% include "partials/logo.html" %}<span>{{ site.platform_name }}</span></div>
+      <p>{{ site.tagline }}. منصة تجمع المدرّس والطالب في بيئة رقمية واحدة منظّمة.</p>
+      {% if site.support_phone %}<p>الدعم: <span class="ltr">{{ site.support_phone }}</span></p>{% endif %}</div>
+    <div><h4 style="color:#fff">روابط</h4><p><a href="{% url 'pricing' %}">الأسعار</a><br><a href="{% url 'teachers' %}">المدرّسون</a><br><a href="{% url 'contact' %}">تواصل معنا</a></p></div>
+    <div><h4 style="color:#fff">قانوني</h4><p><a href="{% url 'privacy' %}">سياسة الخصوصية</a><br><a href="{% url 'terms' %}">الشروط والأحكام</a></p></div>
+  </div>
+  <div class="wrap small center" style="margin-top:22px;opacity:.7">© {% now "Y" %} {{ site.platform_name }} — جميع الحقوق محفوظة</div>
+</footer>
+{% endblock %}

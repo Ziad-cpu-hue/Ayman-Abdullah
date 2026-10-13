@@ -1,0 +1,7 @@
+{% extends "site/public_base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block main %}
+<section class="section"><div class="wrap article"><h1>{{ title }}</h1>
+  {% if text %}<div class="legal">{{ text }}</div>{% else %}<div class="empty">لم تُضف الإدارة نص هذه الصفحة بعد.</div>{% endif %}
+</div></section>
+{% endblock %}

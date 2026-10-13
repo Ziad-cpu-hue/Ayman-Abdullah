@@ -1,0 +1,248 @@
+{% extends "ui/document.html" %}
+{% load static %}
+{% load ui_extras %}
+{% block title %}الإشعارات{% endblock %}
+{% block body_class %}min-h-screen text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-700{% endblock %}
+{% block head %}<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+<style data-purpose="custom-typography">
+    body { font-family: Tajawal, sans-serif !important; background-color: #F8FAFC; }
+    /* العناوين (الإشعارات / تصفية الإشعارات / لا تفوت أي جديد!) بخط Tajawal */
+    .font-cairo { font-family: Tajawal, sans-serif !important; }
+    /* ألوان brand كما في التصميم */
+    .text-brand-500 { color: #1677F9; }
+    .hover\:text-brand-500:hover { color: #1677F9; }
+    .group:hover .group-hover\:text-brand-500 { color: #1677F9; }
+  </style>
+<style data-purpose="decorations">
+    .hero-gradient { background: linear-gradient(135deg, #F3F8FF 0%, #E9F3FF 50%, #F5F9FF 100%); }
+    .custom-scroll::-webkit-scrollbar { width: 6px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background-color: #CBD5E1; border-radius: 9999px; }
+  </style>{% endblock %}
+{% block body %}
+<!-- صفحة «الإشعارات» — التصميم الجديد كما هو، بدون القائمة الجانبية. -->
+<!-- BEGIN: HeroBanner -->
+<section class="hero-gradient relative overflow-hidden py-8 lg:py-10 max-w-[1440px] mx-auto mt-6 mb-2 px-4 sm:px-6 lg:px-8 rounded-2xl border border-blue-100 shadow-sm" style="border: 1px solid #D6E7FF; border-radius: 20px; box-shadow: 0 4px 20px rgba(30, 90, 160, 0.06);">
+<!-- Subtle Cloud & Decor Elements (SVGs) -->
+<div class="absolute inset-0 pointer-events-none opacity-40">
+<svg class="absolute top-4 left-1/3 w-28 h-16 text-blue-200/50" fill="currentColor" viewBox="0 0 100 60">
+<path d="M20,40 Q10,40 10,30 Q10,20 20,20 Q25,10 40,10 Q55,10 60,20 Q70,20 70,30 Q80,30 80,40 Q80,50 65,50 L20,50 Z"></path>
+</svg>
+<svg class="absolute bottom-2 right-1/4 w-36 h-20 text-blue-200/40" fill="currentColor" viewBox="0 0 100 60">
+<path d="M25,45 Q15,45 15,35 Q15,25 25,25 Q30,15 45,15 Q60,15 65,25 Q75,25 75,35 Q85,35 85,45 L25,45 Z"></path>
+</svg>
+</div>
+<div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col-reverse md:flex-row items-center justify-between gap-8">
+<!-- Right Column: Heading, Subtitle & Breadcrumbs -->
+<div class="text-right w-full md:w-auto">
+<div class="flex items-center gap-3 mb-2 justify-start">
+<h1 class="text-3xl sm:text-4xl lg:text-[40px] font-extrabold text-[#1677F9] font-cairo">الإشعارات</h1>
+<span class="p-2 bg-blue-100 text-[#1677F9] rounded-2xl inline-flex"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxsjs6lBkVvaawyn34pLDwq0jB0wQpwbXZrbtLZQXIXgzUSXcBLfFyD3UOLT4H08nYI9RGY5INyIIaky3SRWLJjBQbhovwcuMzDz_Q4DAZfHjDHlLUpgmImWyB_TFBUMNgl3HGuVEFiZ1iHcuRf6XnDZmxJRsC2aF3_J6pHEHG8FK7OrdWSOjttWNNe2yUoyD0uf2tTJqCq5-3V3Bn8tDUwaqFO8OERouAhJfkB_A9lyDMAQ6d1GGPr-Hz_FSUQk4KrA" alt="إشعار" class="w-8 h-8 object-contain"></span>
+</div>
+<p class="text-base sm:text-lg text-slate-500 font-medium mb-4">
+          تابع آخر التحديثات والتنبيهات من منصة مدرستك
+        </p>
+<!-- Breadcrumb Navigation -->
+<nav class="flex items-center gap-2 text-xs sm:text-sm text-slate-400 font-medium">
+<a class="flex items-center gap-1.5 hover:text-brand-500 transition-colors" href="{% url 'student:home' %}">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwcO3eu8sGgGnfTXqdIujqCQ9LfonoTcywD36adzoDipXuKbrUE_A6ShW4AiDptonOJyudbYc8kh5yWJc-vujhhG6KuINyxbi-LUeTy9mhVAmAR9N97a5R0lpqUY-KbcA-04kudYyz6T572i3aXQiNM6FFC8_dFddSyS0Whq9hxoJWNMH4etpXLO6cnQWvk7HP1n-PtxDjSMNtVH9wBJ62UHxNf0ngehcsL53tiPfKJQ_FJen5Pi-1hvkQaXQO2Gla_A" alt="الرئيسية" class="w-4 h-4 object-contain">
+<span class="text-slate-600 hover:text-brand-500">الرئيسية</span>
+</a>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4iJdha22eD-9l2k7IYOFzNOTa2JgcNgiC9BFUvZkawMM3oIpABe0TH8K7JE7s5Ncqg-PoO4Jjy0PelIJL1tPAJUvLtt52ghXu2uU-_GulYj3_-3Uzv4IzIw1j0aHKD-qM1UNaikvVVvGCMFqrmTFX3qh2WlAF056kAyq8Us2vtSatfikeybFPYgDELOATFDvAJ-prxjKMMOLzmRGr2JAX7eTH6jAHiHUf11CCLdf1-Ut98qGHKUkoRJFFQ5ux6E-Q0A" alt="-" class="w-3.5 h-3.5 object-contain opacity-60">
+<span class="text-brand-500 font-bold">الإشعارات</span>
+</nav>
+</div>
+<!-- Left Column: 3D Illustration Vector Composition -->
+<div class="relative w-64 sm:w-80 h-44 flex items-center justify-center"><div class="flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdL5Tqg4DdivbyIdf8twxI_f-sqgGUwHbmUeI8o-0dChbNTPm1pqfV1_Eyc66idE9k8b_uBQFxR2grpE0DNRt4rmjv5Gc12c272XAhd_4ajXkyn9H8onqCJQIwFuQuIVtfUj4_9yDpf77rCkOh-bWLcKxZx3TVERSoQtpsYKDdnsCBdpZIVFYF1GAzORDsS1HDux0_oH6-7R-fdKQMihcgVQsaIfaxrLkwfCr2ZDRJVd-1NCh5h1gpAe_ae7LQFljjjg" alt="إشعار" class="object-contain drop-shadow-md" style="width: 160px; height: 160px;"></div></div>
+</div>
+</section>
+<!-- END: HeroBanner -->
+<!-- BEGIN: MainContent -->
+<main class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+<!-- RIGHT SIDEBAR: Filters & Motivation Card (4 Cols on lg) -->
+<aside class="lg:col-span-4 space-y-6">
+<!-- Filters Card -->
+<section class="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5" data-purpose="notification-filters-card" id="n-filters">
+<!-- Card Header -->
+<div class="flex items-center gap-2.5 pb-4 mb-4 border-b border-slate-100">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCttxWjUtaKKkwm5IvbK7RizFzb1C8kdsbGsq6ka7tHL1rMg-Akt-MFpPW8Jw7V4-UDKtvowzf14DNweKEUoBNWgs2w_f8-rFd-Hp5cdVfnF4wnjuwqXNPuDB6gDyjNKON56raGc7eT6BD7bZctQuCHGRxyTZ0QyDkCamj51zxypCWhU96v6cpdLRtAiCGkuHpUwf9Z6lQDZIGTfubWXN7sD8K-bpnRBMbO8Iq_-M4QmvuBwmnxCAcFY-9HeiD9TMjtAg" alt="تصفية" class="w-5 h-5 sm:w-6 sm:h-6 object-contain flex-shrink-0">
+<h2 class="text-lg font-bold text-slate-800 font-cairo">تصفية الإشعارات</h2>
+</div>
+<!-- Filter Item List -->
+<div class="space-y-1.5 font-medium text-sm">
+<!-- Item: All (Active) -->
+<button data-cat="all" class="w-full flex items-center justify-between p-3 rounded-xl bg-blue-50/70 text-brand-500 font-bold border border-blue-100/60 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB067PrG1s4g5syIFmg0jVGtaBSm_CSAZk6--FkuPR4JFc5uHKYpSiGNCdA0NSh1Aii_i0Czz1ihBPXwJ_E_w8A-WK01WshGh-EqxqjQeexoIj0AB55EuNx8s40KSFDqrgT9kmRCWMXtRI9tTKkJjcwNyy9QnGfegFbl18i3nRyVdXB-WQF-6UrKKjpq_cLHIEFhHXmllI_nA-5eeUCyg9PFZVTtDGNLUe0jMMe9hyWp6jtQKBpfRM9ol2rr_qceRzFJA" alt="الكل" class="w-5 h-5 object-contain flex-shrink-0" style="width: 22px; height: 22px;">
+<span class="">الكل</span>
+</div>
+<svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Item: دورات جديدة -->
+<button data-cat="course" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHT5EmlHRDYT0e8Izzg30vFBmUqwciobRRyZMbXDsg9rUywZdqgYATukVYBuLxLfJ7m7jYyncHLhTowXXkZr9D7DAdfDve3EFhMi6HLlMoJ1ZMk-52YytB2GZiZiw_HrHcf2apPXFrKmPZAibbeUeOUzVu8NsDFByNYhJxVfmy34DeN_yZOa2BWQcg8HRf2YcV7J3m-uZKbTk-6regq-iiXbf5BXvDi4G5IlRK-cYrJorFzaaJRJTmyDSFD6DkxvsWkw" alt="دورات جديدة" class="w-5 h-5 object-contain">
+<span class="">دورات جديدة</span>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Item: محاضرات جديدة -->
+<button data-cat="lecture" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzL-MngOi89TSKy1x5qrtIvwjZtEjvHN8btRwZqeVyAH9sAX4oRCoIUYFHjWq-vk324oVePyGJgzjHy5HtwsTIxhHqhGgFCJDPc1gdEYTbk9-fJ7mlvax0WLuet260d2SAqok8flZnZtjZUFBCJ5cETw8aVv8q5v1R5da4GJ94qDeMuBNsY03hzRLROBEtzvnBBVNimJVPx5vVYBQDdil9EbDx4u0v7f2bAyHl_AnwI7_wrTd7Flir4gBjFHnR0yK2dw" alt="محاضرات جديدة" class="w-5 h-5 object-contain">
+<span class="">محاضرات جديدة</span>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Item: دروس جديدة -->
+<button data-cat="lesson" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHn3uGHxbjmIFp0eWFPY3h4k-gvtc35sLCnjKee_a3M4UXlmY4_-WcL7ij5dqmuBcTojAmYWZV2_3l_9PD3RDsBu-_TXw2M4NBOuAx8B5hpg_-8iz5gP2-qDYFI1mL6tKeh3ci3DINth5GfZpBKALGL7et3LHFqjsrQfM8ff-eN_UyUxv0N_Trntl3ZuMGJSdItLtgX6oTmQMRQ8recfPTDshN-2DxgWVunQl9sAyTGNzJplyzYuxdq9Sj4O3Ti2Izkw" alt="دروس جديدة" class="w-5 h-5 object-contain">
+<span class="">دروس جديدة</span>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Item: اختبارات جديدة -->
+<button data-cat="quiz" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbelYMxteWAQ00REKt1iNgxi7mUcg1vPT2YWDF4JXGObvfVTwaHU0VaCPnOPdIMAEQCDb_s9jrsVR-nsH5QHC0vs8AQ-qqRhySW5W9CinRkeA8PtOlWO7tZMJqJBPbrb3DhnKy9DkdSCZLsmXTeSLJvAv_D3kwd5Fq2JzHoibsLRpnRupqF7HTCqmEEsISZKS24F_XMa5jaN9rSM3mAf1qOyOZWMAm323ZdLJZ5nlFu_RI1qGzr0VmlbJKWXUkNPmNEw" alt="اختبارات جديدة" class="w-5 h-5 object-contain">
+<span class="">اختبارات جديدة</span>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Item: تحديثات المحتوى -->
+<button data-cat="update" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1TkNNeJJ4TBmGfvdJxlQ8jH7fkh5STa0RE_tjvTxH19EzBMbOX0tMD-HunDUpo97F0YA6HPiX_dgIVDibSjBGiHwZfYtBSfUYA3MtoBJaCWAetP09HUGdvCt2iTPFN9qzdQ7vy9hkve7Fp6BN3ohB5hnJANWJO_5TKGLdiPWf2QqahE0AFmFrc4FxMsCB9IFlvPiVQXGEwYiKwRMEKaKSzabGAWqITsOWDpejh7wbclEypseLAaVv8A_DSK17yfeqdA" alt="تحديثات المحتوى" class="w-5 h-5 object-contain">
+<span class="">تحديثات المحتوى</span>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Item: تنبيهات -->
+<button data-cat="alert" class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition" type="button">
+<div class="flex items-center gap-3">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxsjs6lBkVvaawyn34pLDwq0jB0wQpwbXZrbtLZQXIXgzUSXcBLfFyD3UOLT4H08nYI9RGY5INyIIaky3SRWLJjBQbhovwcuMzDz_Q4DAZfHjDHlLUpgmImWyB_TFBUMNgl3HGuVEFiZ1iHcuRf6XnDZmxJRsC2aF3_J6pHEHG8FK7OrdWSOjttWNNe2yUoyD0uf2tTJqCq5-3V3Bn8tDUwaqFO8OERouAhJfkB_A9lyDMAQ6d1GGPr-Hz_FSUQk4KrA" alt="تنبيهات" class="w-5 h-5 object-contain">
+<span class="">تنبيهات</span>
+</div>
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</section>
+<!-- Motivational Educational Card -->
+<section class="bg-gradient-to-b from-[#F0F7FF] to-[#E5F1FF] rounded-2xl border border-blue-100 p-6 text-center relative overflow-hidden shadow-sm" data-purpose="motivational-banner">
+<!-- Background Soft Bubble -->
+<div class="absolute -top-6 -right-6 w-24 h-24 bg-blue-200/40 rounded-full blur-xl pointer-events-none"></div>
+<!-- Header with light bulb -->
+<div class="flex items-center justify-center gap-2 mb-2">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXZIx3w4jQtpd20MNqZOb-gRlSJnNUn8Qa-NHSaAJooYA6_8RUH9xDmPi_-BpC3QreTld2aTUBwtuOJTCpauWzjrw3krNZm25UWGgmYfDbSWGylkmeyVviEqwvdc0LgqiusUIL4qlBMYjjzkJg7WgjYYeasxhG9pKDZStIVpknuGSfi-jkpq8gD1KUa3kSpbXkngkz_vXthNmFSj6oXvvU2YVWSmsbKFLoKcdBy9pFyUmX8dRHw5reFyTeHoqUG-TJpg" alt="فكرة" class="w-7 h-7 object-contain">
+<h3 class="text-lg font-bold text-slate-800 font-cairo">لا تفوت أي جديد!</h3>
+</div>
+<p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xs mx-auto mb-5 font-medium">
+            تابع إشعاراتك أولاً بأول لتكون دائماً على إطلاع بكل ما هو جديد في منصة مدرستك.
+          </p>
+<!-- Illustration: Stacked Books + Pencil Holder + Plant -->
+<div class="relative w-full h-36 flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv_weG8N-QIfcKau4TXYL0vZL6bMoOUsByOLvDZDl3nnAPN5obeMp6iDm2_ydc6yqqhHuA8I89V_xgPue5RxiZy6WgilEjbAKFFrP8fjvXZtoFaXRdxrSci_84BhTacUSr4784-ud0Apt7eFMh4C05Ev34lCWYyko3tjzOeyhZm0X9YFDIRrX9_7E0C3wlADFzUXyoM2GuYUdyZeUhSxtjxL3QB6oFD7seLdQuuRTyoQbpOk9dLFlPeF84P9O3u3SDqw" alt="نبتة" class="object-contain drop-shadow-sm mx-auto" style="width: 140px; height: 140px;"></div>
+</section>
+</aside>
+<!-- LEFT MAIN CONTENT: Notification Cards List (8 Cols on lg) -->
+<section class="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6">
+<!-- Action Header Strip -->
+<div class="flex flex-wrap items-center justify-between gap-4 pb-5 mb-5 border-b border-slate-100">
+<!-- Bulk Action Buttons -->
+
+<!-- Total Count Counter -->
+<div class="flex items-center gap-2 text-xs sm:text-sm font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">
+<span class="">إجمالي الإشعارات:</span>
+<span id="n-count" class="text-brand-500 font-extrabold text-base" style="font-family: Outfit, Inter, sans-serif; font-weight: 600; letter-spacing: 0.02em;">{{ items|length }}</span>
+
+</div>
+{% if items %}<form method="post" action="{% url 'student:notifications_read_all' %}">{% csrf_token %}<button type="submit" class="flex items-center gap-2 text-xs sm:text-sm font-bold text-brand-500 bg-blue-50/70 hover:bg-blue-100/70 px-3 py-1.5 rounded-lg border border-blue-100/60 transition">تعليم الكل كمقروء</button></form>{% endif %}
+</div>
+<!-- Notification List Items -->
+<div class="space-y-3.5" data-purpose="notification-items-container" id="n-list">
+{% for n in items %}{% with c=n|notif_cat %}
+<a href="{% url 'student:notification_go' n.pk %}" data-n-card data-cat="{{ c }}" class="no-underline group relative flex items-start sm:items-center justify-between p-4 rounded-xl border border-slate-150 bg-white hover:bg-blue-50/30 hover:border-blue-200 transition-all duration-200 shadow-2xs hover:shadow-sm">
+<div class="flex items-start sm:items-center gap-3.5 flex-1 min-w-0">
+{% if c == "course" %}<div class="w-12 h-12 rounded-2xl bg-[#F3EEFF] text-[#8B5CF6] flex items-center justify-center flex-shrink-0 shadow-xs"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHT5EmlHRDYT0e8Izzg30vFBmUqwciobRRyZMbXDsg9rUywZdqgYATukVYBuLxLfJ7m7jYyncHLhTowXXkZr9D7DAdfDve3EFhMi6HLlMoJ1ZMk-52YytB2GZiZiw_HrHcf2apPXFrKmPZAibbeUeOUzVu8NsDFByNYhJxVfmy34DeN_yZOa2BWQcg8HRf2YcV7J3m-uZKbTk-6regq-iiXbf5BXvDi4G5IlRK-cYrJorFzaaJRJTmyDSFD6DkxvsWkw" alt="دورة جديدة" class="w-7 h-7 object-contain"></div>{% elif c == "lecture" %}<div class="w-12 h-12 rounded-2xl bg-[#ECFDF3] text-[#22C55E] flex items-center justify-center flex-shrink-0 shadow-xs"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzL-MngOi89TSKy1x5qrtIvwjZtEjvHN8btRwZqeVyAH9sAX4oRCoIUYFHjWq-vk324oVePyGJgzjHy5HtwsTIxhHqhGgFCJDPc1gdEYTbk9-fJ7mlvax0WLuet260d2SAqok8flZnZtjZUFBCJ5cETw8aVv8q5v1R5da4GJ94qDeMuBNsY03hzRLROBEtzvnBBVNimJVPx5vVYBQDdil9EbDx4u0v7f2bAyHl_AnwI7_wrTd7Flir4gBjFHnR0yK2dw" alt="محاضرة جديدة" class="w-7 h-7 object-contain"></div>{% elif c == "quiz" %}<div class="w-12 h-12 rounded-2xl bg-[#FFF5E8] text-[#F59E0B] flex items-center justify-center flex-shrink-0 shadow-xs"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbelYMxteWAQ00REKt1iNgxi7mUcg1vPT2YWDF4JXGObvfVTwaHU0VaCPnOPdIMAEQCDb_s9jrsVR-nsH5QHC0vs8AQ-qqRhySW5W9CinRkeA8PtOlWO7tZMJqJBPbrb3DhnKy9DkdSCZLsmXTeSLJvAv_D3kwd5Fq2JzHoibsLRpnRupqF7HTCqmEEsISZKS24F_XMa5jaN9rSM3mAf1qOyOZWMAm323ZdLJZ5nlFu_RI1qGzr0VmlbJKWXUkNPmNEw" alt="اختبار جديد" class="w-7 h-7 object-contain"></div>{% elif c == "lesson" %}<div class="w-12 h-12 rounded-2xl bg-[#FFF1F2] text-[#F43F5E] flex items-center justify-center flex-shrink-0 shadow-xs"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHn3uGHxbjmIFp0eWFPY3h4k-gvtc35sLCnjKee_a3M4UXlmY4_-WcL7ij5dqmuBcTojAmYWZV2_3l_9PD3RDsBu-_TXw2M4NBOuAx8B5hpg_-8iz5gP2-qDYFI1mL6tKeh3ci3DINth5GfZpBKALGL7et3LHFqjsrQfM8ff-eN_UyUxv0N_Trntl3ZuMGJSdItLtgX6oTmQMRQ8recfPTDshN-2DxgWVunQl9sAyTGNzJplyzYuxdq9Sj4O3Ti2Izkw" alt="درس جديد" class="w-7 h-7 object-contain"></div>{% elif c == "update" %}<div class="w-12 h-12 rounded-2xl bg-[#EEF6FF] text-[#1677F9] flex items-center justify-center flex-shrink-0 shadow-xs"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1TkNNeJJ4TBmGfvdJxlQ8jH7fkh5STa0RE_tjvTxH19EzBMbOX0tMD-HunDUpo97F0YA6HPiX_dgIVDibSjBGiHwZfYtBSfUYA3MtoBJaCWAetP09HUGdvCt2iTPFN9qzdQ7vy9hkve7Fp6BN3ohB5hnJANWJO_5TKGLdiPWf2QqahE0AFmFrc4FxMsCB9IFlvPiVQXGEwYiKwRMEKaKSzabGAWqITsOWDpejh7wbclEypseLAaVv8A_DSK17yfeqdA" alt="تحديث محتوى" class="w-7 h-7 object-contain"></div>{% else %}<div class="w-12 h-12 rounded-2xl bg-[#F3E8FF] text-[#A855F7] flex items-center justify-center flex-shrink-0 shadow-xs"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj4gnFpgZ6KT3tvfBcCSn3z4AmIPfHs9c1yfkDseJMe0mAME1KxFZ-EkRQQTvqFfgSVEqSM9p3o21VG5N8NEl8p1X193yVonwuAQfQtJRtwoCrIQZv6JY5TFpXWI8pOzP6-VYgbXqkkB50738lrZg-Z9noAa1NKqWUklzeNfVtRGym9v2hXVPHnCZFKHG_eEnM1dYKwLoclLM5Dwcm51MXd8zHBUcFZ54n5Ie2uvY6gCAP9p6vyaJEf5MleWDVuLg5bA" alt="تنبيه" class="w-7 h-7 object-contain"></div>{% endif %}
+<!-- Notification Details -->
+<div class="flex-1 min-w-0 pr-1">
+<h4 class="text-sm sm:text-base font-bold text-slate-800 leading-snug group-hover:text-brand-500 transition-colors">
+                  {% if not n.is_read %}<span class="inline-block w-2 h-2 rounded-full bg-[#1677F9] ml-1.5 align-middle" title="غير مقروء"></span>{% endif %}{{ n.title }}
+                </h4>
+{% if n.body %}<p class="text-xs sm:text-sm text-slate-500 mt-0.5 line-clamp-1">
+                  {{ n.body }}
+                </p>{% endif %}
+<div class="flex items-center gap-1.5 text-[11px] text-slate-400 mt-1.5">
+<svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="n-time" data-ts="{{ n.created_at|date:"c" }}" style="font-family: Outfit, Inter, sans-serif; font-weight: 500; letter-spacing: 0.02em;">{{ n.created_at|date:"d/m H:i" }}</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 flex-shrink-0 mr-3">
+{% if c == "course" %}<span class="hidden sm:inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-[#EDE9FE] text-[#7C3AED]">
+                دورة جديدة
+              </span>{% elif c == "lecture" %}<span class="hidden sm:inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-[#DCFCE7] text-[#16A34A]">
+                محاضرة جديدة
+              </span>{% elif c == "quiz" %}<span class="hidden sm:inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-[#FEF3C7] text-[#D97706]">
+                اختبار جديد
+              </span>{% elif c == "lesson" %}<span class="hidden sm:inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-[#FFE4E6] text-[#E11D48]">
+                درس جديد
+              </span>{% elif c == "update" %}<span class="hidden sm:inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-[#DBEAFE] text-[#2563EB]">
+                تحديث محتوى
+              </span>{% else %}<span class="hidden sm:inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-[#EDE9FE] text-[#8B5CF6]">
+                تنبيه
+              </span>{% endif %}
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4iJdha22eD-9l2k7IYOFzNOTa2JgcNgiC9BFUvZkawMM3oIpABe0TH8K7JE7s5Ncqg-PoO4Jjy0PelIJL1tPAJUvLtt52ghXu2uU-_GulYj3_-3Uzv4IzIw1j0aHKD-qM1UNaikvVVvGCMFqrmTFX3qh2WlAF056kAyq8Us2vtSatfikeybFPYgDELOATFDvAJ-prxjKMMOLzmRGr2JAX7eTH6jAHiHUf11CCLdf1-Ut98qGHKUkoRJFFQ5ux6E-Q0A" alt="فتح" class="w-4 h-4 object-contain opacity-50 group-hover:opacity-100 transition">
+</div>
+</a>
+{% endwith %}{% endfor %}
+{% if not items %}<div class="rounded-2xl border-2 border-dashed border-slate-200 bg-white p-12 text-center text-slate-500"><div class="text-4xl mb-2">🔔</div>لا توجد إشعارات بعد.</div>{% endif %}
+<div id="n-empty" class="hidden rounded-2xl border-2 border-dashed border-slate-200 bg-white p-10 text-center text-slate-500 text-sm font-semibold">لا توجد إشعارات في هذا التصنيف.</div>
+</div>
+</section>
+</div>
+</main>
+<!-- END: MainContent -->
+<script>
+(function(){
+  var list=document.getElementById('n-list'); if(!list)return;
+  var cards=[].slice.call(list.querySelectorAll('[data-n-card]')), cnt=document.getElementById('n-count'), emptyBox=document.getElementById('n-empty');
+  var btns=[].slice.call(document.querySelectorAll('#n-filters [data-cat]'));
+  var ACT='w-full flex items-center justify-between p-3 rounded-xl bg-blue-50/70 text-brand-500 font-bold border border-blue-100/60 transition';
+  var OFF='w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition';
+  function pick(cat){
+    var n=0;cards.forEach(function(c){var show=cat==='all'||c.dataset.cat===cat;c.classList.toggle('hidden',!show);if(show)n++;});
+    if(cnt)cnt.textContent=n; if(emptyBox)emptyBox.classList.toggle('hidden',n>0||!cards.length);
+    btns.forEach(function(b){var on=b.dataset.cat===cat;b.className=on?ACT:OFF;var s=b.querySelector('svg');if(s)s.setAttribute('class','w-4 h-4 '+(on?'text-brand-500':'text-slate-400'));});
+  }
+  btns.forEach(function(b){b.addEventListener('click',function(){pick(b.dataset.cat);});});
+  /* الوقت بصيغة التصميم: اليوم / أمس / اسم اليوم */
+  var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  function sod(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+  [].slice.call(document.querySelectorAll('.n-time')).forEach(function(el){
+    var d=new Date(el.getAttribute('data-ts')); if(isNaN(d))return;
+    var h=d.getHours(),m=d.getMinutes(),ap=h>=12?'م':'ص';h=h%12||12;var t=h+':'+(m<10?'0':'')+m+' '+ap;
+    var diff=Math.round((sod(new Date())-sod(d))/86400000), lbl;
+    if(diff<=0)lbl='اليوم';else if(diff===1)lbl='أمس';else if(diff<7)lbl=DAYS[d.getDay()];
+    else lbl=d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+    el.textContent=lbl+' - '+t;});
+  pick('all');
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "owner/base.html" %}
+{% block title %}الإيرادات{% endblock %}
+{% block topbar_title %}الإيرادات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>الإيرادات</h1></div>
+<div class="grid g4 mb">
+  <div class="card stat"><span>الإجمالي</span><b>{{ stats.total|floatformat:0 }} ج</b></div>
+  <div class="card stat teal"><span>اليوم</span><b>{{ stats.today|floatformat:0 }} ج</b></div>
+  <div class="card stat gold"><span>هذا الشهر</span><b>{{ stats.month|floatformat:0 }} ج</b></div>
+  <div class="card stat purple"><span>الشهر الماضي</span><b>{{ stats.prev_month|floatformat:0 }} ج</b></div>
+</div>
+<div class="card mb"><h3>آخر 14 يومًا</h3><div class="bars">{% for d in daily %}<div class="bar"><em>{{ d.p|floatformat:0 }}</em><i style="height:{{ d.pct }}%"></i><span>{{ d.l }}</span></div>{% endfor %}</div></div>
+<h3>الإيراد حسب المدرّس</h3>
+<div class="tablewrap"><table class="t"><thead><tr><th>المدرّس</th><th>عدد العمليات</th><th>الإجمالي</th></tr></thead><tbody>
+{% for r in by_teacher %}<tr><td>{{ r.enrollment__teacher__user__full_name }}</td><td>{{ r.n }}</td><td>{{ r.total|floatformat:0 }} ج</td></tr>{% empty %}<tr><td colspan="3" class="center muted">لا توجد بيانات بعد.</td></tr>{% endfor %}
+</tbody></table></div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "owner/base.html" %}
+{% block title %}المدرّسون{% endblock %}
+{% block topbar_title %}المدرّسون{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>المدرّسون</h1><a class="btn" href="{% url 'owner:teacher_new' %}">+ إضافة مدرّس</a></div>
+<form class="row mb"><input class="input grow" name="q" value="{{ q }}" placeholder="بحث بالاسم أو المادة أو رقم المدرّس…"><button class="btn ghost">بحث</button></form>
+<div class="tablewrap"><table class="t"><thead><tr><th>المدرّس</th><th>المادة</th><th>الرقم</th><th>الطلاب النشطون</th><th>الحالة</th><th></th></tr></thead><tbody>
+{% for t in page %}<tr><td>{{ t.name }}</td><td>{{ t.subject }}</td><td class="ltr">{{ t.teacher_code }}</td><td>{{ t.n_students }}</td>
+<td><span class="badge {% if t.user.is_active %}green{% else %}red{% endif %}">{% if t.user.is_active %}نشط{% else %}موقوف{% endif %}</span></td>
+<td><a class="btn sm ghost" href="{% url 'owner:teacher_detail' t.pk %}">عرض</a></td></tr>
+{% empty %}<tr><td colspan="6" class="center muted">لا يوجد مدرّسون.</td></tr>{% endfor %}
+</tbody></table></div>
+{% include "partials/pager.html" with page=page qs=qs %}
+{% endblock %}

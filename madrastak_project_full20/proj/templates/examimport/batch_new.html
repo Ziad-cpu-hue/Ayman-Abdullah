@@ -1,0 +1,18 @@
+{% extends "teacher/base.html" %}
+{% block title %}استيراد أسئلة{% endblock %}
+{% block topbar_title %}استيراد أسئلة — {{ quiz.title }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'teacher:quiz_detail' quiz.pk %}">{{ quiz.title }}</a> ← استيراد أسئلة</div>
+<div class="card" style="max-width:640px">
+  <h3>استيراد أسئلة من ملف PDF أو صور</h3>
+  <p class="muted small">
+    ارفع ملف PDF يحتوي على أسئلة اختيار من متعدد بإجاباتها الصحيحة، أو صورة واحدة، أو مجموعة صور لصفحات
+    متعددة (بالترتيب). سيقوم النظام باستخراج الأسئلة والاختيارات والإجابات الصحيحة تلقائيًا، وسيعرضها عليك
+    للمراجعة والتعديل قبل إضافتها فعليًا إلى الاختبار — لن تُضاف أي أسئلة دون موافقتك.
+  </p>
+  <form method="post" enctype="multipart/form-data" data-once>{% csrf_token %}
+    {% include "partials/form.html" %}
+    <button class="btn" type="submit">تحليل الملف واستخراج الأسئلة</button>
+  </form>
+</div>
+{% endblock %}

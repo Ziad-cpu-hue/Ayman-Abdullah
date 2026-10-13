@@ -1,0 +1,12 @@
+{% extends "owner/base.html" %}
+{% block title %}تفعيل يدوي{% endblock %}
+{% block topbar_title %}تفعيل اشتراك يدويًا{% endblock %}
+{% block content %}
+<div class="banner blue">استخدم هذا فقط عند التفعيل بدون إيصال دفع مرفوع (مثال: دفع نقدي مباشر).</div>
+<div class="card" style="max-width:560px">
+<form method="post" data-once>{% csrf_token %}
+  <div class="field"><label>الطالب</label><select class="input" name="student" required><option value="">اختر الطالب</option>{% for s in students %}<option value="{{ s.pk }}">{{ s.full_name }} — {{ s.phone }}</option>{% endfor %}</select></div>
+  <div class="field"><label>المدرّس</label><select class="input" name="teacher" required><option value="">اختر المدرّس</option>{% for t in teachers %}<option value="{{ t.pk }}">{{ t.name }} — {{ t.subject }}</option>{% endfor %}</select></div>
+  <button class="btn" type="submit">تفعيل اشتراك شهر</button>
+</form></div>
+{% endblock %}
