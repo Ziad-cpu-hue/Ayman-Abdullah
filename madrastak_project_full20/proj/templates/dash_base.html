@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="app">
+  <aside class="sidebar" id="sidebar" aria-label="القائمة الجانبية">
+    <a class="brand" href="{% if user.is_student %}{% url 'student:home' %}{% else %}{% url 'go' %}{% endif %}">{% include "partials/logo.html" %}<span>{{ site.platform_name }}</span></a>
+    <div class="sec">{% if user.role == 'student' %}حسابي{% elif user.role == 'teacher' %}لوحة المدرّس{% else %}لوحة الإدارة{% endif %}</div>
+    {% for i in nav %}<a class="nav {% if i.active %}active{% endif %}" href="{{ i.url }}"><span class="ic">{{ i.icon }}</span>{{ i.label }}{% if i.label == 'الإشعارات' and unread_count %}<span class="badge">{{ unread_count }}</span>{% endif %}</a>{% endfor %}
+    {% if workspace_nav %}
+      <div class="sec">مساحة {{ current_teacher.display_label }} — {{ current_teacher.subject }}</div>
+      {% for i in workspace_nav %}<a class="nav {% if i.active %}active{% endif %}" href="{{ i.url }}"><span class="ic">{{ i.icon }}</span>{{ i.label }}</a>{% endfor %}
+    {% endif %}
+    <div class="who">
+      <b>{{ user.full_name }}</b>
+      <span>{{ user.get_role_display }}{% if user.role == 'staff' %} — {{ user.get_staff_role_display }}{% endif %}</span>
+      <form method="post" action="{% url 'logout' %}" style="margin-top:8px">{% csrf_token %}<button class="btn sm ghost" style="color:#fff;border-color:rgba(255,255,255,.3)" type="submit">🚪 تسجيل الخروج</button></form>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="menuBtn" aria-label="فتح القائمة">☰</button>
+      <div class="title">{% block topbar_title %}{% endblock %}</div>
+      <span class="grow"></span>
+      {% block topbar_extra %}{% endblock %}
+      {% if user.is_student %}<a class="bell" href="{% url 'student:notifications' %}" aria-label="الإشعارات">🔔{% if unread_count %}<span class="dot">{{ unread_count }}</span>{% endif %}</a>
+      {% else %}<a class="bell" href="{% if user.is_teacher %}{% url 'teacher:messages' %}{% else %}{% url 'owner:tickets' %}{% endif %}" aria-label="تنبيهات">🔔{% if unread_count %}<span class="dot">{{ unread_count }}</span>{% endif %}</a>{% endif %}
+      <span class="avatar" title="{{ user.full_name }}">{{ user.first_name|slice:":1" }}</span>
+    </header>
+    <div class="content">
+      {% if impersonating %}<div class="banner red row spread"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="btn sm danger">العودة لحسابي</button></form></div>{% endif %}
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+<nav class="bottomnav" aria-label="تنقل سريع">
+  {% for i in bottom_nav %}<a class="{% if i.active %}active{% endif %}" href="{{ i.url }}"><span>{{ i.icon }}</span>{{ i.label|truncatechars:9 }}</a>{% endfor %}
+  <a href="#" onclick="document.body.classList.add('nav-open');return false"><span>☰</span>المزيد</a>
+</nav>
+{% endblock %}
