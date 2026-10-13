@@ -1,0 +1,13 @@
+{% extends base_template %}
+{% block topbar_title %}تذكرة دعم جديدة{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>تذكرة دعم جديدة</h1></div>
+<div class="card" style="max-width:560px">
+<form method="post" data-once>{% csrf_token %}
+  <div class="field"><label>عنوان المشكلة</label><input class="input" name="subject" required></div>
+  <div class="field"><label>النوع</label><select class="input" name="category">
+    <option value="payment">مشكلة في الدفع</option><option value="access">مشكلة في الدخول</option><option value="content">مشكلة في المحتوى</option><option value="technical">مشكلة تقنية</option><option value="other">أخرى</option></select></div>
+  <div class="field"><label>تفاصيل المشكلة</label><textarea class="input" name="message" rows="4" required></textarea></div>
+  <button class="btn" type="submit">إرسال</button>
+</form></div>
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends "teacher/base.html" %}
+{% block title %}{% if is_new %}إضافة كلمة{% else %}تعديل الكلمة{% endif %}{% endblock %}
+{% block topbar_title %}{{ l.title }} — {% if is_new %}إضافة كلمة{% else %}تعديل الكلمة{% endif %}{% endblock %}
+{% block head %}{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<style data-purpose="custom-styling">
+    .tpage {
+      font-family: 'Tajawal', sans-serif;
+    }
+    .wizard-card {
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.10),
+                  0 12px 30px -8px rgba(0, 102, 254, 0.16),
+                  0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      backdrop-filter: blur(16px);
+    }
+    .subtle-input-border {
+      border: 1.5px solid #dce8fa;
+    }
+    .subtle-input-border:focus {
+      border-color: #0066fe;
+      box-shadow: 0 0 0 4px rgba(0, 102, 254, 0.12);
+    }
+    .upload-zone-border {
+      border: 2px dashed #bfdbfe;
+    }
+    .upload-zone-border:hover,
+    .upload-zone-border.is-dragover {
+      border-color: #0066fe;
+      background-color: #f8fbff;
+    }
+  </style>
+{% endblock %}
+{% block page %}
+<div class="tpage min-h-[calc(100vh-7rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 antialiased text-slate-800 selection:bg-blue-100 selection:text-blue-800 relative overflow-x-hidden bg-[#eef5fc]">
+<!-- BEGIN: Vibrant Interlocking Wave Background -->
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+<div class="absolute inset-0 bg-[#eef5fc]"></div>
+<svg class="absolute inset-0 w-full h-full object-cover" fill="none" preserveaspectratio="none" viewbox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 0 L1440 0 L1440 450 C1080 560 620 320 0 490 Z" fill="#d9ebfc"></path>
+</svg>
+</div>
+<!-- END: Vibrant Interlocking Wave Background -->
+<!-- BEGIN: ModalContainer -->
+<main class="w-full max-w-[720px] relative z-10 my-auto" data-purpose="wizard-modal">
+<div class="wizard-card bg-white/95 rounded-[36px] p-7 sm:p-10 lg:p-11 relative overflow-hidden flex flex-col border border-white/70 shadow-2xl">
+<!-- BEGIN: HeaderStepper -->
+<header class="w-full mb-7 pb-3.5 border-b border-slate-100" data-purpose="stepper-navigation">
+<div class="flex items-center justify-between">
+<!-- Stepper Items (RTL: Step 1 Right -> Step 2 Active -> Step 3 Left) -->
+<div class="flex items-center gap-5 sm:gap-7" data-purpose="stepper-steps">
+<!-- Step 1: Completed with Checkmark -->
+<div class="flex items-center gap-3" data-purpose="step-completed">
+<span class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-blue-50 text-[#0066fe] border-2 border-blue-200 flex items-center justify-center shadow-sm shrink-0">
+<svg class="w-5 h-5 stroke-[2.8]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</span>
+<span class="text-xs sm:text-sm font-extrabold text-slate-700 whitespace-nowrap">معلومات الدرس</span>
+</div>
+<!-- Step 2: Active with Glowing Ring -->
+<div class="flex items-center gap-3" data-purpose="step-active">
+<span class="w-12 h-12 sm:w-13 sm:h-13 rounded-full bg-[#0066fe] text-white text-xl sm:text-2xl font-extrabold flex items-center justify-center shadow-[0_4px_16px_rgba(0,102,254,0.45)] ring-4 ring-blue-100/90 leading-none select-none shrink-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                2
+              </span>
+<span class="text-xs sm:text-sm font-extrabold text-[#0066fe] tracking-tight whitespace-nowrap">{% if is_new %}إضافة كلمة{% else %}تعديل الكلمة{% endif %}</span>
+</div>
+<!-- Step 3: Inactive / Pending -->
+<div class="flex items-center gap-3 opacity-75 hover:opacity-100 transition-opacity" data-purpose="step-pending">
+<span class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-slate-100/90 text-slate-600 text-lg sm:text-xl font-bold flex items-center justify-center border border-slate-200/90 shadow-sm leading-none select-none shrink-0" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                3
+              </span>
+<span class="text-xs sm:text-sm font-bold text-slate-500 whitespace-nowrap">إنهاء</span>
+</div>
+</div>
+<!-- Navigation Back Button -->
+<button aria-label="الرجوع" class="w-9 h-9 rounded-full bg-slate-50 hover:bg-blue-50 border border-slate-200/80 hover:border-blue-200 flex items-center justify-center text-slate-500 hover:text-[#0066fe] transition-all shadow-sm active:scale-95" data-purpose="back-navigation-button" data-cancel-url="{% url 'teacher:lesson_detail' l.pk %}" type="button">
+<!-- Left Chevron Arrow for RTL navigation -->
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<polyline points="15 18 9 12 15 6"></polyline>
+</svg>
+</button>
+</div>
+</header>
+<!-- END: HeaderStepper -->
+<form id="vocab-form" method="post" class="flex-1 flex flex-col" novalidate>{% csrf_token %}
+{% if form.non_field_errors %}<p class="mb-3 text-xs font-bold text-rose-600">{{ form.non_field_errors.0 }}</p>{% endif %}
+<!-- BEGIN: FormContentSection -->
+<section class="flex-1 flex flex-col space-y-4 sm:space-y-4.5 z-10" data-purpose="vocab-form-fields">
+<div class="space-y-1.5" data-purpose="input-group-word">
+<label class="flex items-center gap-1.5 text-xs sm:text-sm font-black text-slate-800" for="vocab-word">
+<span>{{ form.word.label }}</span>
+<span class="text-rose-500 text-base leading-none font-black">*</span>
+</label>
+<input class="w-full rounded-2xl subtle-input-border bg-white py-3 px-4.5 text-xs sm:text-sm font-bold text-slate-700 placeholder-slate-400 focus:outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="vocab-word" name="word" type="text" dir="auto" maxlength="100" value="{{ form.word.value|default_if_none:'' }}"/>
+{% if form.word.errors %}<p class="text-[11px] font-bold text-rose-600">{{ form.word.errors.0 }}</p>{% endif %}
+</div>
+<div class="space-y-1.5" data-purpose="input-group-meaning">
+<label class="flex items-center gap-1.5 text-xs sm:text-sm font-black text-slate-800" for="vocab-meaning">
+<span>{{ form.meaning.label }}</span>
+<span class="text-rose-500 text-base leading-none font-black">*</span>
+</label>
+<input class="w-full rounded-2xl subtle-input-border bg-white py-3 px-4.5 text-xs sm:text-sm font-bold text-slate-700 placeholder-slate-400 focus:outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="vocab-meaning" name="meaning" type="text" dir="auto" maxlength="200" value="{{ form.meaning.value|default_if_none:'' }}"/>
+{% if form.meaning.errors %}<p class="text-[11px] font-bold text-rose-600">{{ form.meaning.errors.0 }}</p>{% endif %}
+</div>
+<div class="space-y-1.5" data-purpose="input-group-example">
+<label class="flex items-center gap-1.5 text-xs sm:text-sm font-black text-slate-800" for="vocab-example">
+<span>{{ form.example.label }}</span>
+</label>
+<input class="w-full rounded-2xl subtle-input-border bg-white py-3 px-4.5 text-xs sm:text-sm font-bold text-slate-700 placeholder-slate-400 focus:outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="vocab-example" name="example" type="text" dir="auto" maxlength="300" value="{{ form.example.value|default_if_none:'' }}"/>
+{% if form.example.errors %}<p class="text-[11px] font-bold text-rose-600">{{ form.example.errors.0 }}</p>{% endif %}
+</div>
+<div class="space-y-1.5" data-purpose="input-group-example_translation">
+<label class="flex items-center gap-1.5 text-xs sm:text-sm font-black text-slate-800" for="vocab-example-tr">
+<span>{{ form.example_translation.label }}</span>
+</label>
+<input class="w-full rounded-2xl subtle-input-border bg-white py-3 px-4.5 text-xs sm:text-sm font-bold text-slate-700 placeholder-slate-400 focus:outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="vocab-example-tr" name="example_translation" type="text" dir="auto" maxlength="300" value="{{ form.example_translation.value|default_if_none:'' }}"/>
+{% if form.example_translation.errors %}<p class="text-[11px] font-bold text-rose-600">{{ form.example_translation.errors.0 }}</p>{% endif %}
+</div>
+<div class="space-y-1.5" data-purpose="input-group-order">
+<label class="flex items-center gap-1.5 text-xs sm:text-sm font-black text-slate-800" for="vocab-order">
+<span>{{ form.order.label }}</span>
+</label>
+<input class="w-full rounded-2xl subtle-input-border bg-white py-3 px-4.5 text-xs sm:text-sm font-bold text-slate-700 placeholder-slate-400 focus:outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="vocab-order" name="order" type="number" min="0" step="1" inputmode="numeric" value="{{ form.order.value|default_if_none:'' }}"/>
+{% if form.order.errors %}<p class="text-[11px] font-bold text-rose-600">{{ form.order.errors.0 }}</p>{% endif %}
+</div>
+</section>
+<!-- END: FormContentSection -->
+<!-- BEGIN: BottomIllustrationAndActions -->
+<footer class="mt-5 pt-3 flex flex-wrap items-end justify-between gap-y-3 relative z-10" data-purpose="modal-footer">
+<!-- 3D Cute Educational Illustration from DataStore -->
+<div class="w-48 sm:w-56 h-28 sm:h-32 relative -mb-2 -mr-2 pointer-events-none select-none flex-shrink-0" data-purpose="educational-illustration">
+<img alt="Educational illustration with graduation hat, books and plants" class="w-full h-full object-contain pointer-events-none select-none filter drop-shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7D9Y28qrYWQyL_hiSXYulTEH58RCNyStH-x9gjJLMSN65zybLVSTeXks7rycp0fWhef_yMpdC1ZUSJFg9AQLaNhtlpjhxXnU4lhehDTdWHMNTTQWTqBmDTTfL1PLDzWOp3Q6MFMYaAgaEg5LaWXIxJ8HvLgw3HZXOozf8-DCO3Dpzl6MC-2IFkNN_4sFK2xSRHiSDdAO1oYjQQFu-W22SftvPK77gmXdItOM19hmjTp0gbz0i7DbFD4_g1zRwhjTJJA"/>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-wrap items-center gap-3.5 pb-1" data-purpose="form-action-buttons">
+<!-- Cancel Button -->
+<button class="min-w-[95px] px-6 sm:px-7 py-3 bg-blue-50/80 hover:bg-blue-100 text-[#0066fe] text-sm sm:text-base font-bold tracking-normal transition-all border-2 border-blue-200 hover:border-blue-300 shadow-sm active:scale-95 text-center flex items-center justify-center rounded-2xl" data-purpose="cancel-button" data-cancel-url="{% url 'teacher:lesson_detail' l.pk %}" type="button">
+            إلغاء
+          </button>
+{% if is_new %}<!-- Add & continue -->
+<button class="px-6 sm:px-7 py-3 bg-white hover:bg-blue-50 text-[#0066fe] text-sm sm:text-base font-bold tracking-normal transition-all border-2 border-blue-200 hover:border-blue-300 shadow-sm active:scale-95 text-center flex items-center justify-center rounded-2xl" data-purpose="add-another-button" name="add_another" value="1" type="submit">
+            إضافة والمتابعة لكلمة أخرى
+          </button>{% endif %}
+<!-- Submit Button -->
+<button class="min-w-[150px] sm:min-w-[170px] px-9 sm:px-11 py-3.5 rounded-2xl bg-[#0066fe] hover:bg-[#0055d4] text-white text-sm sm:text-base font-bold tracking-normal transition-all shadow-[0_8px_20px_rgba(0,102,254,0.38)] hover:shadow-[0_10px_25px_rgba(0,102,254,0.48)] active:scale-95 text-center flex items-center justify-center" data-purpose="submit-button" type="submit">
+            {% if is_new %}إضافة{% else %}حفظ التعديلات{% endif %}
+          </button>
+</div>
+</footer>
+<!-- END: BottomIllustrationAndActions -->
+</form>
+</div>
+</main>
+<!-- END: ModalContainer -->
+<script>
+(function () {
+  const form = document.getElementById('vocab-form');
+  const word = document.getElementById('vocab-word');
+  const meaning = document.getElementById('vocab-meaning');
+  document.querySelectorAll('[data-cancel-url]').forEach((b) => {
+    b.addEventListener('click', () => { window.location.href = b.dataset.cancelUrl; });
+  });
+  form.addEventListener('submit', (e) => {
+    const empty = [word, meaning].find((el) => !el.value.trim());
+    if (empty) {
+      e.preventDefault();
+      empty.focus();
+      empty.classList.add('border-rose-400');
+      return;
+    }
+    const btns = form.querySelectorAll('button[type="submit"]');
+    const clicked = e.submitter;
+    setTimeout(() => btns.forEach((b) => { b.disabled = true; b.classList.add('opacity-75', 'cursor-wait'); }), 10);
+  });
+})();
+</script>
+</div>
+{% endblock %}

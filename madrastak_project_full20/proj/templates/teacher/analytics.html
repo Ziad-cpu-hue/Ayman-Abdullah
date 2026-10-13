@@ -1,0 +1,19 @@
+{% extends "teacher/base.html" %}
+{% block title %}التحليلات{% endblock %}
+{% block topbar_title %}التحليلات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>التحليلات</h1></div>
+<h3>أداء الدورات</h3>
+<div class="grid gauto mb">
+{% for r in course_rows %}<div class="card"><h4>{{ r.c.title }}</h4><div class="row spread small"><span>معدل الإكمال</span><span>{{ r.completion }}%</span></div><div class="progress"><i style="width:{{ r.completion }}%"></i></div>
+{% if r.avg_score %}<p class="small muted mt">متوسط الدرجات: {{ r.avg_score }}%</p>{% endif %}</div>{% empty %}<div class="empty">لا توجد بيانات كافية بعد.</div>{% endfor %}
+</div>
+<div class="split">
+  <div class="card mb"><h3>أصعب الأسئلة (الأكثر خطأً)</h3>
+    {% for q in hard_q %}<div class="row spread small" style="padding:6px 0;border-bottom:1px dashed var(--line)"><span>{{ q.text|truncatechars:60 }}</span><span class="badge red">{{ q.wrong }} خطأ</span></div>{% empty %}<p class="muted small">لا توجد بيانات كافية.</p>{% endfor %}</div>
+  <div class="card mb"><h3>الدروس الأقل إكمالًا</h3>
+    {% for l in hard_lessons %}<div class="row spread small" style="padding:6px 0;border-bottom:1px dashed var(--line)"><span>{{ l.lesson__title }}</span><span>{{ l.done }}/{{ l.started }}</span></div>{% empty %}<p class="muted small">لا توجد بيانات كافية.</p>{% endfor %}</div>
+</div>
+<div class="card"><h3>طلاب يحتاجون متابعة</h3>
+{% for e in falling_behind %}<div class="row spread small" style="padding:6px 0;border-bottom:1px dashed var(--line)"><span>{{ e.student.full_name }}</span><span class="badge red">{{ e.errs }} خطأ مفتوح</span></div>{% empty %}<p class="muted small">لا يوجد طلاب متأخرون حاليًا.</p>{% endfor %}</div>
+{% endblock %}

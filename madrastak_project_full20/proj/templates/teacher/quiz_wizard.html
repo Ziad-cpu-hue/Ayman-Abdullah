@@ -1,0 +1,103 @@
+{% extends "teacher/base.html" %}
+{% block title %}إضافة اختبار{% endblock %}
+{% block page %}
+<div class="p-4 sm:p-6 md:p-8 flex-1"><div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+  <aside class="rounded-[28px] p-7 text-white shadow-xl h-fit" style="background:linear-gradient(160deg,#4c1d95,#6d28d9 60%,#8b5cf6)">
+    <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-file-circle-check"></i></div>
+    <h1 class="text-2xl font-black text-white m-0">إضافة اختبار</h1>
+    <p class="text-sm text-violet-100 mt-2">اختبار أو كويز أو تدريب يظهر للطلاب داخل الدرس/الوحدة/الدورة التي تحددها.</p>
+    <ol class="mt-6 space-y-4 list-none p-0 text-sm" id="wz-steps">
+      <li data-step="1" class="flex items-center gap-3"><span class="wz-dot w-8 h-8 rounded-full bg-white text-violet-700 font-black flex items-center justify-center num-font">1</span>بيانات الاختبار</li>
+      <li data-step="2" class="flex items-center gap-3"><span class="wz-dot w-8 h-8 rounded-full bg-white/25 font-black flex items-center justify-center num-font">2</span>الأسئلة</li>
+      <li data-step="3" class="flex items-center gap-3"><span class="wz-dot w-8 h-8 rounded-full bg-white/25 font-black flex items-center justify-center num-font">3</span>تأكيد الحفظ</li>
+    </ol>
+  </aside>
+  <form method="post" enctype="multipart/form-data" class="wz lg:col-span-3 bg-white rounded-[28px] border border-blue-100 shadow-md p-7 space-y-5" id="wz" data-once>{% csrf_token %}
+    {% if form.non_field_errors or files_error %}<div class="rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 text-sm px-4 py-3">{% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}{{ files_error }}</div>{% endif %}
+    <textarea id="qj-init" class="hidden">{{ questions_json }}</textarea>
+    <input type="hidden" name="questions_json" id="questions_json" value="[]">
+    <!-- 1 -->
+    <div data-pane="1" class="space-y-4">
+      <h2 class="font-black text-lg text-slate-800 m-0">بيانات الاختبار</h2>
+      <div><label class="ui-label">عنوان الاختبار</label>{{ form.title }}{{ form.title.errors }}</div>
+      <div><label class="ui-label">وصف / تعليمات</label>{{ form.description }}</div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><label class="ui-label">النوع</label>{{ form.kind }}</div>
+        <div><label class="ui-label">مكان الاختبار (يظهر فيه للطالب)</label>{{ form.target }}{{ form.target.errors }}</div>
+        <div><label class="ui-label">{{ form.duration_minutes.label }}</label>{{ form.duration_minutes }}</div>
+        <div><label class="ui-label">{{ form.max_attempts.label }}</label>{{ form.max_attempts }}</div>
+        <div id="deadline-box" class="md:col-span-2"><label class="ui-label">{{ form.deadline.label }}</label><input type="datetime-local" name="deadline" value="{{ form.deadline.value|default:'' }}">{{ form.deadline.errors }}</div>
+      </div>
+      <div class="text-left"><button type="button" data-go="2" class="px-8 py-3 rounded-xl bg-violet-600 text-white text-sm font-bold">التالي ←</button></div>
+    </div>
+    <!-- 2 -->
+    <div data-pane="2" class="space-y-4 hidden">
+      <h2 class="font-black text-lg text-slate-800 m-0">الأسئلة</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <label class="cursor-pointer rounded-2xl border-2 border-slate-200 p-4 has-[:checked]:border-violet-600 has-[:checked]:bg-violet-50 text-center"><input type="radio" name="question_source" value="manual" class="sr-only" {% if form.question_source.value != 'pdf' and form.question_source.value != 'image' %}checked{% endif %}><i class="fa-solid fa-pen-to-square text-2xl text-violet-600"></i><p class="font-black text-sm m-0 mt-2">إضافة يدوية</p><p class="text-[11px] text-slate-500 m-0">اكتب الأسئلة بنفسك</p></label>
+        <label class="cursor-pointer rounded-2xl border-2 border-slate-200 p-4 has-[:checked]:border-violet-600 has-[:checked]:bg-violet-50 text-center"><input type="radio" name="question_source" value="pdf" class="sr-only" {% if form.question_source.value == 'pdf' %}checked{% endif %}><i class="fa-solid fa-file-pdf text-2xl text-rose-500"></i><p class="font-black text-sm m-0 mt-2">رفع ملف PDF</p><p class="text-[11px] text-slate-500 m-0">استخراج تلقائي (OCR)</p></label>
+        <label class="cursor-pointer rounded-2xl border-2 border-slate-200 p-4 has-[:checked]:border-violet-600 has-[:checked]:bg-violet-50 text-center"><input type="radio" name="question_source" value="image" class="sr-only" {% if form.question_source.value == 'image' %}checked{% endif %}><i class="fa-solid fa-image text-2xl text-sky-500"></i><p class="font-black text-sm m-0 mt-2">رفع صورة</p><p class="text-[11px] text-slate-500 m-0">صورة أو عدة صور</p></label>
+      </div>
+      <div id="src-manual" class="space-y-4">
+        <div id="q-list" class="space-y-4"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button type="button" id="add-q" class="w-full py-3 rounded-2xl border-2 border-dashed border-violet-300 text-violet-700 font-bold text-sm hover:bg-violet-50">+ إضافة سؤال</button>
+          <button type="button" id="add-essay" class="w-full py-3 rounded-2xl border-2 border-dashed border-violet-300 text-violet-700 font-bold text-sm hover:bg-violet-50">+ إضافة سؤال مقالي</button>
+        </div>
+      </div>
+      <div id="src-file" class="hidden">
+        <div class="dropzone rounded-3xl border-2 border-dashed border-violet-300 bg-violet-50/50 p-8 text-center"><i class="fa-solid fa-cloud-arrow-up text-4xl text-violet-500 mb-2"></i><p class="font-bold text-slate-700 m-0">اسحب الملف هنا أو اضغط للاختيار</p><p class="text-xs text-slate-500 mt-1">PDF أو صور (JPG/PNG/WEBP) — أسئلة اختيار من متعدد بإجاباتها. ستراجع الأسئلة المستخرجة قبل إضافتها.</p>
+          <input type="file" name="files" id="files" multiple accept=".pdf,.jpg,.jpeg,.png,.webp" class="block mx-auto mt-3 text-sm"><p data-file-names class="text-xs text-violet-700 font-bold mt-2"></p></div>
+      </div>
+      <div class="flex justify-between"><button type="button" data-go="1" class="px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold">→ السابق</button><button type="button" data-go="3" class="px-8 py-3 rounded-xl bg-violet-600 text-white text-sm font-bold">التالي ←</button></div>
+    </div>
+    <!-- 3 -->
+    <div data-pane="3" class="space-y-4 hidden">
+      <h2 class="font-black text-lg text-slate-800 m-0">تأكيد الحفظ</h2>
+      <div id="summary" class="rounded-2xl bg-slate-50 border border-slate-200 p-5 text-sm leading-loose"></div>
+      <label id="pub-box" class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="publish" class="w-4 h-4" {% if form.publish.value %}checked{% endif %}> {{ form.publish.label }}</label>
+      <div class="flex justify-between"><button type="button" data-go="2" class="px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold">→ السابق</button><button type="submit" class="px-10 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black shadow-lg shadow-emerald-600/30">حفظ الاختبار ✓</button></div>
+    </div>
+  </form>
+</div></div>
+{% endblock %}
+{% block scripts %}<script>
+(function(){
+  var f=document.getElementById('wz');
+  f.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName==='INPUT')e.preventDefault()});
+  var panes=f.querySelectorAll('[data-pane]');
+  function go(n){panes.forEach(function(p){p.classList.toggle('hidden',p.getAttribute('data-pane')!==String(n))});
+    document.querySelectorAll('#wz-steps li').forEach(function(li){var s=+li.getAttribute('data-step'),d=li.querySelector('.wz-dot');d.className='wz-dot w-8 h-8 rounded-full font-black flex items-center justify-center num-font '+(s<n?'bg-emerald-400 text-white':s===n?'bg-white text-violet-700':'bg-white/25');});
+    if(n===3)summary();window.scrollTo({top:0,behavior:'smooth'});}
+  f.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-go'))}});
+  var kind=f.querySelector('[name=kind]');function dl(){document.getElementById('deadline-box').classList.toggle('hidden',kind.value!=='homework')}kind.onchange=dl;dl();
+  function src(){return f.querySelector('[name=question_source]:checked').value}
+  function syncSrc(){var m=src()==='manual';document.getElementById('src-manual').classList.toggle('hidden',!m);document.getElementById('src-file').classList.toggle('hidden',m);
+    document.getElementById('files').accept=src()==='pdf'?'.pdf':(src()==='image'?'.jpg,.jpeg,.png,.webp':'.pdf,.jpg,.jpeg,.png,.webp');document.getElementById('pub-box').classList.toggle('hidden',!m);}
+  f.querySelectorAll('[name=question_source]').forEach(function(r){r.onchange=syncSrc});syncSrc();
+  // بنّاء الأسئلة اليدوي
+  var list=document.getElementById('q-list');
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
+  function card(q){q=q||{text:'',options:['','','',''],correct:0};var idx=list.children.length;
+    var d=document.createElement('div');d.className='qcard-w rounded-2xl border border-slate-200 p-5 bg-slate-50/50 space-y-3';
+    if(q.type==='essay'){d.setAttribute('data-essay','1');
+      d.innerHTML='<div class="flex items-center justify-between"><b class="text-sm text-violet-700">السؤال <span class="qn num-font"></span> (مقالي)</b><button type="button" class="rm text-rose-500 text-xs font-bold">حذف</button></div><textarea class="qt" rows="3" placeholder="نص السؤال المقالي">'+esc(q.text)+'</textarea><p class="text-[11px] text-slate-500 m-0">سيظهر للطالب نص السؤال مع مربع فارغ لكتابة إجابته.</p>';
+      d.querySelector('.rm').onclick=function(){d.remove();renum()};list.appendChild(d);renum();return;}
+    var opts='';for(var i=0;i<4;i++){opts+='<div class="flex items-center gap-2"><input type="radio" class="corr w-4 h-4 accent-emerald-600" name="corr_'+idx+'_'+Date.now()+'" '+(q.correct===i?'checked':'')+' data-i="'+i+'"><input type="text" class="opt" placeholder="الاختيار '+(i+1)+'" value="'+esc((q.options||[])[i])+'"></div>';}
+    d.innerHTML='<div class="flex items-center justify-between"><b class="text-sm text-violet-700">السؤال <span class="qn num-font"></span></b><button type="button" class="rm text-rose-500 text-xs font-bold">حذف</button></div><textarea class="qt" rows="2" placeholder="نص السؤال">'+esc(q.text)+'</textarea><p class="text-[11px] text-slate-500 m-0">حدّد الدائرة بجوار الإجابة الصحيحة</p>'+opts+'<input type="text" class="qe" placeholder="شرح الإجابة (اختياري)" value="'+esc(q.explanation||'')+'">';
+    d.querySelector('.rm').onclick=function(){d.remove();renum()};list.appendChild(d);renum();}
+  function renum(){[].forEach.call(list.children,function(c,i){c.querySelector('.qn').textContent=i+1})}
+  function collect(){return [].map.call(list.children,function(c){
+    if(c.getAttribute('data-essay')){return {type:'essay',text:c.querySelector('.qt').value,options:[],correct:0,explanation:''}}
+    var corr=0;c.querySelectorAll('.corr').forEach(function(r,i){if(r.checked)corr=i});
+    return {text:c.querySelector('.qt').value,options:[].map.call(c.querySelectorAll('.opt'),function(o){return o.value}),correct:corr,explanation:c.querySelector('.qe').value}})}
+  document.getElementById('add-q').onclick=function(){card()};
+  document.getElementById('add-essay').onclick=function(){card({type:'essay',text:''})};
+  try{var init=JSON.parse(document.getElementById('qj-init').value||'[]');init.forEach(function(q){card(q)})}catch(e){}
+  if(!list.children.length)card();
+  function summary(){var ss=f.querySelector('[name=target]');var n=src()==='manual'?collect().filter(function(q){return q.text.trim()}).length:0;
+    document.getElementById('summary').innerHTML='<b>العنوان:</b> '+esc(f.querySelector('[name=title]').value||'—')+'<br><b>النوع:</b> '+esc(kind.options[kind.selectedIndex].text)+'<br><b>المكان:</b> '+esc(ss.options[ss.selectedIndex]?ss.options[ss.selectedIndex].text:'—')+'<br><b>الأسئلة:</b> '+(src()==='manual'?n+' سؤال يدوي':'سيتم استخراجها من الملف المرفوع وستراجعها قبل الإضافة');}
+  f.addEventListener('submit',function(){document.getElementById('questions_json').value=JSON.stringify(src()==='manual'?collect():[])});
+  {% if form.errors or files_error %}go(1);{% endif %}
+})();
+</script>{% endblock %}

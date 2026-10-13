@@ -1,0 +1,44 @@
+{% extends "teacher/base.html" %}
+{% block title %}الربط الذكي بالشرح{% endblock %}
+{% block topbar_title %}الربط الذكي — {{ q.title }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'teacher:quiz_detail' q.pk %}">{{ q.title }}</a> ← الربط الذكي بالشرح</div>
+<div class="pagehead">
+  <div>
+    <h1>ربط الأسئلة بأقسام الشرح</h1>
+    <p class="muted">يقترح النظام أنسب قسم من شرح الدرس لكل سؤال، وعليك اعتماد الاقتراح أو تغييره قبل ظهوره للطالب عند الخطأ.</p>
+  </div>
+  <form method="post" action="{% url 'teacher:quiz_run_mapping' q.pk %}">{% csrf_token %}<button class="btn" type="submit">🧠 تشغيل الربط الذكي</button></form>
+</div>
+
+{% if not all_sections %}<div class="banner">لا توجد أقسام شرح مرتبطة بدروس هذا الاختبار بعد. أضف أقسام شرح في صفحة الدرس أولًا.</div>{% endif %}
+{% if last_run and last_run.status == 'failed' %}<div class="banner red">آخر تشغيلة فشلت: {{ last_run.error_message }}</div>{% endif %}
+
+{% for m in mappings %}
+<div class="card mb">
+  <div class="row spread">
+    <b>{{ m.question.text|truncatechars:100 }}</b>
+    <span class="badge {% if m.status == 'confirmed' %}green{% elif m.status == 'rejected' %}gray{% else %}amber{% endif %}">{{ m.get_status_display }}</span>
+  </div>
+  <p class="small muted mt">
+    الاقتراح: <b>{{ m.section.title|default:"—" }}</b>{% if m.section %} ({{ m.section.lesson.title }}){% endif %}
+    — الثقة {{ m.confidence }}%{% if m.reasoning %} — {{ m.reasoning }}{% endif %}
+  </p>
+  {% if m.secondary_sections.all %}
+  <p class="small muted">مراجع إضافية: {% for s in m.secondary_sections.all %}{{ s.title }}{% if not forloop.last %}، {% endif %}{% endfor %}</p>
+  {% endif %}
+  <form method="post" action="{% url 'teacher:mapping_confirm' m.pk %}" class="row mt">{% csrf_token %}
+    <select name="section" class="input" style="max-width:280px">
+      {% for s in all_sections %}<option value="{{ s.pk }}" {% if s.pk == m.section_id %}selected{% endif %}>{{ s.lesson.title }} — {{ s.title }}</option>{% endfor %}
+    </select>
+    <button class="btn sm teal" type="submit">✅ اعتماد</button>
+  </form>
+  <form method="post" action="{% url 'teacher:mapping_reject' m.pk %}" class="mt">{% csrf_token %}<button class="btn sm danger" type="submit">رفض الاقتراح</button></form>
+</div>
+{% empty %}<div class="empty">لا توجد اقتراحات بعد. اضغط «تشغيل الربط الذكي» لتوليدها.</div>{% endfor %}
+
+{% if unmapped %}
+<h3 class="mt">أسئلة بلا اقتراح حتى الآن</h3>
+{% for qq in unmapped %}<div class="card mb"><span>{{ qq.text|truncatechars:100 }}</span></div>{% endfor %}
+{% endif %}
+{% endblock %}

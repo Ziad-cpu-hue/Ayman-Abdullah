@@ -1,0 +1,8 @@
+{% extends "teacher/base.html" %}
+{% block title %}الإعدادات{% endblock %}
+{% block topbar_title %}الإعدادات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>الإعدادات</h1></div>
+<div class="card" style="max-width:480px"><h3>تغيير كلمة المرور</h3>
+<form method="post" data-once>{% csrf_token %}{% include "partials/form.html" %}<button class="btn" type="submit">تغيير كلمة المرور</button></form></div>
+{% endblock %}

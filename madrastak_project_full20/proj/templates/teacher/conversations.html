@@ -1,0 +1,13 @@
+{% extends "teacher/base.html" %}
+{% block title %}الرسائل{% endblock %}
+{% block topbar_title %}الرسائل{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>محادثات الطلاب</h1></div>
+{% if convs %}
+{% for c in convs %}
+<a class="card mb" href="{% url 'teacher:conversation_detail' c.pk %}" style="display:block;text-decoration:none;color:inherit">
+  <div class="row spread"><b>{{ c.student.full_name }}</b><span class="row">{% if c.unread %}<span class="badge red">{{ c.unread }} جديدة</span>{% endif %}<span class="small muted">{{ c.updated_at|timesince }}</span></span></div>
+</a>
+{% endfor %}
+{% else %}<div class="empty"><span class="big">💬</span>لا توجد محادثات بعد.</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,646 @@
+{% extends "teacher/base.html" %}
+{% load static %}
+{% block title %}مدرستك - محتوى الدرس{% endblock %}
+{% block head %}{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800;900&amp;family=Tajawal:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"/>
+<style>
+    * {
+      font-family: 'Tajawal', sans-serif;
+    }
+    .font-num {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-feature-settings: 'tnum' on, 'lnum' on;
+      letter-spacing: -0.02em;
+    }
+    /* Smooth circular progress styling */
+    .progress-ring-circle {
+      transition: stroke-dashoffset 0.4s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    /* Management/Selection mode transitions */
+    .unit-manage-actions {
+      max-width: 0;
+      opacity: 0;
+      overflow: hidden;
+      transform: scaleX(0.85);
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: 0;
+      pointer-events: none;
+    }
+    body.is-selection-mode .unit-manage-actions {
+      max-width: 110px;
+      opacity: 1;
+      transform: scaleX(1);
+      margin-left: 0.5rem;
+      pointer-events: auto;
+    }
+  </style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;700;800&display=swap');
+@font-face {
+  font-family: 'Somar';
+  src: url('https://fonts.cdnfonts.com/s/72814/Somar-SemiBold.woff') format('woff'),
+       url('https://fonts.cdnfonts.com/s/72814/Somar-Bold.woff') format('woff');
+  font-weight: 600 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Somar';
+  src: url('https://fonts.cdnfonts.com/s/72814/Somar-Regular.woff') format('woff');
+  font-weight: 400;
+  font-display: swap;
+}
+.font-somar {
+  font-family: 'Somar', 'Almarai', 'Tajawal', sans-serif !important;
+}
+</style>
+<script>(function(){var p={
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif'],
+            tajawal: ['Tajawal', 'sans-serif'],
+            num: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              navy: '#0d1b3e',
+              navyDark: '#08122c',
+              navyLight: '#16285a',
+              blue: '#2563eb',
+              primary: '#2f6fed',
+              teal: '#00bfa5',
+              tealLight: '#e0f7f5',
+              pageBg: '#f4f7fc',
+              cardBg: '#ffffff',
+              borderLight: '#e2e8f0',
+            }
+          }
+        }
+      }
+    };function m(a,b){for(var k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])){a[k]=m(a[k]||{},b[k]);}else{a[k]=b[k];}}return a;}window.tailwind=window.tailwind||{};tailwind.config=m(tailwind.config||{},p);})();</script>
+{% endblock %}
+{% block page %}
+<div class="tpage bg-brand-pageBg min-h-[calc(100vh-7rem)]  w-full flex flex-row  antialiased text-slate-800 m-0 p-0 select-none" style="">
+
+<!-- ==================== MAIN CONTENT AREA ==================== -->
+<main class="flex-1 h-full overflow-y-auto p-4 md:p-6 lg:p-7 flex flex-col gap-5 bg-[#f4f7fc]">
+<!-- BEGIN: Course Overview Card -->
+<section class="bg-white rounded-2xl p-6 md:p-7 shadow-sm border border-slate-200/70 flex flex-col gap-6" data-purpose="course-hero-card" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(240, 246, 255, 0.85) 50%, rgba(245, 243, 255, 0.8) 100%); border-color: rgba(191, 219, 254, 0.7); backdrop-filter: blur(8px);">
+<!-- Course Title Header & Teacher Section -->
+<div class="flex items-center justify-between pb-6 border-b border-slate-100">
+<!-- Right side: Subject Title & Enlarged Course Icon Box -->
+<div class="flex items-center gap-4 md:gap-5">
+<div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl p-2.5 bg-blue-50/80 border border-blue-100 flex items-center justify-center shadow-sm flex-shrink-0">
+<img alt="أيقونة الدرس" class="w-12 h-12 md:w-14 md:h-14 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxfvUDcC0r4MWP8hGzuxG2N7kcUU9PCui6RT8GOSVzpZohiPikO_s09ObaowfeniFuSUejNdYv6asNpYzxB9PyiwZkSynme_N6hA2q2AYKUL20E83KN9D6UxqbWb_GjHaRPAnoOoT4JZ-TOK9suLIqNg_Z1FL72vJQv_RNfAD63olS14zcO65pMbaBuwyxnFdHhLQ8V--aCgBmKIU6ACE2xtzouqiPoyZi66bqLDQVj3phIdTW1eVNnWIfS0B1QpH7aQ"/>
+</div>
+<div>
+<h1 class="text-4xl md:text-5xl font-black text-blue-600 tracking-wider leading-tight antialiased drop-shadow-xs" style="font-family: Tajawal, sans-serif; font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; letter-spacing: 0.06em; -webkit-text-stroke: 1px rgb(37, 99, 235);">{{ c.title }}</h1>
+<p class="text-xs md:text-sm font-semibold text-slate-400 mt-1 font-somar" style="font-family: 'Somar', 'Almarai', 'Tajawal', sans-serif;">{{ c.get_grade_display }}{% if c.term_label %} • {{ c.term_label }}{% endif %}</p>
+</div>
+</div>
+<!-- Left side: Teacher Avatar & Stacked Details -->
+<div class="flex items-center gap-4">
+<div class="flex flex-col text-left">
+<span class="text-base md:text-lg font-black text-slate-800 leading-tight">{{ c.teacher.name }}</span>
+<span class="text-xs md:text-sm font-semibold text-blue-600/90 mt-1 pl-1">معلم المادة المعتمد</span>
+</div>
+<div class="relative w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden ring-2 ring-slate-300/80 shadow-md flex-shrink-0 bg-slate-900">
+<img alt="معلم المادة" class="w-full h-full object-cover filter grayscale contrast-110 opacity-90 transition hover:opacity-100" src="{% if c.teacher.photo %}{{ c.teacher.photo.url }}{% else %}https://lh3.googleusercontent.com/aida-public/AB6AXuCeYw18S3a0WIlRCN3kWusmChaYZ5yrKVfEv3BL8pKZLTuN6kWSVUZltqPsRYwhyq-GsWbpqyCwIl0VTMhtomWGMjHBOhidd5uXueZVydURNUR2XC3etM2sTw58DFYSk3YRiYP5HC8MLvw3T6yDY-0aZUtuKKg9KPbC0TkdyBjaTuBf8uVgJVoNFBawRJcLLaslNQOrs3xosLfV0aK1mWhY-fdJfCXcU-W4e-km4upjQK0y8eMuPLLY{% endif %}"/>
+<div class="absolute inset-0 bg-blue-900/15 pointer-events-none"></div>
+</div>
+</div>
+</div>
+<!-- 4 Stat Metrics -->
+<div class="bg-slate-50/80 rounded-2xl p-4 md:p-5 border border-slate-100 grid grid-cols-2 sm:grid-cols-4 gap-3.5 md:gap-5 text-center">
+<div class="flex flex-col items-center justify-center py-6 px-4 bg-[#e0f2fe] rounded-2xl border border-sky-200/80 hover:bg-[#d4edfc] transition shadow-xs">
+<span class="font-num text-5xl md:text-6xl font-black text-sky-700 tracking-tight leading-none" id="stats-total-lessons">0</span>
+<span class="text-sm md:text-base font-extrabold text-sky-900 mt-3">عدد الدروس</span>
+</div>
+<div class="flex flex-col items-center justify-center py-6 px-4 bg-[#ede9fe] rounded-2xl border border-purple-200/80 hover:bg-[#e4ddfc] transition shadow-xs">
+<span class="font-num text-5xl md:text-6xl font-black text-purple-700 tracking-tight leading-none" id="stats-total-tests">0</span>
+<span class="text-sm md:text-base font-extrabold text-purple-900 mt-3">الاختبارات</span>
+</div>
+<div class="flex flex-col items-center justify-center py-6 px-4 bg-[#fef3c7] rounded-2xl border border-amber-200/80 hover:bg-[#fdeaa8] transition shadow-xs">
+<span class="font-num text-5xl md:text-6xl font-black text-amber-700 tracking-tight leading-none" id="stats-total-homework">0</span>
+<span class="text-sm md:text-base font-extrabold text-amber-900 mt-3">الواجبات</span>
+</div>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-5 py-6 px-4 bg-[#d1fae5] rounded-2xl border border-emerald-200/80 hover:bg-[#c2f5dc] transition shadow-xs">
+<div class="relative w-24 h-24 flex items-center justify-center flex-shrink-0">
+<svg class="w-24 h-24" viewbox="0 0 64 64">
+<circle cx="32" cy="32" fill="none" r="26" stroke="#a7f3d0" stroke-width="7"></circle>
+<circle class="progress-ring-circle" cx="32" cy="32" fill="none" r="26" stroke="#059669" stroke-dasharray="163.36" stroke-dashoffset="163.36" stroke-linecap="round" stroke-width="7"></circle>
+</svg>
+<span class="absolute font-num text-xl md:text-2xl font-black text-emerald-950">0%</span>
+</div>
+<span class="text-sm md:text-base font-black text-emerald-900">نسبة الإنجاز</span>
+</div>
+</div>
+</section>
+<!-- END: Course Overview Card -->
+<!-- BEGIN: Study Units Master Card Container -->
+<section class="bg-white rounded-3xl p-5 md:p-6 shadow-sm border border-slate-200/80 flex flex-col gap-4" data-purpose="study-units-master-container">
+<!-- Master Container Header -->
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 flex-wrap gap-3">
+<div class="flex items-center gap-3 px-3.5 py-1.5 rounded-2xl bg-blue-50/70 border border-blue-200/60 shadow-xs">
+<span class="w-2.5 h-6 bg-blue-600 rounded-full"></span>
+<h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-wider antialiased" style="font-family: Tajawal, sans-serif; font-size: clamp(1.85rem, 3.5vw, 2.35rem); font-weight: 900; letter-spacing: 0.06em; -webkit-text-stroke: 0.6px rgb(30, 41, 59);">الوحدات الدراسية</h2>
+<span class="font-num text-xs font-bold text-blue-700 bg-white/90 border border-blue-200/60 px-2.5 py-0.5 rounded-full shadow-2xs" id="units-total-badge">3</span>
+</div>
+<div class="flex items-center gap-2.5">
+<!-- Button: Toggle Selection / Management Mode -->
+<button class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200/80 text-slate-700 font-bold text-xs md:text-sm px-3.5 py-2.5 rounded-xl transition border border-slate-200 active:scale-95 shadow-2xs" id="btn-toggle-select-mode" type="button">
+<svg class="w-4 h-4 text-slate-600" fill="none" id="select-mode-icon" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="" id="select-mode-text">تحديد العناصر</span>
+</button>
+<!-- Button: Add New Unit Header -->
+<button class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs md:text-sm px-4 py-2.5 rounded-xl shadow-sm hover:shadow-md transition active:scale-95" id="btn-add-unit-header" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">{% if is_new %}إضافة وحدة جديدة{% else %}تعديل الوحدة{% endif %}</span>
+</button>
+</div>
+</div>
+<!-- Batch Actions Bar (Shown only in selection mode) -->
+<div class="hidden transition-all duration-300 items-center justify-between bg-blue-50/95 border border-blue-200 rounded-2xl px-4 py-3 shadow-xs" id="batch-actions-bar">
+<div class="flex items-center gap-3">
+<div class="flex items-center justify-center w-7 h-7 rounded-lg bg-blue-600 text-white text-xs font-num font-black shadow-xs" id="selected-units-count">0</div>
+<span class="text-xs md:text-sm font-bold text-slate-700">تم تحديد <span class="font-num font-black text-blue-700" id="selected-units-text">0</span> وحدات</span>
+</div>
+<div class="flex items-center gap-2 flex-wrap">
+<button class="text-xs font-bold text-blue-700 hover:text-blue-900 bg-white hover:bg-blue-100/60 border border-blue-200/70 px-3 py-1.5 rounded-lg transition active:scale-95 shadow-2xs" id="btn-select-all" type="button">تحديد الكل</button>
+<button class="text-xs font-bold text-slate-600 hover:text-slate-800 bg-white hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg transition active:scale-95 shadow-2xs" id="btn-deselect-all" type="button">إلغاء التحديد</button>
+<button class="inline-flex items-center gap-1.5 text-xs font-bold text-rose-700 bg-rose-100/80 hover:bg-rose-600 hover:text-white border border-rose-200 px-3.5 py-1.5 rounded-lg transition shadow-2xs active:scale-95 disabled:opacity-50 disabled:pointer-events-none" disabled="" id="btn-delete-selected" type="button">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="">حذف المحدد</span>
+</button>
+<button class="text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-200/80 hover:bg-slate-300 border border-slate-300 px-3 py-1.5 rounded-lg transition active:scale-95" id="btn-done-selection" type="button">تم</button>
+</div>
+</div>
+<!-- Units Cards List Container -->
+<div class="flex flex-col gap-3.5" id="study-units-list">
+{% for unit in c.units.all %}
+{% cycle 'rgba(6, 182, 212, 0.08)' 'rgba(99, 102, 241, 0.08)' 'rgba(245, 158, 11, 0.08)' 'rgba(16, 185, 129, 0.08)' 'rgba(236, 72, 153, 0.08)' as unit_bg silent %}
+{% cycle 'rgba(6, 182, 212, 0.3)' 'rgba(99, 102, 241, 0.3)' 'rgba(245, 158, 11, 0.3)' 'rgba(16, 185, 129, 0.3)' 'rgba(236, 72, 153, 0.3)' as unit_border silent %}
+<div class="unit-card rounded-2xl p-4 md:px-5 md:py-4 border flex items-center justify-between gap-4 transition shadow-2xs" data-lessons="{{ unit.lessons.count }}" data-tests="{{ unit.quizzes.count }}" data-unit-index="{{ forloop.counter }}" data-unit-id="{{ unit.pk }}" data-delete-url="{% url 'teacher:unit_delete' pk=unit.pk %}" style="background-color: {{ unit_bg }}; border-color: {{ unit_border }};">
+<div class="flex items-center gap-3 flex-shrink-0">
+<div class="unit-manage-actions flex items-center gap-2">
+<label class="unit-checkbox-label flex items-center cursor-pointer select-none" title="تحديد الوحدة">
+<input class="unit-select-checkbox w-5 h-5 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 transition cursor-pointer" type="checkbox"/>
+</label>
+<button class="btn-delete-unit p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition border border-transparent hover:border-rose-200" title="حذف هذه الوحدة" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<a class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs md:text-sm px-6 py-3 rounded-xl shadow-sm hover:shadow-md transition active:scale-95 flex items-center justify-center gap-1.5" href="{% url 'teacher:unit_detail' pk=unit.pk %}">
+<span>الدخول للوحدة</span>
+<svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+</div>
+<div class="flex items-center gap-4 md:gap-5 text-right">
+<div>
+<h3 class="text-sm md:text-base font-extrabold text-slate-800 unit-title-text">{{ unit.title }}</h3>
+<p class="text-xs text-slate-500 font-medium mt-0.5 unit-desc-text">{{ unit.description|default:'لا يوجد وصف مختصر لهذه الوحدة.' }}</p>
+<div class="flex items-center justify-end gap-2 text-xs text-slate-400 font-medium mt-1">
+<span class="font-bold text-slate-600"><span class="font-num">{{ unit.lessons.count }}</span> دروس</span>
+<span>•</span>
+<span><span class="font-num">{{ unit.quizzes.count }}</span> اختبارات</span>
+</div>
+</div>
+<div class="relative w-20 h-20 flex items-center justify-center flex-shrink-0">
+<svg class="w-20 h-20" viewbox="0 0 64 64">
+<circle cx="32" cy="32" fill="none" r="26" stroke="#e2e8f0" stroke-width="7"></circle>
+<circle class="progress-ring-circle" cx="32" cy="32" fill="none" r="26" stroke="#00bfa5" stroke-dasharray="163.36" stroke-dashoffset="163.36" stroke-linecap="round" stroke-width="7"></circle>
+</svg>
+<span class="absolute font-num text-base md:text-lg font-black text-slate-800">0%</span>
+</div>
+</div>
+</div>
+{% endfor %}
+</div>
+<!-- Add Unit Card Trigger -->
+<button class="w-full group rounded-2xl p-5 md:py-6 border-2 border-dashed border-blue-200 hover:border-blue-400 bg-blue-50/30 hover:bg-blue-50/70 transition flex items-center justify-between gap-4 cursor-pointer text-right" id="card-create-unit" type="button">
+<div class="flex items-center gap-3 text-blue-600 group-hover:text-blue-700 font-bold text-xs md:text-sm">
+<span class="px-3 py-1.5 rounded-lg bg-blue-100/60 group-hover:bg-blue-600 group-hover:text-white transition shadow-2xs">بدء الإضافة</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="text-right">
+<div class="text-sm md:text-base font-extrabold text-slate-800 group-hover:text-blue-600 transition" id="card-create-unit-title">{% if is_new %}+ إنشاء وحدة دراسية جديدة{% else %}+ تعديل بيانات الوحدة{% endif %}</div>
+<p class="text-xs text-slate-400 font-medium mt-0.5">أضف وحدة دراسية جديدة، الدروس، والاختبارات لمقرر اللغة الإنجليزية</p>
+</div>
+<div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-blue-100/60 group-hover:bg-blue-600 text-blue-600 group-hover:text-white flex items-center justify-center transition shadow-2xs flex-shrink-0">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</button>
+</section>
+<!-- END: Study Units Master Card Container -->
+<!-- BEGIN: Study Schedule Section -->
+<section class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/70 flex flex-col gap-4" data-purpose="study-schedule">
+<!-- Schedule Header -->
+<div class="flex items-center justify-between border-b border-slate-100 pb-3">
+<div class="flex items-center gap-2.5">
+<img alt="التقويم" class="w-6 h-6 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1dM3ASuL8ScCgpP2E_OIQZ_KLNjQ53StX2bDNfAhsLnG3BYNDelvMZfLh0__c-p_P30gjHuj41Vs30bHq7HqZqM6jYV_Gv9moBOJbC35exix7ddpWpEKKeROK7y1QISQ0bbMN-Se9ZH_Wp1k43YkkUDal23WWU617N5AcdMU__lz24FmSqqYRzXulwXjbh5kzKWJMhgjYGb5gc5vYPye-3MDmubGZDoGNiQjhg1ToY7sre50An9m6jcoqZE81glxaXA"/>
+<h3 class="text-base font-extrabold text-slate-800">الجدول / خطة الدراسة</h3>
+</div>
+<a class="text-xs font-bold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition" href="{% url 'teacher:course_detail' pk=c.pk %}">
+<span class="">عرض الكل</span>
+<svg class="w-4 h-4 rotate-180" fill="none" stroke="currentColor" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+</div>
+<!-- Schedule Timetable Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-center divide-y sm:divide-y-0 sm:divide-x sm:divide-x-reverse divide-slate-100 pt-1">
+<!-- Item 1 -->
+<div class="p-2 space-y-1.5">
+<div class="font-extrabold text-slate-800 text-sm">الترسيب الشامل</div>
+<div class="font-num text-xs font-black text-blue-600 tracking-wider">2025-11-23</div>
+<p class="text-xs text-slate-400 pt-1 leading-relaxed">الدرس الأول - الوحدة 1<br/>مهمة حل الاختبار</p>
+</div>
+<!-- Item 2 -->
+<div class="p-2 space-y-1.5">
+<div class="font-extrabold text-slate-800 text-sm">الدرس الثاني - الوحدة 1</div>
+<div class="text-xs font-bold text-slate-500">مهمة متابعة الدرس</div>
+<p class="text-xs text-slate-400 pt-1 leading-relaxed">الدرس الأول - الوحدة 1<br/>مهمة حل الاختبار</p>
+</div>
+<!-- Item 3 -->
+<div class="p-2 space-y-1.5 flex flex-col items-center justify-center">
+<div class="font-extrabold text-slate-800 text-sm">الامتحان الثانوي</div>
+<div class="font-num text-xs font-black text-blue-600 tracking-wider">2025-11-25</div>
+<div class="mt-2.5 inline-flex items-center gap-1.5 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+<span class="w-2 h-2 rounded-full bg-blue-600"></span>
+<span class="text-[11px] font-bold text-blue-700">تقييم معتمد</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: Study Schedule Section -->
+<!-- BEGIN: Add New Unit Modal Form -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs hidden transition-opacity duration-200" id="create-unit-modal">
+<div class="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full mx-4 shadow-2xl border border-slate-100 flex flex-col gap-6 transform transition-transform duration-200 scale-95" id="create-unit-modal-box">
+<!-- Modal Header -->
+<div class="flex items-center justify-between pb-4 border-b border-slate-100">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 shadow-2xs">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-lg md:text-xl font-black text-slate-800">{% if is_new %}إنشاء وحدة دراسية جديدة{% else %}تعديل الوحدة الدراسية{% endif %}</h3>
+<p class="text-xs text-slate-400 font-medium mt-0.5">{% if is_new %}أدخل بيانات الوحدة التعليمية لإضافتها للمقرر{% else %}عدّل بيانات الوحدة التعليمية ثم احفظ التغييرات{% endif %}</p>
+</div>
+</div>
+<button class="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition active:scale-95" id="btn-close-create-modal" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- Modal Form -->
+<form class="flex flex-col gap-4 text-right" id="form-create-unit" method="post" action="{% if is_new %}{% url 'teacher:unit_new' pk=c.pk %}{% else %}{% url 'teacher:unit_edit' pk=u.pk %}{% endif %}" data-create-url="{% url 'teacher:unit_new' pk=c.pk %}" data-edit-url="{% if not is_new %}{% url 'teacher:unit_edit' pk=u.pk %}{% endif %}">
+{% csrf_token %}
+<input type="hidden" name="order" value="{% if is_new %}{{ c.units.count|add:'1' }}{% else %}{{ u.order }}{% endif %}">
+<input type="hidden" name="status" value="{% if is_new %}published{% else %}{{ form.status.value|default:u.status }}{% endif %}">
+{% if not is_new %}<input type="hidden" name="return_unit" value="{{ u.pk }}">{% endif %}
+<input type="hidden" name="publish_at" value="{% if not is_new and u.publish_at %}{{ u.publish_at|date:'Y-m-d\TH:i' }}{% endif %}">
+<div>
+<label class="block text-xs md:text-sm font-extrabold text-slate-700 mb-1.5" for="input-unit-name">اسم الوحدة <span class="text-rose-500">*</span></label>
+<div class="relative">
+<input class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition placeholder:text-slate-400" id="input-unit-name" name="title" placeholder="مثال: الوحدة 4 — مهارات الكتابة المتقدمة" required="" type="text" value="{{ form.title.value|default_if_none:'' }}"/>
+</div>
+</div>
+<div>
+<label class="block text-xs md:text-sm font-extrabold text-slate-700 mb-1.5" for="input-unit-desc">وصف الوحدة <span class="text-xs font-semibold text-slate-400">(اختياري)</span></label>
+<textarea class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 text-sm font-semibold focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition placeholder:text-slate-400 resize-none" id="input-unit-desc" name="description" placeholder="شرح تفصيلي لقواعد التعبير وبناء الجمل المركبة والمفردات..." rows="3">{{ form.description.value|default_if_none:'' }}</textarea>
+</div>
+{% if form.errors %}
+<div class="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700">
+{% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}
+{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+</div>
+{% endif %}
+<div class="grid grid-cols-2 gap-3 pt-1">
+<div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100/70">
+<span class="block text-[11px] font-bold text-slate-500">الدروس الافتراضية</span>
+<span class="text-sm font-black text-blue-700 font-num">4 دروس</span>
+</div>
+<div class="bg-purple-50/50 p-3 rounded-xl border border-purple-100/70">
+<span class="block text-[11px] font-bold text-slate-500">الاختبار المبدئي</span>
+<span class="text-sm font-black text-purple-700 font-num">1 اختبار</span>
+</div>
+</div>
+<!-- Modal Actions -->
+<div class="flex items-center gap-3 pt-3 border-t border-slate-100 mt-2">
+<button class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm py-3 rounded-xl shadow-sm hover:shadow-md transition active:scale-95" id="btn-submit-create-unit" type="submit">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>{% if is_new %}إنشاء الوحدة{% else %}حفظ التعديلات{% endif %}</span>
+</button>
+<button class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm py-3 rounded-xl transition active:scale-95" id="btn-cancel-create-unit" type="button">إلغاء</button>
+</div>
+</form>
+</div>
+</div>
+<!-- END: Add New Unit Modal Form -->
+<!-- BEGIN: Delete Confirmation Modal -->
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs hidden transition-opacity duration-200" id="delete-confirm-modal">
+<div class="bg-white rounded-3xl p-6 md:p-7 max-w-md w-full mx-4 shadow-2xl border border-slate-100 flex flex-col gap-5 text-center transform transition-transform duration-200 scale-95" id="delete-modal-box">
+<div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 mx-auto flex items-center justify-center border border-rose-100 shadow-xs">
+<svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h3 class="text-lg md:text-xl font-black text-slate-800" id="delete-modal-title">تأكيد حذف الوحدة الدراسية</h3>
+<p class="text-xs md:text-sm text-slate-500 font-medium mt-1.5 leading-relaxed" id="delete-modal-message">هل أنت متأكد من رغبتك في حذف هذه الوحدة؟ سيتم حذف جميع الدروس والاختبارات المرتبطة بها نهائياً.</p>
+</div>
+<div class="flex items-center gap-3 mt-2">
+<button class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs md:text-sm py-2.5 rounded-xl shadow-sm transition active:scale-95" id="btn-confirm-delete" type="button">تأكيد الحذف</button>
+<button class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs md:text-sm py-2.5 rounded-xl transition active:scale-95" id="btn-cancel-delete" type="button">تراجع</button>
+</div>
+</div>
+</div>
+<!-- END: Delete Confirmation Modal -->
+</main>
+<!-- ==================== END: MAIN CONTENT AREA ==================== -->
+<!-- Interactive Script for Selection Mode & Unit Management -->
+<script>
+(function() {
+  const body = document.body;
+  const list = document.getElementById('study-units-list');
+  const badge = document.getElementById('units-total-badge');
+  const statsLessons = document.getElementById('stats-total-lessons');
+  const statsTests = document.getElementById('stats-total-tests');
+  const btnToggleSelect = document.getElementById('btn-toggle-select-mode');
+  const selectModeText = document.getElementById('select-mode-text');
+  const batchBar = document.getElementById('batch-actions-bar');
+  const selectedCountBadge = document.getElementById('selected-units-count');
+  const selectedTextSpan = document.getElementById('selected-units-text');
+  const btnSelectAll = document.getElementById('btn-select-all');
+  const btnDeselectAll = document.getElementById('btn-deselect-all');
+  const btnDeleteSelected = document.getElementById('btn-delete-selected');
+  const btnDoneSelection = document.getElementById('btn-done-selection');
+  const headerBtn = document.getElementById('btn-add-unit-header');
+  const cardBtn = document.getElementById('card-create-unit');
+
+  const createModal = document.getElementById('create-unit-modal');
+  const createModalBox = document.getElementById('create-unit-modal-box');
+  const createForm = document.getElementById('form-create-unit');
+  const inputUnitName = document.getElementById('input-unit-name');
+  const inputUnitDesc = document.getElementById('input-unit-desc');
+  const btnCloseCreateModal = document.getElementById('btn-close-create-modal');
+  const btnCancelCreateUnit = document.getElementById('btn-cancel-create-unit');
+
+  const modal = document.getElementById('delete-confirm-modal');
+  const modalBox = document.getElementById('delete-modal-box');
+  const modalTitle = document.getElementById('delete-modal-title');
+  const modalMessage = document.getElementById('delete-modal-message');
+  const btnConfirmDelete = document.getElementById('btn-confirm-delete');
+  const btnCancelDelete = document.getElementById('btn-cancel-delete');
+  const csrfTokenField = document.querySelector('input[name="csrfmiddlewaretoken"]');
+  const csrfToken = csrfTokenField ? csrfTokenField.value : '';
+  const isNew = {{ is_new|yesno:'true,false' }};
+  const hasErrors = {{ form.errors|yesno:'true,false' }};
+  const createUrl = createForm ? (createForm.dataset.createUrl || createForm.action) : '';
+  const editUrl = createForm ? (createForm.dataset.editUrl || createForm.action) : '';
+  let modalMode = isNew ? 'create' : 'edit';
+
+  let isSelectionMode = false;
+  let pendingDeleteAction = null;
+
+  function updateCount() {
+    const cards = list ? list.querySelectorAll('.unit-card') : [];
+    if (badge) badge.textContent = cards.length;
+    let totalL = 0;
+    let totalT = 0;
+    cards.forEach(card => {
+      totalL += parseInt(card.getAttribute('data-lessons') || '0', 10);
+      totalT += parseInt(card.getAttribute('data-tests') || '0', 10);
+    });
+    if (statsLessons) statsLessons.textContent = totalL;
+    if (statsTests) statsTests.textContent = totalT;
+    updateSelectedCount();
+  }
+
+  function updateSelectedCount() {
+    const checked = list ? list.querySelectorAll('.unit-select-checkbox:checked').length : 0;
+    if (selectedCountBadge) selectedCountBadge.textContent = checked;
+    if (selectedTextSpan) selectedTextSpan.textContent = checked;
+    if (btnDeleteSelected) btnDeleteSelected.disabled = checked === 0;
+  }
+
+  function setSelectionMode(enabled) {
+    isSelectionMode = enabled;
+    if (isSelectionMode) {
+      body.classList.add('is-selection-mode');
+      batchBar.classList.remove('hidden');
+      batchBar.classList.add('flex');
+      selectModeText.textContent = 'إلغاء التحديد';
+      btnToggleSelect.classList.remove('bg-slate-100', 'text-slate-700');
+      btnToggleSelect.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-300');
+    } else {
+      body.classList.remove('is-selection-mode');
+      batchBar.classList.add('hidden');
+      batchBar.classList.remove('flex');
+      selectModeText.textContent = 'تحديد العناصر';
+      btnToggleSelect.classList.add('bg-slate-100', 'text-slate-700');
+      btnToggleSelect.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-300');
+      if (list) list.querySelectorAll('.unit-select-checkbox').forEach(cb => cb.checked = false);
+    }
+    updateSelectedCount();
+  }
+
+  function syncModalMode(mode) {
+    modalMode = mode === 'create' ? 'create' : 'edit';
+    const creating = modalMode === 'create';
+    if (createForm) createForm.action = creating ? createUrl : editUrl;
+
+    const orderField = createForm ? createForm.querySelector('input[name="order"]') : null;
+    const statusField = createForm ? createForm.querySelector('input[name="status"]') : null;
+    const publishField = createForm ? createForm.querySelector('input[name="publish_at"]') : null;
+    if (creating) {
+      const nextIndex = (list ? list.querySelectorAll('.unit-card').length : 0) + 1;
+      if (orderField) orderField.value = nextIndex;
+      if (statusField) statusField.value = 'published';
+      if (publishField) publishField.value = '';
+      if (inputUnitName) inputUnitName.value = `الوحدة ${nextIndex} — `;
+      if (inputUnitDesc) inputUnitDesc.value = '';
+    } else {
+      if (orderField) orderField.value = '{{ u.order|default_if_none:"" }}';
+      if (statusField) statusField.value = '{{ u.status|default_if_none:"draft" }}';
+      if (publishField) publishField.value = '{% if u.publish_at %}{{ u.publish_at|date:"Y-m-d\TH:i" }}{% endif %}';
+    }
+
+    const modalTitle = createModal ? createModal.querySelector('h3') : null;
+    const modalSubtitle = createModal ? createModal.querySelector('.border-b + * p, h3 + p') : null;
+    const submitText = document.getElementById('btn-submit-create-unit');
+    const submitSpan = submitText ? submitText.querySelector('span') : null;
+    const headerSpan = headerBtn ? headerBtn.querySelector('span') : null;
+    const cardTitle = document.getElementById('card-create-unit-title');
+
+    if (modalTitle) modalTitle.textContent = creating ? 'إنشاء وحدة دراسية جديدة' : 'تعديل الوحدة الدراسية';
+    const subtitleEl = modalTitle ? modalTitle.parentElement.querySelector('p') : null;
+    if (subtitleEl) subtitleEl.textContent = creating ? 'أدخل بيانات الوحدة التعليمية لإضافتها للمقرر' : 'عدّل بيانات الوحدة التعليمية ثم احفظ التغييرات';
+    if (submitSpan) submitSpan.textContent = creating ? 'إنشاء الوحدة' : 'حفظ التعديلات';
+    if (headerSpan) headerSpan.textContent = creating ? 'إضافة وحدة جديدة' : 'تعديل الوحدة';
+    if (cardTitle) cardTitle.textContent = creating ? '+ إنشاء وحدة دراسية جديدة' : '+ تعديل بيانات الوحدة';
+  }
+
+  function openCreateModal(mode) {
+    if (!createModal || !createModalBox) return;
+    const requestedMode = mode || (isNew ? 'create' : 'edit');
+    syncModalMode(requestedMode);
+    createModal.classList.remove('hidden');
+    setTimeout(() => {
+      createModalBox.classList.remove('scale-95');
+      createModalBox.classList.add('scale-100');
+      if (inputUnitName) {
+        inputUnitName.focus();
+        inputUnitName.setSelectionRange(inputUnitName.value.length, inputUnitName.value.length);
+      }
+    }, 10);
+  }
+
+  function closeCreateModal() {
+    if (!createModal || !createModalBox) return;
+    createModalBox.classList.remove('scale-100');
+    createModalBox.classList.add('scale-95');
+    setTimeout(() => createModal.classList.add('hidden'), 150);
+  }
+
+  function openDeleteModal(title, message, onConfirm) {
+    modalTitle.textContent = title;
+    modalMessage.textContent = message;
+    pendingDeleteAction = onConfirm;
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modalBox.classList.remove('scale-95');
+      modalBox.classList.add('scale-100');
+    }, 10);
+  }
+
+  function closeDeleteModal() {
+    modalBox.classList.remove('scale-100');
+    modalBox.classList.add('scale-95');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      pendingDeleteAction = null;
+    }, 150);
+  }
+
+  async function deleteUnitFromServer(card) {
+    const url = card && card.getAttribute('data-delete-url');
+    if (!url || !csrfToken) return false;
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrfToken, 'X-Requested-With': 'XMLHttpRequest'},
+        credentials: 'same-origin'
+      });
+      return response.ok;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function removeCard(card) {
+    if (!card) return;
+    card.style.transition = 'all 0.25s ease';
+    card.style.opacity = '0';
+    card.style.transform = 'scale(0.95)';
+    setTimeout(() => { card.remove(); updateCount(); }, 250);
+  }
+
+  function attachUnitEvents(card) {
+    const deleteBtn = card.querySelector('.btn-delete-unit');
+    const checkbox = card.querySelector('.unit-select-checkbox');
+    if (deleteBtn) {
+      deleteBtn.onclick = function(e) {
+        e.stopPropagation();
+        const titleEl = card.querySelector('.unit-title-text');
+        const unitName = titleEl ? titleEl.textContent : 'هذه الوحدة';
+        openDeleteModal(
+          'تأكيد حذف الوحدة',
+          `هل أنت متأكد من حذف (${unitName}) نهائياً بما تشمله من دروس واختبارات؟`,
+          async function() {
+            const ok = await deleteUnitFromServer(card);
+            if (!ok) { window.location.reload(); return; }
+            removeCard(card);
+          }
+        );
+      };
+    }
+    if (checkbox) checkbox.onchange = updateSelectedCount;
+  }
+
+  if (btnToggleSelect) btnToggleSelect.addEventListener('click', () => setSelectionMode(!isSelectionMode));
+  if (btnDoneSelection) btnDoneSelection.addEventListener('click', () => setSelectionMode(false));
+  if (btnSelectAll) btnSelectAll.addEventListener('click', () => {
+    list.querySelectorAll('.unit-select-checkbox').forEach(cb => cb.checked = true);
+    updateSelectedCount();
+  });
+  if (btnDeselectAll) btnDeselectAll.addEventListener('click', () => {
+    list.querySelectorAll('.unit-select-checkbox').forEach(cb => cb.checked = false);
+    updateSelectedCount();
+  });
+
+  if (btnCancelDelete) btnCancelDelete.addEventListener('click', closeDeleteModal);
+  if (modal) modal.addEventListener('click', e => { if (e.target === modal) closeDeleteModal(); });
+  if (btnConfirmDelete) btnConfirmDelete.addEventListener('click', async () => {
+    if (pendingDeleteAction) await pendingDeleteAction();
+    closeDeleteModal();
+  });
+
+  if (btnDeleteSelected) btnDeleteSelected.addEventListener('click', () => {
+    const selectedCards = Array.from(list.querySelectorAll('.unit-select-checkbox:checked')).map(cb => cb.closest('.unit-card'));
+    if (!selectedCards.length) return;
+    openDeleteModal(
+      'تأكيد حذف الوحدات المحددة',
+      `هل أنت متأكد من رغبتك في حذف ${selectedCards.length} وحدات مختارة نهائياً؟`,
+      async function() {
+        const results = await Promise.all(selectedCards.map(deleteUnitFromServer));
+        if (results.some(ok => !ok)) { window.location.reload(); return; }
+        selectedCards.forEach(removeCard);
+        setTimeout(() => { if (!list.querySelectorAll('.unit-card').length) setSelectionMode(false); }, 300);
+      }
+    );
+  });
+
+  if (headerBtn) headerBtn.addEventListener('click', () => openCreateModal(isNew ? 'create' : 'create'));
+  if (cardBtn) cardBtn.addEventListener('click', () => openCreateModal('create'));
+  if (btnCloseCreateModal) btnCloseCreateModal.addEventListener('click', closeCreateModal);
+  if (btnCancelCreateUnit) btnCancelCreateUnit.addEventListener('click', closeCreateModal);
+  if (createModal) createModal.addEventListener('click', e => { if (e.target === createModal) closeCreateModal(); });
+
+  if (createForm) createForm.addEventListener('submit', () => {
+    const button = document.getElementById('btn-submit-create-unit');
+    if (button) {
+      button.disabled = true;
+      button.classList.add('opacity-70');
+    }
+  });
+
+  if (list) list.querySelectorAll('.unit-card').forEach(attachUnitEvents);
+  updateCount();
+
+  if (isNew || hasErrors || !isNew) openCreateModal(isNew ? 'create' : 'edit');
+})();
+</script>
+
+</div>
+{% endblock %}

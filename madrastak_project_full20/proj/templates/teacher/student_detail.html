@@ -1,0 +1,355 @@
+{% load ui_extras %}<!DOCTYPE html><html dir="rtl" lang="ar" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>تقرير {{ s.full_name }} - مدرستك</title>
+<!-- Google Fonts: Cairo & Tajawal -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&amp;family=Tajawal:wght@400;500;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
+{% include "teacher/_sidebar_head.html" %}
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#0d2847',
+              dark: '#081c33',
+              blue: '#1e88e5',
+              cyan: '#00b4d8',
+              accent: '#38bdf8',
+              bg: '#f4f8fc',
+              cardBorder: '#e2edf8',
+            }
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+            tajawal: ['Tajawal', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Visual & Graph Styles -->
+<style data-purpose="base-styling">
+    body {
+      font-family: 'Cairo', 'Tajawal', sans-serif;
+      background-color: #f4f8fc;
+      color: #1e293b;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+<!-- END: Custom Visual & Graph Styles -->
+</head>
+<body class="min-h-screen flex flex-row antialiased selection:bg-cyan-500 selection:text-white font-tajawal">
+{% if messages %}<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">{% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}</div>
+<script>setTimeout(function(){document.querySelectorAll(".toast").forEach(function(t){t.style.transition="opacity .5s";t.style.opacity="0";setTimeout(function(){t.remove()},600)})},5200);</script>{% endif %}
+{% include "teacher/_sidebar.html" with active="students" %}
+<div class="flex-1 min-w-0 flex flex-col overflow-x-hidden">
+{% if impersonating %}<div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 mx-4 sm:mx-6 mt-4 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div>{% endif %}
+<!-- BEGIN: DashboardContainer -->
+<main class="flex-grow w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
+<!-- BEGIN: PageTitleBanner -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden" style="background: linear-gradient(135deg, rgba(63, 139, 249, 0.08) 0%, rgba(54, 206, 143, 0.08) 100%); backdrop-filter: blur(8px); border: 1px solid rgba(63, 139, 249, 0.15);">
+<!-- Right Side: Breadcrumb & Title -->
+<div class="flex items-center gap-4 w-full md:w-auto text-right">
+<div class="w-14 h-14 rounded-2xl bg-white p-1 shadow-md border border-blue-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+{% if s.student_profile.avatar %}<img alt="{{ s.full_name }}" class="w-full h-full object-cover rounded-xl" src="{{ s.student_profile.avatar.url }}">{% else %}<span class="w-full h-full rounded-xl bg-blue-100 text-blue-700 font-black flex items-center justify-center text-xl">{{ s.first_name|slice:":1" }}</span>{% endif %}
+</div>
+<div>
+<div class="flex items-center gap-1.5 text-xs text-slate-400 font-bold mb-1"><a href="{% url 'teacher:students' %}" class="hover:underline hover:text-blue-600">قائمة الطلاب</a><span>←</span><span class="text-slate-600">{{ s.full_name }}</span></div>
+<h1 class="text-2xl lg:text-3xl font-extrabold text-[#0d2847] flex items-center gap-2">تقرير الطالب: {{ s.full_name }}</h1>
+<p class="text-slate-500 text-sm mt-1">{{ s.student_profile.get_grade_display|default:"—" }} — أداء الطالب وتقدّمه في المنصة</p>
+</div>
+</div>
+<!-- Left Side: Status badge + message action -->
+<div class="flex flex-wrap items-center justify-between md:justify-start gap-3 w-full md:w-auto">
+<span class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs lg:text-sm font-bold shadow-sm {% if enr.display_status == 'active' %}bg-emerald-100 text-emerald-700{% elif enr.display_status == 'under_review' or enr.display_status == 'awaiting_payment' %}bg-amber-100 text-amber-700{% else %}bg-rose-100 text-rose-700{% endif %}"><i class="fa-solid fa-circle-check"></i>{{ enr.display_label }}</span>
+{% if conv %}<a href="{% url 'teacher:conversation_detail' conv.pk %}" class="inline-flex items-center gap-2 bg-[#f8fafc] border border-slate-200 rounded-xl px-4 py-2.5 text-xs lg:text-sm font-semibold text-slate-700 shadow-sm hover:border-cyan-400 transition-colors no-underline"><i class="fa-regular fa-comment-dots text-cyan-600"></i><span class="">مراسلة الطالب</span></a>{% endif %}
+</div></div>
+<!-- END: PageTitleBanner -->
+<!-- BEGIN: TopKPISection -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" data-purpose="top-kpi-cards">
+<!-- KPI 1: أيام الاشتراك المتبقية -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(2, 132, 199) 0%, rgb(14, 165, 233) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm"><i class="fa-regular fa-calendar-days text-white"></i></div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm">{{ enr.display_label }}</span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">أيام الاشتراك المتبقية</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold text-white" style="font-family: 'Outfit', sans-serif;">{{ remaining_days }}</span>
+      <span class="text-xs text-white/80">{% if plan_days %}من أصل <span style="font-family: 'Outfit', sans-serif;">{{ plan_days }}</span> يوم{% else %}يومًا{% endif %}</span>
+    </div>
+  </div>
+</div>
+<!-- KPI 2: الدروس المكتملة -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(5, 150, 105) 0%, rgb(16, 185, 129) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm"><i class="fa-solid fa-circle-check text-white"></i></div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm"><span style="font-family: 'Outfit', sans-serif;">{{ pr.percent }}%</span></span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">عدد الدروس المكتملة</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold text-white" style="font-family: 'Outfit', sans-serif;">{{ pr.done }}</span>
+      <span class="text-xs text-white/80">من إجمالي <span style="font-family: 'Outfit', sans-serif;">{{ pr.total }}</span> درس</span>
+    </div>
+  </div>
+</div>
+<!-- KPI 3: المحاولات على الاختبارات -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(124, 58, 237) 0%, rgb(139, 92, 246) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm"><i class="fa-solid fa-clipboard-check text-white"></i></div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm">متوسط <span style="font-family: 'Outfit', sans-serif;">{{ stats.avg_percent }}%</span></span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">محاولات الاختبارات</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold text-white" style="font-family: 'Outfit', sans-serif;">{{ stats.attempts }}</span>
+      <span class="text-xs text-white/80">من إجمالي <span style="font-family: 'Outfit', sans-serif;">{{ total_quizzes }}</span> اختبار</span>
+    </div>
+  </div>
+</div>
+<!-- KPI 4: متوسط الدرجات -->
+<div class="rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow relative flex flex-col justify-between text-white overflow-hidden" style="background: linear-gradient(135deg, rgb(234, 88, 12) 0%, rgb(245, 158, 11) 100%);">
+  <div class="flex items-start justify-between">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm bg-white/20 text-white backdrop-blur-sm"><i class="fa-solid fa-star text-white"></i></div>
+    <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-sm">أفضل <span style="font-family: 'Outfit', sans-serif;">{{ stats.best }}%</span></span>
+  </div>
+  <div class="mt-4">
+    <span class="text-xs font-semibold block mb-1 text-white/90">متوسط الدرجات</span>
+    <div class="flex items-baseline gap-2">
+      <span class="text-3xl font-extrabold text-white" style="font-family: 'Outfit', sans-serif;">{{ stats.avg_percent }}%</span>
+      <span class="text-xs text-white/80">أدنى نتيجة <span style="font-family: 'Outfit', sans-serif;">{{ stats.worst }}%</span></span>
+    </div>
+  </div>
+</div></section>
+<!-- END: TopKPISection -->
+<!-- BEGIN: MainContentGrid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Right Column (aside): Profile + Quick stats + Motivation + Strengths + Payments -->
+<aside class="lg:col-span-4 space-y-6">
+<!-- Card: معلومات الطالب -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm text-center">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+<h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-regular fa-user text-cyan-600"></i>معلومات الطالب</h3>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-cyan-400 to-blue-600 mb-3 shadow">
+<div class="w-full h-full bg-sky-50 rounded-full overflow-hidden flex items-center justify-center">
+{% if s.student_profile.avatar %}<img alt="{{ s.full_name }}" class="w-full h-full object-cover" src="{{ s.student_profile.avatar.url }}">{% else %}<span class="w-full h-full flex items-center justify-center text-3xl font-black text-blue-700">{{ s.first_name|slice:":1" }}</span>{% endif %}
+</div>
+</div>
+<h2 class="text-xl font-extrabold text-slate-800">{{ s.full_name }}</h2>
+<p class="text-xs text-slate-400 font-medium mt-0.5">{{ s.student_profile.get_grade_display|default:"—" }}</p>
+</div>
+<div class="mt-6 space-y-3.5 text-right text-xs text-slate-600">
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-semibold text-slate-700 font-mono" dir="ltr">{{ s.phone }}</span>
+<div class="flex items-center gap-2 text-slate-400"><span class="text-[11px]">رقم الهاتف</span><i class="fa-solid fa-phone text-cyan-600"></i></div>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-semibold text-slate-700 font-mono" dir="ltr">{{ s.student_profile.parent_phone|default:"—" }}</span>
+<div class="flex items-center gap-2 text-slate-400"><span class="text-[11px]">رقم ولي الأمر</span><i class="fa-solid fa-user-shield text-cyan-600"></i></div>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-semibold text-slate-700">{{ enr.created_at|date:"Y/m/d" }}</span>
+<div class="flex items-center gap-2 text-slate-400"><span class="text-[11px]">تاريخ الانضمام</span><i class="fa-regular fa-calendar-check text-cyan-600"></i></div>
+</div>
+</div>
+</div>
+<!-- Card: إحصائيات سريعة -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-chart-line" style="color: #3F8BF9;"></i>إحصائيات سريعة</h3>
+</div>
+<div class="space-y-3.5 text-xs">
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ stats.attempts }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">محاولات الاختبارات</span><i class="fa-regular fa-clipboard" style="color: #8299DF;"></i></div>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ pr.done }}/{{ pr.total }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">الدروس المكتملة</span><i class="fa-regular fa-circle-check" style="color: #36CE8F;"></i></div>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ stats.avg_percent }}%</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">متوسط الدرجات</span><i class="fa-regular fa-star" style="color: #FBB459;"></i></div>
+</div>
+<div class="flex items-center justify-between p-2 rounded-lg transition-colors hover:bg-slate-50">
+<span class="font-bold text-sm" style="color: {% if stats.errors_open %}#E5484D{% else %}#133664{% endif %}; font-family: 'Outfit', sans-serif;">{{ stats.errors_open }}</span>
+<div class="flex items-center gap-2" style="color: #4C658D;"><span class="">أخطاء مفتوحة</span><i class="fa-regular fa-circle-exclamation" style="color: #E87881;"></i></div>
+</div>
+</div></div>
+<!-- Card: تحفيز وتقدير -->
+<div class="bg-gradient-to-b from-sky-50 via-white to-blue-50 rounded-2xl p-6 border border-sky-100 shadow-sm text-center relative overflow-hidden">
+<div class="w-12 h-12 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center text-2xl mx-auto shadow-inner mb-3"><i class="fa-solid fa-trophy"></i></div>
+{% if stats.avg_percent >= 85 %}<h3 class="text-base font-extrabold text-slate-800 mb-1">{{ s.first_name }} يسير بأداء ممتاز!</h3><p class="text-xs text-slate-500 max-w-[220px] mx-auto leading-relaxed">استمر في متابعته على هذا الأداء المتميز.</p>
+{% elif stats.avg_percent >= 60 %}<h3 class="text-base font-extrabold text-slate-800 mb-1">{{ s.first_name }} يحقق تقدّمًا جيدًا</h3><p class="text-xs text-slate-500 max-w-[220px] mx-auto leading-relaxed">بمزيد من المتابعة يمكنه الوصول لمستوى أفضل.</p>
+{% else %}<h3 class="text-base font-extrabold text-slate-800 mb-1">{{ s.first_name }} بحاجة لمزيد من الدعم</h3><p class="text-xs text-slate-500 max-w-[220px] mx-auto leading-relaxed">يُنصح بالتواصل معه ومتابعة نقاط الضعف الحالية.</p>{% endif %}
+<div class="mt-4 flex items-center justify-center"><div class="relative py-2"><i class="fa-solid fa-graduation-cap text-5xl text-blue-900 drop-shadow-md"></i>
+<div class="flex justify-center -space-x-1 mt-1 text-sky-400"><i class="fa-solid fa-book-bookmark text-2xl text-blue-500"></i><i class="fa-solid fa-book text-2xl text-cyan-400"></i><i class="fa-solid fa-book text-2xl text-sky-300"></i></div>
+</div></div>
+</div>
+<!-- Card: أقوى نقاط الطالب -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm flex flex-col justify-between"><div>
+<div class="flex items-center justify-between pb-3 border-b mb-5" style="border-color: #D7E1ED;"><h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-star" style="color: #FBB459;"></i>أقوى نقاط الطالب</h3></div>
+<div class="space-y-4 text-xs font-semibold" style="color: #4C658D;">
+{% for st in strengths %}<div>
+<div class="flex justify-between items-center mb-1.5"><span class="font-bold" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ st.percent }}%</span><span class="">{{ st.label }}</span></div>
+<div class="w-full rounded-full h-2 overflow-hidden" style="background-color: #D7E1ED;"><div class="h-2 rounded-full" style="width: {{ st.percent }}%; background-color: #36CE8F;"></div></div>
+</div>{% endfor %}
+</div></div></div>
+<!-- Card: سجل المدفوعات -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-wallet" style="color: #3F8BF9;"></i>سجل المدفوعات</h3>
+</div>
+<div class="space-y-2.5 text-xs">{% for p in payments %}<div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100">
+<span class="font-bold" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ p.amount }} ج.م</span>
+<span class="text-slate-500">{{ p.created_at|date:"Y/m/d" }}</span>
+<span class="px-2.5 py-1 rounded-full text-[10px] font-bold {% if p.status == 'approved' %}bg-emerald-100 text-emerald-700{% elif p.status == 'rejected' %}bg-rose-100 text-rose-700{% else %}bg-amber-100 text-amber-700{% endif %}">{{ p.get_status_display }}</span>
+</div>{% empty %}<p class="text-slate-400 text-center py-4">لا يوجد مدفوعات مسجّلة.</p>{% endfor %}</div>
+</div>
+</aside>
+<!-- Left Column: Charts -->
+<div class="lg:col-span-8 space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Card: ملخص الأداء العام (Overall Gauge) -->
+<div class="md:col-span-5 bg-white rounded-2xl p-5 border border-[#e2edf8] shadow-sm flex flex-col justify-between items-center text-center"><div class="w-full flex items-center justify-between mb-2">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-chart-pie" style="color: #3F8BF9;"></i>ملخص الأداء العام</h3>
+</div>
+<div class="my-3 relative flex items-center justify-center"><div class="relative w-40 h-40 flex items-center justify-center">
+  <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
+    <circle cx="80" cy="80" r="64" fill="none" stroke="#E2E8F0" stroke-width="16"></circle>
+    <circle cx="80" cy="80" r="64" fill="none" stroke="#00B4D8" stroke-width="16" stroke-dasharray="{{ gauge_circumference }}" stroke-dashoffset="{{ gauge_dashoffset }}" stroke-linecap="round" class="transition-all duration-1000"></circle>
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+    <span class="text-3xl font-black tracking-tight leading-none" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ pr.percent }}%</span>
+    <span class="text-xs font-semibold mt-1" style="color: #4C658D;">نسبة إنجاز الدروس</span>
+  </div>
+</div></div>
+<div class="grid grid-cols-2 gap-3 w-full mt-2">
+<div class="rounded-xl p-2.5 text-center border" style="background-color: #F2F8FD; border-color: #D7E1ED;"><span class="text-xs font-medium block" style="color: #4C658D;">دروس مكتملة</span><span class="text-xl font-bold mt-0.5 block" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ pr.done }}</span></div>
+<div class="rounded-xl p-2.5 text-center border" style="background-color: #F2F8FD; border-color: #D7E1ED;"><span class="text-xs font-medium block" style="color: #4C658D;">إجمالي الدروس</span><span class="text-xl font-bold mt-0.5 block" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ pr.total }}</span></div>
+</div></div>
+<!-- Card: الأداء حسب الدورات -->
+<div class="md:col-span-7 bg-white rounded-2xl p-5 border border-[#e2edf8] shadow-sm flex flex-col justify-between"><div class="flex items-center justify-between mb-4">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-chart-simple" style="color: #3F8BF9;"></i>الأداء حسب الدورات</h3>
+</div>
+{% if courses_perf %}<div class="flex flex-col sm:flex-row items-center gap-4">
+<div class="w-full flex-1">
+<div class="h-48 flex items-end justify-between gap-2 px-2 pt-6 pb-2 border-b border-l relative" style="border-color: #D7E1ED;">
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div><div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div><div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div><div class="border-b border-dashed w-full h-0" style="border-color: #D7E1ED;"></div>
+</div>
+{% for c in courses_perf %}<div class="flex-1 flex flex-col items-center h-full justify-end group">
+<span class="text-[11px] font-bold mb-1" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ c.percent }}%</span>
+<div class="w-full max-w-[28px] rounded-t-md transition-all duration-500 group-hover:brightness-110" style="height: {{ c.percent }}%; background-color: {{ c.color }};"></div>
+</div>{% endfor %}
+</div>
+<div class="flex justify-between text-[10px] font-semibold mt-2 px-1 text-center" style="color: #4C658D;">{% for c in courses_perf %}<span class="flex-1 truncate">{{ c.title }}</span>{% endfor %}</div>
+</div>
+<div class="flex flex-col gap-1.5 text-[11px] font-medium min-w-[100px] border-r pr-3" style="color: #4C658D; border-color: #D7E1ED;">{% for c in courses_perf %}<div class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full" style="background-color: {{ c.color }};"></span>{{ c.title }}</div>{% endfor %}</div>
+</div>{% else %}<p class="text-slate-400 text-sm text-center py-10">لا توجد دورات منشورة بعد.</p>{% endif %}
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Card: توزيع الأنشطة -->
+<div class="md:col-span-6 bg-[#FEFEFE] rounded-2xl p-5 border border-[#D7E1ED] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-2"><h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-chart-donut" style="color: #3F8BF9;"></i>توزيع الأنشطة</h3></div>
+{% if donut_total %}<div class="flex items-center justify-between gap-4 py-2">
+<div class="relative w-36 h-36 flex-shrink-0 flex items-center justify-center"><div class="relative w-40 h-40 flex-shrink-0 flex items-center justify-center">
+  <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 160 160">
+    <circle cx="80" cy="80" r="64" fill="none" stroke="#E2E8F0" stroke-width="16"></circle>
+    {% for d in donut %}{% if d.count %}<circle cx="80" cy="80" r="64" fill="none" stroke="{{ d.color }}" stroke-width="16" stroke-dasharray="{{ d.dasharray }}" stroke-dashoffset="{{ d.dashoffset }}" stroke-linecap="round"></circle>{% endif %}{% endfor %}
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center">
+    <span class="text-2xl font-black leading-none" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ donut_total }}</span>
+    <span class="text-[10px] font-semibold mt-1" style="color: #4C658D;">إجمالي الأنشطة</span>
+  </div>
+</div></div>
+<div class="flex-1 space-y-2 text-xs font-semibold pr-2" style="color: #4C658D;">{% for d in donut %}<div class="flex items-center justify-between">
+<div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full" style="background-color: {{ d.color }};"></span><span class="">{{ d.label }}</span></div>
+<span class="font-bold" style="color: #133664; font-family: 'Outfit', sans-serif;">{{ d.count }}</span>
+</div>{% endfor %}</div>
+</div>{% else %}<p class="text-slate-400 text-sm text-center py-10">لا توجد أنشطة مسجّلة بعد.</p>{% endif %}
+</div>
+<!-- Card: نشاط الطالب على المنصة (آخر 7 أيام) -->
+<div class="md:col-span-6 bg-[#FEFEFE] rounded-2xl p-5 border border-[#D7E1ED] shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-4"><h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-wave-square" style="color: #3F8BF9;"></i>نشاط الطالب على المنصة</h3><span class="text-[11px] font-semibold px-3 py-1 rounded-lg" style="background-color: #F2F8FD; color: #4C658D;">آخر 7 أيام</span></div>
+{% if chart_points %}<div class="h-44 w-full relative pt-2">
+<svg class="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 350 140">
+<line stroke="#D7E1ED" stroke-dasharray="3" stroke-width="1" x1="0" x2="350" y1="20" y2="20"></line>
+<line stroke="#D7E1ED" stroke-dasharray="3" stroke-width="1" x1="0" x2="350" y1="60" y2="60"></line>
+<line stroke="#D7E1ED" stroke-dasharray="3" stroke-width="1" x1="0" x2="350" y1="100" y2="100"></line>
+<path d="{{ chart_area_path }}" fill="rgba(63, 139, 249, 0.12)"></path>
+<path d="{{ chart_line_path }}" fill="none" stroke="#3F8BF9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+{% for pt in chart_points %}<circle cx="{{ pt.x }}" cy="{{ pt.y }}" fill="{% if forloop.last %}#3F8BF9{% else %}#FEFEFE{% endif %}" r="{% if forloop.last %}5{% else %}4{% endif %}" stroke="#3F8BF9" stroke-width="2"></circle>{% endfor %}
+</svg>
+</div>
+<div class="flex justify-between text-[11px] font-semibold mt-2 px-1" style="color: #4C658D; font-family: 'Outfit', sans-serif;">{% for pt in chart_points %}<span class="">{{ pt.label }}</span>{% endfor %}</div>
+{% else %}<p class="text-slate-400 text-sm text-center py-10">لا يوجد نشاط مسجّل هذا الأسبوع.</p>{% endif %}
+</div>
+</div>
+<!-- Card: أحدث الأنشطة -->
+<section class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-4 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-lg font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-regular fa-clock" style="color: #3F8BF9;"></i>أحدث نتائج الاختبارات</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-right border-collapse">
+<thead><tr class="text-xs font-semibold border-b" style="background-color: #F2F8FD; color: #4C658D; border-color: #D7E1ED;">
+<th class="py-3 px-4 rounded-r-xl">التاريخ والوقت</th><th class="py-3 px-4">الاختبار</th><th class="py-3 px-4">الدورة</th><th class="py-3 px-4 rounded-l-xl">النتيجة</th>
+</tr></thead>
+<tbody class="text-xs divide-y" style="border-color: #D7E1ED;">
+{% for a in atts %}<tr class="hover:bg-slate-50/50 transition-colors" style="border-color: #D7E1ED;">
+<td class="py-3.5 px-4" style="color: #4C658D; font-family: 'Outfit', sans-serif;">{{ a.submitted_at|date:"Y/m/d - H:i" }}</td>
+<td class="py-3.5 px-4 font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-regular fa-clipboard-check text-sm" style="color: #8299DF;"></i>{{ a.quiz.title }}</td>
+<td class="py-3.5 px-4 font-semibold" style="color: #4C658D;">{{ a.quiz.course.title }}</td>
+<td class="py-3.5 px-4 font-bold" style="color: {% if a.percent < 50 %}#E5484D{% else %}#36CE8F{% endif %};">{{ a.percent }}%</td>
+</tr>{% empty %}<tr><td colspan="4" class="py-10 text-center text-slate-400">لا توجد محاولات اختبارات بعد.</td></tr>{% endfor %}
+</tbody>
+</table>
+</div></section>
+<!-- Card: نقاط الضعف الحالية -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm"><div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-solid fa-triangle-exclamation" style="color: #E87881;"></i>نقاط الضعف الحالية</h3>
+</div>
+<div class="space-y-2 text-xs">{% for e in errors %}<div class="p-3 rounded-xl bg-rose-50/60 border border-rose-100 text-slate-700">{{ e.question.text|truncatechars:110 }}</div>{% empty %}<p class="text-slate-400 text-center py-6">لا توجد أخطاء مفتوحة حاليًا. 👏</p>{% endfor %}</div>
+</div>
+<!-- Card: تواصل الطالب مع المعلم -->
+<div class="bg-white rounded-2xl p-6 border border-[#e2edf8] shadow-sm flex flex-col justify-between"><div>
+<div class="flex items-center justify-between pb-3 border-b mb-4" style="border-color: #D7E1ED;">
+<h3 class="text-base font-bold flex items-center gap-2" style="color: #133664;"><i class="fa-regular fa-comments" style="color: #3F8BF9;"></i>تواصل الطالب مع المعلم</h3>
+{% if conv %}<a class="text-xs font-bold flex items-center gap-1 hover:underline" href="{% url 'teacher:conversation_detail' conv.pk %}" style="color: #3F8BF9;">عرض المحادثة<i class="fa-solid fa-chevron-left text-[10px]"></i></a>{% endif %}
+</div>
+{% if conv_messages %}<div class="overflow-x-auto">
+<table class="w-full text-right text-xs">
+<thead><tr class="font-semibold border-b" style="background-color: #F2F8FD; color: #4C658D; border-color: #D7E1ED;"><th class="py-2.5 px-3">التاريخ</th><th class="py-2.5 px-3">المرسل</th><th class="py-2.5 px-3">الرسالة</th><th class="py-2.5 px-3">الحالة</th></tr></thead>
+<tbody class="divide-y font-medium" style="border-color: #D7E1ED;">{% for m in conv_messages %}<tr class="hover:bg-slate-50/50" style="border-color: #D7E1ED;">
+<td class="py-3 px-3" style="color: #4C658D; font-family: 'Outfit', sans-serif;">{{ m.created_at|date:"Y/m/d" }}</td>
+<td class="py-3 px-3 font-bold" style="color: #133664;">{% if m.sender.teacher_profile %}أنت{% else %}{{ s.full_name }}{% endif %}</td>
+<td class="py-3 px-3 truncate max-w-[200px]" style="color: #4C658D;">{{ m.text|default:"(صورة)"|truncatechars:60 }}</td>
+<td class="py-3 px-3"><span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold border {% if m.is_read %}bg-[#eafaf3] border-emerald-400" style="color:#36CE8F;{% else %}bg-amber-50 border-amber-300" style="color:#d97706;{% endif %}">{% if m.is_read %}مقروءة{% else %}غير مقروءة{% endif %}</span></td>
+</tr>{% endfor %}</tbody>
+</table>
+</div>{% else %}<p class="text-slate-400 text-center py-6">لم تبدأ أي محادثة مع هذا الطالب بعد.</p>{% endif %}
+</div>
+<div class="mt-4 pt-3 border-t flex justify-end" style="border-color: #D7E1ED;">
+{% if conv %}<a href="{% url 'teacher:conversation_detail' conv.pk %}" class="text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all hover:opacity-95 no-underline" style="background-color: #3F8BF9; box-shadow: 0 4px 14px rgba(63, 139, 249, 0.25);"><i class="fa-solid fa-paper-plane"></i>إرسال رسالة جديدة</a>
+{% else %}<a href="{% url 'teacher:messages' %}" class="text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-2 transition-all hover:opacity-95 no-underline" style="background-color: #3F8BF9; box-shadow: 0 4px 14px rgba(63, 139, 249, 0.25);"><i class="fa-solid fa-paper-plane"></i>الذهاب إلى الرسائل</a>{% endif %}
+</div></div>
+</div>
+<!-- END: MainContentGrid -->
+</main>
+<!-- END: DashboardContainer -->
+<!-- BEGIN: MainFooter -->
+<footer class="bg-[#081c33] text-white border-t border-slate-800 mt-4" style="background-color: #133664; border-color: #1e4579;"><div class="max-w-[1440px] mx-auto px-4 lg:px-8 py-8 flex flex-col items-center justify-center text-center space-y-3"><p class="text-sm md:text-base font-medium text-slate-200 max-w-2xl leading-relaxed">النجاح يبدأ بخطوة، والتميز رحلة مستمرة يصنعها الطالب باجتهاده وعزيمته كل يوم. منصة مدرستك معه دائماً نحو القمة.</p></div></footer>
+<!-- END: MainFooter -->
+</div>
+</body></html>

@@ -1,0 +1,12 @@
+{% extends "teacher/base.html" %}
+{% block title %}بحث{% endblock %}
+{% block page %}
+<div class="p-4 sm:p-6 md:p-8 flex-1 space-y-6">
+<div><h1 class="text-2xl font-black text-slate-900 m-0">نتائج البحث</h1><p class="text-sm text-slate-500 mt-1">{% if q %}عن «{{ q }}»{% else %}اكتب كلمة في شريط البحث أعلاه.{% endif %}</p></div>
+{% if q and not students and not courses and not lessons and not quizzes %}<div class="rounded-3xl border-2 border-dashed border-slate-200 bg-white p-10 text-center text-slate-500">لا توجد نتائج مطابقة.</div>{% endif %}
+{% if students %}<section><h3 class="font-black mb-2">الطلاب</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3">{% for e in students %}<a class="bg-white rounded-2xl border border-blue-100 p-4 no-underline text-slate-800" href="{% url 'teacher:student_detail' e.pk %}"><b>{{ e.student.full_name }}</b><p class="text-xs text-slate-500 m-0 num-font" dir="ltr">{{ e.student.phone }}</p></a>{% endfor %}</div></section>{% endif %}
+{% if courses %}<section><h3 class="font-black mb-2">الدورات</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3">{% for c in courses %}<a class="bg-white rounded-2xl border border-blue-100 p-4 no-underline text-slate-800" href="{% url 'teacher:course_detail' c.pk %}"><b>{{ c.title }}</b></a>{% endfor %}</div></section>{% endif %}
+{% if lessons %}<section><h3 class="font-black mb-2">الدروس</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3">{% for l in lessons %}<a class="bg-white rounded-2xl border border-blue-100 p-4 no-underline text-slate-800" href="{% url 'teacher:lesson_detail' l.pk %}"><b>{{ l.title }}</b><p class="text-xs text-slate-500 m-0">{{ l.unit.course.title }} — {{ l.unit.title }}</p></a>{% endfor %}</div></section>{% endif %}
+{% if quizzes %}<section><h3 class="font-black mb-2">الاختبارات</h3><div class="grid grid-cols-1 md:grid-cols-3 gap-3">{% for z in quizzes %}<a class="bg-white rounded-2xl border border-blue-100 p-4 no-underline text-slate-800" href="{% url 'teacher:quiz_detail' z.pk %}"><b>{{ z.title }}</b><p class="text-xs text-slate-500 m-0">{{ z.get_kind_display }} — {{ z.course.title }}</p></a>{% endfor %}</div></section>{% endif %}
+</div>
+{% endblock %}

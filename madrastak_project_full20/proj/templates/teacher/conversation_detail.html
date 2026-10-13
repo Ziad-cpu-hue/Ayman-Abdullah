@@ -1,0 +1,10 @@
+{% extends "teacher/base.html" %}
+{% block title %}{{ conv.student.full_name }}{% endblock %}
+{% block topbar_title %}محادثة مع {{ conv.student.full_name }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'teacher:messages' %}">الرسائل</a> ← {{ conv.student.full_name }}</div>
+<div class="card">
+  <div class="chat mb">{% for m in msgs %}<div class="msg {% if m.sender.teacher_profile %}me{% else %}them{% endif %}">{% if m.text %}{{ m.text }}{% endif %}{% if m.image %}<img src="{{ m.image.url }}" alt="">{% endif %}<small>{{ m.created_at|date:"d/m H:i" }} — {{ m.sender.full_name }}</small></div>{% empty %}<p class="muted center">لا توجد رسائل بعد.</p>{% endfor %}</div>
+  <form method="post">{% csrf_token %}<div class="row"><textarea class="input grow" name="text" rows="2" placeholder="اكتب ردًا…" required></textarea><button class="btn" type="submit">إرسال</button></div></form>
+</div>
+{% endblock %}

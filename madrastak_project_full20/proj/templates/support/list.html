@@ -1,0 +1,224 @@
+<!DOCTYPE html><html dir="rtl" lang="ar"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>مدرستك - الدعم الفني</title>
+<!-- Google Fonts: Tajawal exclusively -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              blue: '#1677F9',
+              navy: '#174A91',
+              dark: '#133664',
+              muted: '#6682AD',
+              lightBlue: '#EEF6FF',
+              border: '#DCE8F8',
+              bgLight: '#F7FAFF'
+            }
+          },
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+            sans: ['Tajawal', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body, h1, h2, h3, h4, h5, h6, p, span, a, input, button, textarea {
+      font-family: 'Tajawal', sans-serif !important;
+    }
+    body {
+      background-color: #F7FAFF;
+      color: #174A91;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<style>
+    body, h1, h2, h3, h4, h5, h6, p, span, a, input, button, textarea {
+      font-family: "Plus Jakarta Sans", "Tajawal", sans-serif !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-[#F7FAFF] flex flex-col justify-between selection:bg-[#1677F9] selection:text-white">
+{% if messages %}
+<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">
+  {% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}
+</div>
+{% endif %}
+{% if impersonating %}<div class="max-w-[1440px] mx-auto w-full px-6 lg:px-12 pt-4"><div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div></div>{% endif %}
+<!-- BEGIN: MainHeader -->
+
+<!-- END: MainHeader -->
+<!-- BEGIN: HeroSection -->
+<section class="max-w-[1440px] mx-auto px-6 lg:px-12 pt-8 pb-3 w-full">
+<div class="relative w-full rounded-2xl bg-gradient-to-l from-[#F2F8FF] via-[#EBF4FE] to-[#E3EFFF] overflow-hidden border border-[#DCE8F8] px-8 py-7 sm:px-12 flex flex-col md:flex-row items-center justify-between min-h-[195px] shadow-[0_4px_25px_rgba(23,74,145,0.03)]">
+<!-- Right Side: Heading, Subtitle & Breadcrumbs -->
+<div class="z-10 text-right order-2 md:order-1 flex-1">
+<div class="flex items-center gap-3.5 mb-2.5">
+<h1 class="text-3xl sm:text-4xl font-extrabold text-[#1677F9] tracking-tight">
+            الدعم الفني
+          </h1>
+<!-- Headset Icon in #1677F9 -->
+<div class="w-10 h-10 flex items-center justify-center text-[#1677F9]"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_3N1IkMuFwAvrtRUCxD92NkPaXLQ57APED_ekLOFAIbHp39EsxgO1eFS0LsMjTtesvCWgqKj8ifUH_WPoi3vchsae98iEyMPT88_4aVX4vmUqUdcdMSzYuo_wHmeaMlx7q5Rw3I4eq5RWNXfAdHdgFFhYJXpGXjJRulGIdzRdg9ldUUhi4VlJ5KfoVOFk-HSAKH8SwH-ELkWehifGVUvZ_bU2ivjSTtINwOoqjziIVE1Zy8RdA3iviUt71hT3t78oRds" alt="Headphones" class="w-9 h-9 object-contain"></div>
+</div>
+<p class="text-[#6682AD] text-[15.5px] font-medium leading-relaxed max-w-2xl mb-4">
+          نحن هنا لمساعدتك في حل أي مشكلة تواجهك، فقط أرسل لنا رسالتك وسنرد عليك في أقرب وقت.
+        </p>
+<!-- Breadcrumbs with Home Icon -->
+<nav aria-label="مسار التنقل" class="flex items-center gap-2 text-[13px] text-[#6682AD] font-medium"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeIbCnRZMEPvTVaQxs2KPz1oYlmNhFH1NV2Wug9U9XJDrXRe78wsKozqI3rVCcJ2TZq1qHPLoDjD0G_Hom7sSwPXyia2YYVzUIvpuT5Ns_4bRNXBIf4TMCdA_4YZuFjjx-_dOiVuVaF7NTulQZsNv2sLTJ5KHkdu2dBH5iMRwdw_g2sPkzS7z6J2a_rXKE2ghRXCpqG_rJ0jcp4OiMiNLsete-Y9dqIn7b1luvboU-MOP10ZuY7t9skeje9oPdn1FCIwo" alt="Home" class="w-4 h-4 object-contain"><a class="hover:text-[#1677F9] transition-colors" href="{{ home_url }}">الرئيسية</a><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8CrlB9QHAC_48IEJPehBZZNzzXpRlvPEIZ1pENUmYXK6SD8S21k0E1niHfq5eRTYd-xKFvz5i9TFw_u88B2GrbU6HaH0SVggx8FbAEEOjSJtkiRkGk2y1mj9OiPRSnSaa7WmQKS4NPXpom2OYD1jGkJ-p7egtbx71a8HJRW1TwiBTOYy6lEkidv00RWvmCtkQLUmd2XyRXKSuHZkh-fvRBemG3VvUQgRkxi3aHD0NnYsNWpupLeg5NezHpkF5FZns3aM" alt="&gt;" class="w-2.5 h-2.5 object-contain"><span class="text-[#1677F9] font-bold">الدعم الفني</span></nav>
+</div>
+<!-- Left Side: Clean high-fidelity illustration replica matching IMAGE_3 -->
+<div class="relative order-1 md:order-2 flex items-center justify-center shrink-0 w-80 h-40"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI_-CVfNmwg7CxlNFdmXBYnLJ6EcM-yDScALodvcUHB-e3apnWSz-a74TpB6kLzYabpLhzhWeztP8Ko03dCfy5mbpz3p44H7r6TNpke3stC3cSQ1MQJBMnWOZwHYeG9Vq-RM8d3nFsaTNidm5XRUHxGi4sBLOAS5IFhOKq7hKviq2h35udS1c631jLdCY5jt3nfy_eZICs9P5zjBtetnjr6IIa3zIUqMMfKJ8yjor7RtE-Am58UPjpEvLbhU18ip6r_Io" alt="Headphones" class="w-32 h-32 object-contain drop-shadow-md"></div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: MainContentGrid (Two-Column Layout matching IMAGE_3) -->
+<main class="max-w-[1440px] mx-auto px-6 lg:px-12 py-6 flex-1 w-full">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+<!-- ================= Left Column: Help Information Cards (~28%) ================= -->
+<aside class="lg:col-span-4 flex flex-col gap-4 order-2 lg:order-1">
+<!-- Help Intro Card -->
+<div class="bg-white rounded-2xl p-6 border border-[#DCE8F8] shadow-[0_4px_20px_rgba(23,74,145,0.03)] text-center flex flex-col items-center">
+<div class="w-16 h-16 rounded-full bg-[#EEF6FF] flex items-center justify-center text-[#1677F9] mb-3"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvXBNEmYqBtpwlLXDWm15GbRFF8Qqvb-_vEgwqG7O2mZuAEzET8fB5-JDq1ZPuODIkKMbwmECKOtewYxTSVRKqUkXqaBeFNEMCX6Y7zwYRBrdJ5P_oBIrUVnV6XP7HIW9DJEuNN8ajEueJ24sgg1f2RBsbp60yxDlnsJPmiRE5HKJp1nv8xxg49hT1e13oxlWKWhxufprj5InpTxyP1E-_F-2FQqHvMyQc_91Zt9nzor0usXzJEEetzbJ1SUQ8IzEoKng" alt="Chat" class="w-8 h-8 object-contain"></div>
+<h2 class="text-xl font-bold text-[#174A91] mb-1.5">محتاج مساعدة؟</h2>
+<p class="text-[#6682AD] text-sm leading-relaxed max-w-xs font-medium">
+            يمكنك التواصل معنا في أي وقت وسنكون سعداء بمساعدتك.
+          </p>
+</div>
+<!-- Info Card 1: ساعات العمل -->
+<div class="bg-white rounded-2xl p-5 border border-[#DCE8F8] shadow-[0_4px_20px_rgba(23,74,145,0.02)] flex items-center justify-between gap-4"><div class="text-right flex-1"><h3 class="text-sm font-bold text-[#174A91] mb-1">ساعات العمل</h3><p class="text-xs text-[#6682AD] font-medium leading-relaxed">من 9:00 صباحاً إلى 9:00 مساءً<br>(جميع أيام الأسبوع)</p></div><div class="w-11 h-11 rounded-xl bg-[#EEF6FF] flex items-center justify-center shrink-0"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7iHtBVwVHFoywFz2lbumeHS-ph2mWIknc_FKTGx4RYpTvSEVh0r7gIoArCvFxEdfGtIUukhvtjgLibRpVttr8Zf9Vn3SxM_JkTJKPYZlxhiaPmJoL7kxETyvFuQCfGdsGgiYybRKA2jgJLqCNe0jhBxkcppyucV6MnL8JR1L2SqulgD-7YoRAymwFdX-LKILSDfn_9Mce8ugr-gKNWpXu_lUSgMDKcyreZm4NB4VbBytK-W7dgWCPmnSr1ulx2w6j_uw" alt="ساعات العمل" class="w-6 h-6 object-contain"></div></div>
+<!-- Info Card 2: متوسط وقت الرد -->
+<div class="bg-white rounded-2xl p-5 border border-[#DCE8F8] shadow-[0_4px_20px_rgba(23,74,145,0.02)] flex items-center justify-between gap-4"><div class="text-right flex-1"><h3 class="text-sm font-bold text-[#174A91] mb-1">متوسط وقت الرد</h3><p class="text-xs text-[#6682AD] font-medium">أقل من 30 دقيقة</p></div><div class="w-11 h-11 rounded-xl bg-[#EEF6FF] flex items-center justify-center shrink-0"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbRgW5xm18QAlVvr0PLzYpAJ-iWNhgwgVpsj4ynorDswvycWOSHRjt0gkTxTajJNMw-mdOeAJbzsrOFgGnaFJWRddRYg2hH-Wz2q-JucXTI9tMmsWwURDgy6AZVR-snf2P7WBbt0ZG6_wVK6YFdVsvHvjU-1tL6BKY5HOPflwNDFfyd1h-QhPwLaRB9Rak3L_pMcvu81LMj9bbCl5lTn4bvDCQha57QIMkyFDA9hcIgF6yaBa88kngDUa0abAhpNj_43A" alt="Clock" class="w-6 h-6 object-contain"></div></div>
+<!-- Info Card 3: طرق التواصل الأخرى -->
+<div class="bg-white rounded-2xl p-5 border border-[#DCE8F8] shadow-[0_4px_20px_rgba(23,74,145,0.02)] flex items-center justify-between gap-4"><div class="text-right flex-1"><h3 class="text-sm font-bold text-[#174A91] mb-1">طرق التواصل الأخرى</h3><span class="block text-[11px] text-[#869EBD] font-medium">البريد الإلكتروني</span><a class="text-xs text-[#1677F9] font-bold hover:underline tracking-tight" href="mailto:support@madrasatak.com">support@madrasatak.com</a></div><div class="w-11 h-11 rounded-xl bg-[#EEF6FF] flex items-center justify-center shrink-0"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD3KQtmHSocjFTDBRtAyEN0w8BfPtjgO48wRRLZ3i3eQ8DtwUzAEe540-hF02IB8HEh-chZjNduWh9YVB5o4kax1SxDj1-9KYkkgS0jdbq3KVONZz4sxTsinPUeUNSEePW8eK22WReYiz2hf0cDS6-df5Jag_AXb2nWxM6TU4pxJy7B8lz7sCOSt-5NPb8St3OXdxSCso1vqhaoDc4GD4I7KooQAGdyFxtako0jwfZv-3t9qQ8VI_u6XetMoRhwOKNW9ps" alt="البريد الإلكتروني" class="w-6 h-6 object-contain"></div></div>
+<!-- Motivational Card: معاً نصل إلى هدفك -->
+<div class="rounded-2xl bg-gradient-to-br from-[#EFF6FF] via-[#E4F0FF] to-[#DBEBFF] p-5 border border-[#D8E7FA] flex items-center justify-between relative overflow-hidden min-h-[125px]">
+<div class="z-10 text-right">
+<div class="text-xl font-black text-[#174A91] leading-tight">معاً</div>
+<div class="text-xl font-black text-[#1677F9] mb-1">نصل إلى هدفك</div>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuClwkUeSJGGV-E6P0lKhBfKk9k-02SgDOcutg9-NJjhsP5KQzji9HFxeRE4L0ZwlCDsRJIghvgNhXhj7Pgk2GRiHWp3AzEbSVZnbb8W59APDxAoayRvB1UuO_EClvtUZCZ-kP7MB1ZQDK35GtLeyCXF4L3xvsxZ0cr_158mvh6_JlUDL3hPCnWKWwg1i61nNtHe4oXFXvffAi9CbTQWjuJ8DROkLfLX-89fkmpv-ra8IDP8mCpg805GUjwr8pYvtryFJr8" alt="Heart" class="w-5 h-5 inline-block object-contain">
+</div>
+<!-- Illustrated books and sprout -->
+<div class="relative flex items-center justify-center shrink-0"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWNlk-cNmoFzqJwo7v6TWHDq_a6YZXablH7f91PMdC1vVI7ZA2y8oL0iFtRGBQWjr1G4ZkmY5eLC2NKMFPNm_drmhUgUtaDHpn-qkPmJ-dtwznA2FdQUdY7q4uR_ypg63D2meJCAyPMZd7XEJF6Rfrs-TH9BxA1JAHED7_IK1YfNHuHlWv3-bUVc3LLRaygzIzfv7ug4RaGLGZ-RTF5BYwg-rNKg_hPGpknX8bpfRwZciixunR1qqXY5o7IbkcNACmc2Y" alt="Plant" class="w-24 h-24 object-contain"></div>
+</div>
+</aside>
+<!-- ================= Right Column: Live Chat Interface (~72%) ================= -->
+<section class="lg:col-span-8 bg-white rounded-2xl border border-[#DCE8F8] shadow-[0_4px_25px_rgba(23,74,145,0.03)] flex flex-col h-[670px] order-1 lg:order-2 overflow-hidden">
+<!-- Chat Header -->
+<header class="px-6 py-4 border-b border-[#DCE8F8] flex items-center justify-between bg-white shrink-0">
+<!-- Support Team Info -->
+<div class="flex items-center gap-3.5">
+<div class="w-11 h-11 rounded-full bg-[#EEF6FF] flex items-center justify-center text-[#1677F9] border border-[#D6E7FF]"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_3N1IkMuFwAvrtRUCxD92NkPaXLQ57APED_ekLOFAIbHp39EsxgO1eFS0LsMjTtesvCWgqKj8ifUH_WPoi3vchsae98iEyMPT88_4aVX4vmUqUdcdMSzYuo_wHmeaMlx7q5Rw3I4eq5RWNXfAdHdgFFhYJXpGXjJRulGIdzRdg9ldUUhi4VlJ5KfoVOFk-HSAKH8SwH-ELkWehifGVUvZ_bU2ivjSTtINwOoqjziIVE1Zy8RdA3iviUt71hT3t78oRds" alt="Support Headset" class="w-6 h-6 object-contain"></div>
+<div>
+<h2 class="text-base font-bold text-[#174A91] leading-tight">فريق الدعم الفني</h2>
+<span class="text-xs text-[#6682AD] font-medium">نحن هنا لمساعدتك</span>
+</div>
+</div>
+<!-- Online Status Badge -->
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#22C55E]"></span>
+<span class="text-xs font-bold text-[#22C55E]">متصل الآن</span>
+</div>
+</header>
+<!-- Chat Conversation Messages Flow -->
+<div id="chat-flow" class="flex-1 overflow-y-auto px-6 py-6 space-y-6 bg-white">
+{% for it in thread %}{% if it.kind == "date" %}<!-- Date Separator Badge -->
+<div class="flex items-center justify-center my-1">
+<span class="bg-[#EEF6FF] text-[#6682AD] text-xs font-semibold px-4 py-1.5 rounded-full border border-[#DCE8F8]">
+              {{ it.label }}
+            </span>
+</div>
+{% elif it.kind == "out" %}<!-- Outgoing User Message -->
+<div class="flex items-start gap-3 justify-start flex-row-reverse">
+<!-- User Avatar -->
+<div class="w-9 h-9 rounded-full bg-[#E5F0FF] flex items-center justify-center text-[#1677F9] shrink-0 mt-0.5"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeiwoWBmuuhtcOP-aPo4hc8ph8QMwxzGi7eOL0gv66AOlZRmHCP64VqLvpvJ07VrEzvPcNhyPsrl8MqoB0xAa_0C_f3Rm_LrEAZZli9riPo3LjggoJqnfxnkFJj09QeHEVSHPpvUCxdNRTKVp5tJr7ac_hvQlp_TEeO0-2a6nwEP1H3CXOe47AafTHvRq6skoktD9qem-4-bSb0AqN_TlVLnLJvp7hQGU8kYcEKa1v6Tu06ckZvTfhxb6Roop5POAl5rM" alt="User" class="w-6 h-6 object-contain"></div>
+<!-- Bubble Content -->
+<div class="flex flex-col items-end max-w-[80%] sm:max-w-[70%]">
+<div class="bg-[#1677F9] text-white text-[14px] leading-relaxed p-3.5 px-4 rounded-2xl rounded-tr-none shadow-[0_2px_8px_rgba(22,119,249,0.15)] text-right font-medium">
+{% if it.subject %}<p class="mb-1 font-bold">{{ it.subject }}</p>{% endif %}{{ it.text|linebreaksbr }}
+              </div>
+<div class="flex items-center gap-1.5 mt-1 text-[11px] text-[#8EA6C5]">
+<span class="">{{ it.time }}</span>
+<!-- Double Checkmark -->
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcPpKWcyElzjplEdYJXKupI2_WqAPAJBnaqWr2oGQrsdIjxrsBNthrupn6JSemJ8QgYIBrK5i9Z2r3LjkvMP9MQkD4067N-V8f9WiQPknJxkbs6R0QXNeF_MEmt0FhcXo8Avtl4oN1fQjvJwh50PrXhxvGfoUb-x8ByCwqvvVLqcIANIAdTAFJFY7EE6Uyhqyo2XLi4acdbBWYj60g3LhOkSWgU_HaPTEzgkwyJ2arhvptnyar7OBD2WmHpO_2gFHGCXA" alt="Read" class="w-3.5 h-3.5 object-contain">
+</div>
+</div>
+</div>
+{% elif it.kind == "in" %}<!-- Incoming Support Agent Message -->
+<div class="flex items-start gap-3 justify-start">
+<!-- Agent Avatar -->
+<div class="w-9 h-9 rounded-full bg-[#F0F6FF] border border-[#D6E7FF] flex items-center justify-center text-[#1677F9] shrink-0 mt-0.5"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_3N1IkMuFwAvrtRUCxD92NkPaXLQ57APED_ekLOFAIbHp39EsxgO1eFS0LsMjTtesvCWgqKj8ifUH_WPoi3vchsae98iEyMPT88_4aVX4vmUqUdcdMSzYuo_wHmeaMlx7q5Rw3I4eq5RWNXfAdHdgFFhYJXpGXjJRulGIdzRdg9ldUUhi4VlJ5KfoVOFk-HSAKH8SwH-ELkWehifGVUvZ_bU2ivjSTtINwOoqjziIVE1Zy8RdA3iviUt71hT3t78oRds" alt="Support Agent" class="w-5 h-5 object-contain"></div>
+<!-- Bubble Content -->
+<div class="flex flex-col items-start max-w-[80%] sm:max-w-[70%]">
+<div class="bg-white border border-[#D6E7FF] text-[#174A91] text-[14px] leading-relaxed p-4 px-4.5 rounded-2xl rounded-tl-none shadow-[0_2px_10px_rgba(23,74,145,0.02)] text-right font-medium">
+<p class="">{{ it.text|linebreaksbr }}</p>
+</div>
+<div class="flex items-center gap-1.5 mt-1 text-[11px] text-[#8EA6C5]">
+<span class="">{{ it.time }}</span>
+</div>
+</div>
+</div>
+{% elif it.kind == "status" %}<!-- Ticket Status Badge -->
+<div class="flex items-center justify-center my-1">
+<span class="bg-[#EEF6FF] text-[#6682AD] text-xs font-semibold px-4 py-1.5 rounded-full border border-[#DCE8F8]">
+              {{ it.label }}
+            </span>
+</div>
+{% endif %}{% empty %}<!-- Welcome Message (no tickets yet) -->
+<div class="flex items-start gap-3 justify-start">
+<div class="w-9 h-9 rounded-full bg-[#F0F6FF] border border-[#D6E7FF] flex items-center justify-center text-[#1677F9] shrink-0 mt-0.5"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD_3N1IkMuFwAvrtRUCxD92NkPaXLQ57APED_ekLOFAIbHp39EsxgO1eFS0LsMjTtesvCWgqKj8ifUH_WPoi3vchsae98iEyMPT88_4aVX4vmUqUdcdMSzYuo_wHmeaMlx7q5Rw3I4eq5RWNXfAdHdgFFhYJXpGXjJRulGIdzRdg9ldUUhi4VlJ5KfoVOFk-HSAKH8SwH-ELkWehifGVUvZ_bU2ivjSTtINwOoqjziIVE1Zy8RdA3iviUt71hT3t78oRds" alt="Support Agent" class="w-5 h-5 object-contain"></div>
+<div class="flex flex-col items-start max-w-[80%] sm:max-w-[70%]">
+<div class="bg-white border border-[#D6E7FF] text-[#174A91] text-[14px] leading-relaxed p-4 px-4.5 rounded-2xl rounded-tl-none shadow-[0_2px_10px_rgba(23,74,145,0.02)] text-right font-medium">
+<p class="mb-1 font-bold text-[#174A91]">مرحباً بك.</p>
+<p class="">اكتب مشكلتك في الرسالة بالأسفل وسنرد عليك في أقرب وقت.</p>
+</div>
+</div>
+</div>
+{% endfor %}</div>
+<!-- Chat Input Footer -->
+<footer class="p-4 bg-white border-t border-[#DCE8F8]">
+<form class="flex items-center gap-3" method="post" action="{% url 'comms:tickets' %}" data-once>{% csrf_token %}
+<!-- Attachment Button -->
+<button aria-label="إرفاق ملف" class="p-2 text-[#6682AD] hover:text-[#1677F9] hover:bg-[#EEF6FF] rounded-full transition" type="button"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDbvDKseIxvV1hWi6S6TI18npkRpa8ZqI-JCst2xe7L9BmXfjgZV-Sjdra4FeeaGyE4yAbacA2fiA0TYqoADiUHtCvKt-MU6fO8tGaE2nHB4SURVu20CdsoMVw_MgEPijxCXWIOUXHHDrgKb9uFLBQEEVh4f1WTodc6Duq9uiY0q-szGnpDRo8rnbwk0urDzxrTWaGf7qM3nq8ekezymE5-J94YJ-OEmWWpV2jqMANNyxI6x-wK-MV4FSO4887S9SlpQz8" alt="Attach" class="w-5 h-5 object-contain"></button>
+<!-- Emoji Picker Button -->
+<button aria-label="إضافة رمز تعبيري" class="p-2 text-[#6682AD] hover:text-[#1677F9] hover:bg-[#EEF6FF] rounded-full transition" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Text Message Input Field -->
+<div class="flex-1 relative">
+<input class="w-full bg-[#FFFFFF] border border-[#D4E4F7] rounded-full px-5 py-2.5 text-sm text-[#174A91] placeholder-[#91A7C5] focus:outline-none focus:border-[#1677F9] focus:ring-1 focus:ring-[#1677F9] transition font-medium" placeholder="اكتب رسالتك هنا..." type="text" name="text" required autocomplete="off" maxlength="2000">
+</div>
+<!-- Send Action Button -->
+<button aria-label="إرسال" class="w-10 h-10 rounded-full bg-[#1677F9] hover:bg-blue-600 text-white flex items-center justify-center shadow-md hover:shadow-lg transition transform active:scale-95 shrink-0" type="submit"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZIjdqBFWG39CnPwmiPKkSVG-f-yIZ1dIIY7foSvO3MyjsD0mDm-upvPBJS4ompwBQ-wpmyNCfjugp5oBuL77hjf22pgyMmye-jdeuBrautM2KhY-QHhjS3PHW7Z3K09_4kxX00ag6XrjFL4m6FWQPb-1gSUBR2N8b_zhrlABTdsKQxM1CNwROgGS13ovjbbE7Zf6vcCpY_xEMEFUNbfe_1Aut8xv9AzQlP4o_i1hXXu8GGK2KempXWPZMJoIPbFIuvmw" alt="Send" class="w-5 h-5 object-contain"></button>
+</form>
+</footer>
+</section>
+</div>
+</main>
+<!-- END: MainContentGrid -->
+<!-- BEGIN: Bottom Spacing -->
+<footer class="h-6"></footer>
+<!-- END: Bottom Spacing -->
+
+
+
+
+<script>
+(function(){
+  var f=document.getElementById('chat-flow'); if(f){f.scrollTop=f.scrollHeight;}
+  setTimeout(function(){document.querySelectorAll('.toast').forEach(function(t){t.style.transition='opacity .5s';t.style.opacity='0';setTimeout(function(){t.remove()},600)})},5200);
+  document.querySelectorAll('form[data-once]').forEach(function(fm){fm.addEventListener('submit',function(){var b=fm.querySelector('button[type=submit]');if(b){setTimeout(function(){b.disabled=true;},10);}});});
+})();
+</script>
+</body></html>

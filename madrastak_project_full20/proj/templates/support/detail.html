@@ -1,0 +1,9 @@
+{% extends base_template %}
+{% block topbar_title %}{{ t.subject }}{% endblock %}
+{% block content %}
+<div class="crumbs"><a href="{% url 'comms:tickets' %}">تذاكري</a> ← {{ t.subject }}</div>
+<div class="pagehead"><h1>{{ t.subject }}</h1><span class="badge {% if t.status == 'new' %}amber{% elif t.status == 'in_progress' %}blue{% else %}green{% endif %}">{{ t.get_status_display }}</span></div>
+<div class="card mb"><p>{{ t.message|linebreaks }}</p></div>
+<div class="card mb"><h3>الردود</h3>{% for r in replies %}<div class="msg {% if r.author == t.user %}them{% else %}me{% endif %}" style="max-width:100%">{{ r.text }}<small>{{ r.created_at|date:"d/m H:i" }}</small></div>{% empty %}<p class="muted small">بانتظار رد فريق الدعم.</p>{% endfor %}</div>
+{% if t.status != 'resolved' %}<form method="post" class="row" data-once>{% csrf_token %}<input class="input grow" name="text" placeholder="أضف تعليقًا…" required><button class="btn">إرسال</button></form>{% else %}<div class="banner green">تم حل هذه المشكلة.</div>{% endif %}
+{% endblock %}

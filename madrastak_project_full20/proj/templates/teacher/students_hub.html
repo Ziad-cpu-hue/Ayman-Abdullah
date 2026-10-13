@@ -1,0 +1,22 @@
+{% extends "teacher/base.html" %}
+{% block title %}الطلاب{% endblock %}
+{% block page %}
+<div class="p-4 sm:p-6 md:p-8 flex-1 space-y-6">
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h1 class="text-3xl font-black text-slate-900 m-0">الطلاب</h1><p class="text-slate-500 text-sm mt-1 mb-0">نظرة عامة على طلابك ومستواهم.</p></div>
+  <div class="flex gap-2"><a href="{% url 'teacher:students' %}" class="px-5 py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold no-underline">قائمة الطلاب</a><a href="{% url 'uikit:student_reports' %}" class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-sm font-bold no-underline">تقرير الطلاب</a></div></div>
+<section class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+  <div class="bg-white rounded-2xl border border-blue-100 shadow p-5"><p class="text-xs text-slate-500 font-bold m-0">إجمالي الطلاب</p><p class="text-3xl font-black num-font m-0">{{ stats.total }}</p></div>
+  <div class="bg-white rounded-2xl border border-emerald-100 shadow p-5"><p class="text-xs text-emerald-600 font-bold m-0">اشتراك نشط</p><p class="text-3xl font-black num-font m-0">{{ stats.active }}</p></div>
+  <div class="bg-white rounded-2xl border border-rose-100 shadow p-5"><p class="text-xs text-rose-600 font-bold m-0">اشتراك منتهٍ</p><p class="text-3xl font-black num-font m-0">{{ stats.expired }}</p></div>
+  <div class="bg-white rounded-2xl border border-amber-100 shadow p-5"><p class="text-xs text-amber-600 font-bold m-0">قيد المراجعة</p><p class="text-3xl font-black num-font m-0">{{ stats.pending }}</p></div>
+  <div class="bg-white rounded-2xl border border-purple-100 shadow p-5"><p class="text-xs text-purple-600 font-bold m-0">جدد آخر 30 يوماً</p><p class="text-3xl font-black num-font m-0">{{ stats.new_month }}</p></div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <section class="bg-white rounded-3xl border border-blue-100 shadow-md p-6"><h3 class="font-black mb-4">🏆 الأعلى أداءً</h3>
+    {% for r in top %}<div class="flex items-center justify-between py-2.5 border-b border-dashed border-slate-100 last:border-0"><span class="flex items-center gap-3"><b class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 text-xs flex items-center justify-center num-font">{{ forloop.counter }}</b><span class="text-sm font-bold">{{ r.name }}</span></span><b class="num-font text-emerald-600">{{ r.avg }}%</b></div>{% empty %}<p class="text-sm text-slate-400 text-center py-8">لا توجد نتائج بعد.</p>{% endfor %}</section>
+  <section class="bg-white rounded-3xl border border-blue-100 shadow-md p-6"><h3 class="font-black mb-4">⚠️ يحتاجون متابعة</h3>
+    {% for e in falling %}{% if e.errs %}<a href="{% url 'teacher:student_detail' e.pk %}" class="flex items-center justify-between py-2.5 border-b border-dashed border-slate-100 last:border-0 no-underline text-slate-800"><span class="text-sm font-bold">{{ e.student.full_name }}</span><span class="text-[11px] font-black px-2.5 py-1 rounded-full bg-rose-100 text-rose-700 num-font">{{ e.errs }} خطأ مفتوح</span></a>{% endif %}{% empty %}<p class="text-sm text-slate-400 text-center py-8">لا يوجد طلاب متعثرون 🎉</p>{% endfor %}</section>
+  <section class="bg-white rounded-3xl border border-blue-100 shadow-md p-6"><h3 class="font-black mb-4">🆕 أحدث المنضمين</h3>
+    {% for e in recent %}<a href="{% url 'teacher:student_detail' e.pk %}" class="flex items-center justify-between py-2.5 border-b border-dashed border-slate-100 last:border-0 no-underline text-slate-800"><span class="text-sm font-bold">{{ e.student.full_name }}</span><span class="text-[11px] text-slate-400 num-font">{{ e.created_at|date:"Y-m-d" }}</span></a>{% empty %}<p class="text-sm text-slate-400 text-center py-8">لا يوجد طلاب بعد.</p>{% endfor %}</section>
+</div></div>
+{% endblock %}

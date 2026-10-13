@@ -1,0 +1,14 @@
+{% extends "teacher/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block page %}
+<div class="p-4 sm:p-6 md:p-8 flex-1 space-y-6"><div class="max-w-4xl mx-auto">
+  <a href="{% url 'teacher:courses' %}" class="text-xs font-bold text-blue-600">→ محتوى المنهج</a>
+  <h1 class="text-3xl font-black text-slate-900 mt-2 mb-1">{{ title }}</h1><p class="text-slate-500 text-sm mb-6">{{ sub }}</p>
+  {% for cr in tree %}
+  <section class="bg-white rounded-3xl border border-blue-100 shadow-md p-5 mb-5"><h2 class="font-black text-lg text-slate-800 mb-3">📘 {{ cr.c.title }}</h2>
+    {% for ur in cr.units %}<div class="mb-4"><h3 class="text-sm font-black text-slate-600 mb-2">{{ ur.u.title }}</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-2">{% for l in ur.lessons %}<a href="{% url url_name l.pk %}" class="flex items-center justify-between gap-2 p-3 rounded-2xl border border-slate-100 hover:bg-blue-50 hover:border-blue-200 transition no-underline text-slate-800"><span class="text-sm font-bold">{{ l.title }}</span><span class="text-[11px] text-slate-400">{% if kind == 'vocab' %}<span class="num-font">{{ l.vocabulary.count }}</span> كلمة{% else %}<span class="num-font">{{ l.sections.count }}</span> قسم{% endif %}</span></a>{% empty %}<p class="text-xs text-slate-400">لا دروس في هذه الوحدة.</p>{% endfor %}</div></div>
+    {% empty %}<p class="text-xs text-slate-400">لا وحدات بعد.</p>{% endfor %}
+  </section>{% endfor %}
+</div></div>
+{% endblock %}

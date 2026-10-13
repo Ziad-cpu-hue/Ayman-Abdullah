@@ -1,0 +1,184 @@
+<!DOCTYPE html><html dir="rtl" lang="ar" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>قائمة الطلاب - Student List</title>
+{% include "teacher/_sidebar_head.html" %}
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Tajawal & Cairo for Arabic UI -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet" class=""><link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+          },
+          colors: {
+            sidebar: '#1e293b',
+            sidebarHover: '#2a374f',
+            brandBlue: '#0085ff',
+            cardBg: '#f8fafc',
+            primary: {
+              DEFAULT: '#0D72EA',
+              light: '#EAF3FF',
+              dark: '#0B5DC0',
+            },
+            badge: {
+              active: '#10B981',
+              activeBg: '#D1FAE5',
+            }
+          },
+          boxShadow: {
+            'card-glow': '0 10px 40px -10px rgba(14, 116, 234, 0.15)',
+            'pill': '0 4px 14px rgba(13, 114, 234, 0.25)',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom CSS for specialized layout enhancements -->
+<style data-purpose="custom-styling">
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: radial-gradient(circle at 10% 10%, #eff6ff 0%, #f8fafc 100%);
+    }
+
+    /* Soft curved scrollbars for clean presentation */
+    ::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-row text-slate-800 antialiased selection:bg-blue-500 selection:text-white">
+{% if messages %}<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">{% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}</div>
+<script>setTimeout(function(){document.querySelectorAll(".toast").forEach(function(t){t.style.transition="opacity .5s";t.style.opacity="0";setTimeout(function(){t.remove()},600)})},5200);</script>{% endif %}
+{% include "teacher/_sidebar.html" with active="students" %}
+<div class="flex-1 min-w-0 flex flex-col items-center justify-center p-3 sm:p-6 md:p-8">
+{% if impersonating %}<div class="w-full max-w-5xl rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 mb-4 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div>{% endif %}
+<!-- BEGIN: MainContainer -->
+<main class="w-full max-w-5xl bg-white rounded-3xl p-5 sm:p-7 shadow-card-glow border border-blue-100 relative overflow-hidden" data-purpose="student-management-card">
+<!-- Top subtle ambient lighting accent -->
+<div class="absolute top-0 right-0 w-80 h-32 bg-blue-100/40 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+<!-- BEGIN: TopBar -->
+<header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 relative z-10" data-purpose="header-section">
+<!-- Right Side: Blue Category Tab with Counter Badge -->
+<div class="flex items-center">
+<div class="inline-flex items-center bg-blue-50 text-blue-600 border border-blue-200/80 rounded-2xl px-5 py-2.5 shadow-sm"><h1 class="text-lg sm:text-xl font-bold tracking-normal text-blue-600">قائمة الطلاب</h1></div>
+</div>
+<!-- Left Side: Search Bar & Auxiliary Control Buttons -->
+<div class="flex items-center gap-3 w-full md:w-auto justify-end">
+<!-- Search Input -->
+<form method="get" class="relative w-full sm:w-72 m-0">{% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+<input class="w-full py-2.5 pr-10 pl-4 rounded-full border border-blue-200 bg-white text-sm text-slate-700 placeholder-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all shadow-sm" name="q" value="{{ q }}" placeholder="إبحث عن طالب..." type="text">
+<div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-blue-400">
+<!-- Search Glass Icon -->
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</form>
+<!-- Utility Buttons (Filter / Notification) -->
+<div class="flex items-center gap-2 shrink-0">
+<div class="relative"><button aria-label="تصفية" id="status-filter-btn" class="w-10 h-10 rounded-full border border-blue-100 flex items-center justify-center text-blue-500 hover:bg-blue-50 transition-colors shadow-sm" type="button" onclick="document.getElementById('status-filter-pop').classList.toggle('hidden')">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button><div id="status-filter-pop" class="hidden absolute left-0 top-12 z-30 w-44 bg-white rounded-2xl border border-blue-100 shadow-card-glow overflow-hidden py-1"><a href="?{% if q %}q={{ q|urlencode }}{% endif %}" class="block px-4 py-2 text-sm font-bold no-underline hover:bg-blue-50 {% if not status %}text-blue-600 bg-blue-50/60{% else %}text-slate-600{% endif %}">كل الحالات</a><a href="?{% if q %}q={{ q|urlencode }}&{% endif %}status=active" class="block px-4 py-2 text-sm font-bold no-underline hover:bg-blue-50 {% if status == 'active' %}text-blue-600 bg-blue-50/60{% else %}text-slate-600{% endif %}">نشط</a><a href="?{% if q %}q={{ q|urlencode }}&{% endif %}status=pending" class="block px-4 py-2 text-sm font-bold no-underline hover:bg-blue-50 {% if status == 'pending' %}text-blue-600 bg-blue-50/60{% else %}text-slate-600{% endif %}">قيد المراجعة</a><a href="?{% if q %}q={{ q|urlencode }}&{% endif %}status=expired" class="block px-4 py-2 text-sm font-bold no-underline hover:bg-blue-50 {% if status == 'expired' %}text-blue-600 bg-blue-50/60{% else %}text-slate-600{% endif %}">منتهٍ</a></div></div>
+<a href="{% url 'teacher:messages' %}" aria-label="تنبيهات" title="الرسائل" class="relative w-10 h-10 rounded-full border border-blue-100 flex items-center justify-center text-blue-500 hover:bg-blue-50 transition-colors shadow-sm">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+{% if ui_unread %}<span class="absolute top-1.5 left-2 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full"></span>{% endif %}</a>
+</div>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: TableContent -->
+<div class="overflow-x-auto rounded-2xl border border-slate-100 bg-white" data-purpose="students-table-wrapper">
+<table class="w-full text-right border-collapse select-none" data-purpose="students-data-table">
+<!-- Table Header -->
+<thead>
+<tr class="bg-slate-50/75 border-b border-slate-100 text-slate-500 text-sm md:text-base font-bold">
+<!-- Column: Name -->
+<th class="py-4 px-6 text-slate-700 font-extrabold flex items-center gap-2" scope="col">
+<span class="">الاسم</span>
+<span class="w-5 h-5 rounded-md bg-red-100 text-rose-500 flex items-center justify-center text-xs">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+<path clip-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" fill-rule="evenodd"></path>
+</svg>
+</span>
+</th>
+<!-- Column: Grade -->
+<th class="py-4 px-6 text-blue-900 font-bold" scope="col">الصف</th>
+<!-- Column: Subscription Date -->
+<th class="py-4 px-6 text-blue-900 font-bold" scope="col">الاشتراك في</th>
+<!-- Column: Status -->
+<th class="py-4 px-6 text-blue-900 font-bold text-center" scope="col">الحالة</th>
+<!-- Column: Actions -->
+<th class="py-4 px-6 text-blue-900 font-bold text-center" scope="col">إجراءات</th>
+</tr>
+</thead>
+<!-- Table Body Rows -->
+<tbody class="divide-y divide-slate-100 text-slate-700 font-medium text-sm md:text-base">{% for e in page %}<tr class="hover:bg-blue-50/40 transition-colors duration-150"><td class="py-3.5 px-6 whitespace-nowrap"><div class="flex items-center gap-3">{% if e.student.student_profile.avatar %}<img alt="صورة الطالب {{ e.student.full_name }}" class="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm" src="{{ e.student.student_profile.avatar.url }}">{% else %}<span class="w-10 h-10 rounded-full  border-2 border-white shadow-sm bg-blue-100 text-blue-700 font-black flex items-center justify-center shrink-0">{{ e.student.first_name|slice:":1" }}</span>{% endif %}<span class="font-bold text-blue-950 text-base">{{ e.student.full_name }}</span></div></td><td class="py-3.5 px-6 whitespace-nowrap text-blue-950 font-bold">{{ e.student.student_profile.get_grade_display|cut:"الصف "|default:"—" }}</td><td class="py-3.5 px-6 whitespace-nowrap text-slate-600 num-font text-base md:text-lg" dir="ltr">{{ e.created_at|date:"Y/m/d" }}</td><td class="py-3.5 px-6 whitespace-nowrap text-center">{% if e.display_status == 'active' %}<span class="inline-flex items-center justify-center px-4 py-1 rounded-full text-xs md:text-sm font-extrabold bg-emerald-100 text-emerald-700">{{ e.display_label }}</span>{% elif e.display_status == 'under_review' or e.display_status == 'awaiting_payment' %}<span class="inline-flex items-center justify-center px-4 py-1 rounded-full text-xs md:text-sm font-extrabold bg-amber-100 text-amber-700">{{ e.display_label }}</span>{% else %}<span class="inline-flex items-center justify-center px-4 py-1 rounded-full text-xs md:text-sm font-extrabold bg-rose-100 text-rose-700">{{ e.display_label }}</span>{% endif %}</td><td class="py-3.5 px-6 whitespace-nowrap text-center"><div class="flex items-center justify-center gap-2"><a href="{% url 'teacher:student_detail' e.pk %}" class="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-colors no-underline" title="عرض التفاصيل">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>{% if forloop.counter0|divisibleby:4 %}<a href="{% url 'teacher:student_detail' e.pk %}" class="w-8 h-8 rounded-full bg-purple-50 hover:bg-purple-100 text-purple-600 flex items-center justify-center transition-colors no-underline" title="الإحصائيات">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>{% elif forloop.counter0|add:"-1"|divisibleby:4 %}<a href="{% url 'teacher:student_detail' e.pk %}" class="w-8 h-8 rounded-full bg-cyan-50 hover:bg-cyan-100 text-cyan-600 flex items-center justify-center transition-colors no-underline" title="النشاط">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>{% elif forloop.counter0|add:"-2"|divisibleby:4 %}<a href="{% url 'teacher:student_detail' e.pk %}" class="w-8 h-8 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 flex items-center justify-center transition-colors no-underline" title="الإحصائيات">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>{% else %}<a href="{% url 'teacher:student_detail' e.pk %}" class="w-8 h-8 rounded-full bg-teal-50 hover:bg-teal-100 text-teal-600 flex items-center justify-center transition-colors no-underline" title="النشاط">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>{% endif %}</div></td></tr>{% empty %}<tr><td colspan="5" class="py-12 px-6 text-center text-slate-500 text-sm font-semibold">لا يوجد طلاب مطابقون.</td></tr>{% endfor %}</tbody>
+</table>
+</div>
+<!-- END: TableContent -->
+<!-- BEGIN: FooterControls -->
+<footer class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-2" data-purpose="table-footer-actions">
+<!-- Left side: Numeric Pagination Controls (RTL layout) -->
+<nav aria-label="تنقل الصفحات" class="flex items-center order-2 sm:order-1 gap-2">{% if page.has_previous %}<a href="?{{ qs }}page={{ page.previous_page_number }}" aria-label="الصفحة السابقة" class="w-10 h-10 rounded-xl border border-blue-200 text-blue-500 hover:bg-blue-50 flex items-center justify-center transition-colors no-underline"><svg class="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>{% else %}<span aria-label="الصفحة السابقة" class="w-10 h-10 rounded-xl border border-blue-200 text-blue-500 hover:bg-blue-50 flex items-center justify-center transition-colors opacity-40 cursor-not-allowed"><svg class="w-4 h-4 transform rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>{% endif %}{% with lo=page.number|add:"-2" hi=page.number|add:"2" %}{% for n in page.paginator.page_range %}{% if n >= lo and n <= hi %}{% if n == page.number %}<span class="w-10 h-10 rounded-xl bg-blue-600 text-white num-font text-base flex items-center justify-center shadow-md shadow-blue-500/20">{{ n }}</span>{% else %}<a href="?{{ qs }}page={{ n }}" class="w-10 h-10 rounded-xl text-slate-600 hover:bg-blue-50 hover:text-blue-600 num-font text-base flex items-center justify-center transition-colors no-underline">{{ n }}</a>{% endif %}{% endif %}{% endfor %}{% endwith %}{% if page.has_next %}<a href="?{{ qs }}page={{ page.next_page_number }}" aria-label="الصفحة التالية" class="w-10 h-10 rounded-xl border border-blue-200 text-blue-500 hover:bg-blue-50 flex items-center justify-center transition-colors no-underline"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg></a>{% else %}<span aria-label="الصفحة التالية" class="w-10 h-10 rounded-xl border border-blue-200 text-blue-500 hover:bg-blue-50 flex items-center justify-center transition-colors opacity-40 cursor-not-allowed"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>{% endif %}</nav>
+<!-- Right side: Export Report Action Button -->
+<div class="order-1 sm:order-2 w-full sm:w-auto">
+<a href="?{{ qs }}export=csv" class="w-full sm:w-auto px-8 py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-[#1070e6] hover:from-blue-700 hover:to-blue-600 text-white font-bold text-base shadow-lg shadow-blue-500/25 active:scale-95 transition-all flex items-center justify-center gap-2 no-underline" data-purpose="export-report-btn">
+<span class="">تصدير التقرير</span>
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</a>
+</div>
+</footer>
+<!-- END: FooterControls -->
+</main>
+<script>document.addEventListener("click",function(e){var p=document.getElementById("status-filter-pop"),b=document.getElementById("status-filter-btn");if(p&&b&&!p.contains(e.target)&&!b.contains(e.target))p.classList.add("hidden")});</script>
+<!-- END: MainContainer -->
+</div>
+
+
+</body></html>

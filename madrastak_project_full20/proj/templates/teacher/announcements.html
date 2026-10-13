@@ -1,0 +1,13 @@
+{% extends "teacher/base.html" %}
+{% block title %}الإعلانات{% endblock %}
+{% block topbar_title %}الإعلانات{% endblock %}
+{% block content %}
+<div class="pagehead"><h1>إعلاناتي</h1></div>
+<div class="card mb"><h3>إعلان جديد</h3>
+<form method="post" action="{% url 'teacher:announcement_new' %}" data-once>{% csrf_token %}
+  <div class="field"><label>العنوان</label><input class="input" name="title" required></div>
+  <div class="field"><label>النص</label><textarea class="input" name="body" rows="3" required></textarea></div>
+  <button class="btn" type="submit">نشر وإرسال إشعار للطلاب</button>
+</form></div>
+{% for a in items %}<div class="card mb"><div class="row spread"><b>{{ a.title }}</b><span class="small muted">{{ a.created_at|date:"d/m/Y" }}</span></div><p>{{ a.body }}</p></div>{% empty %}<div class="empty">لم تنشر أي إعلان بعد.</div>{% endfor %}
+{% endblock %}

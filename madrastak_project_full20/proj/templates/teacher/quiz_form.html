@@ -1,0 +1,426 @@
+{% extends "teacher/base.html" %}
+{% load static %}
+{% block title %}{% if is_new %}إنشاء اختبار جديد{% else %}تعديل الاختبار وإضافة الأسئلة{% endif %}{% endblock %}
+{% block head %}{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    .tpage {
+      font-family: "Plus Jakarta Sans", "Tajawal", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tpage input, .tpage textarea, .tpage button { font-family: inherit; }
+    /* نصوص الأسئلة والاختيارات: كبيرة وواضحة */
+    .tpage .q-text   { font-size: 1.1875rem; line-height: 1.75; font-weight: 600; letter-spacing: .005em; }
+    .tpage .q-choice { font-size: 1.0625rem; line-height: 1.6; font-weight: 500; }
+    .tpage .q-input  { font-size: 1.0625rem !important; line-height: 1.6; font-weight: 500; }
+    .tpage .q-meta   { font-size: .9375rem; }
+  </style>
+<script>(function(){var p={
+      theme: {
+        extend: {
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#2563eb',
+              600: '#1d4ed8',
+              700: '#1e40af',
+              primary: '#1d72fe',
+            }
+          },
+          boxShadow: {
+            'modal': '0 25px 60px -15px rgba(30, 58, 95, 0.09), 0 0 1px 1px rgba(225, 234, 245, 0.85)',
+            'btn': '0 4px 16px 0 rgba(29, 114, 254, 0.32)'
+          }
+        }
+      }
+    };function m(a,b){for(var k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])){a[k]=m(a[k]||{},b[k]);}else{a[k]=b[k];}}return a;}window.tailwind=window.tailwind||{};tailwind.config=m(tailwind.config||{},p);})();</script>
+{% endblock %}
+{% block page %}
+<div class="tpage min-h-[calc(100vh-7rem)] relative flex items-center justify-center p-4 sm:p-8 lg:p-12 text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-700 overflow-x-hidden" style="">
+
+<!-- BEGIN: Dual-Color Wave Background -->
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<!-- Top Solid Color (Mist / Sky Blue) -->
+<div class="absolute inset-x-0 top-0 h-[52%] bg-[#e8eff7]"></div>
+<!-- Wave Divider meeting near midpoint -->
+<div class="absolute inset-x-0 top-[38%] h-36 sm:h-48 w-full">
+<svg class="w-full h-full preserve-3d" fill="none" preserveaspectratio="none" viewbox="0 0 1440 280" xmlns="http://www.w3.org/2000/svg">
+<path d="M0,96 C320,190 480,40 820,130 C1140,210 1320,80 1440,110 L1440,280 L0,280 Z" fill="#f0f5f2"></path>
+</svg>
+</div>
+<!-- Bottom Solid Color (Soft Calm Sage / Mint Tint) -->
+<div class="absolute inset-x-0 bottom-0 top-[52%] bg-[#f0f5f2]"></div>
+</div>
+<!-- END: Dual-Color Wave Background -->
+<!-- BEGIN: MainModalContainer -->
+<form id="quiz-create-form" method="post" enctype="multipart/form-data" novalidate style="display:none;">
+  {% csrf_token %}
+  <input type="hidden" name="kind" value="{% if q %}{{ q.kind }}{% elif c %}exam{% elif u %}exam{% else %}quiz{% endif %}">
+  <input type="hidden" name="max_attempts" value="{% if q %}{{ q.max_attempts }}{% else %}0{% endif %}">
+  <input type="hidden" name="status" value="{% if q %}{{ q.status }}{% else %}draft{% endif %}">
+  <input type="hidden" name="deadline" value="{% if q and q.deadline %}{{ q.deadline|date:"Y-m-d\TH:i" }}{% endif %}">
+  <input type="hidden" name="publish_at" value="{% if q and q.publish_at %}{{ q.publish_at|date:"Y-m-d\TH:i" }}{% endif %}">
+</form>
+<main class="relative z-10 w-full max-w-[920px] bg-white rounded-[36px] border border-[#dbe6f5] shadow-modal p-6 sm:p-10 lg:p-12 transition-all duration-300" data-purpose="exam-creation-modal">
+<!-- BEGIN: StepperHeader -->
+<header class="relative mb-8 sm:mb-10" data-purpose="stepper-navigation">
+<nav aria-label="مراحل إنشاء الاختبار" class="relative z-10 flex items-center justify-between px-2 sm:px-6">
+<!-- Step 1: Active -->
+<div class="flex items-center gap-3 sm:gap-4 select-none cursor-pointer" data-purpose="step-active" id="step-nav-1">
+<div class="w-11 h-11 sm:w-12 sm:h-12 lg:w-13 lg:h-13 rounded-full bg-brand-primary text-white flex items-center justify-center shadow-md ring-4 ring-blue-100/70 transition-transform hover:scale-105" id="step-badge-1" style="font-family: Outfit, sans-serif; font-weight: 500; font-size: 1.35rem; letter-spacing: 0.05em;">1</div>
+<div class="flex flex-col">
+<span class="text-sm sm:text-base lg:text-lg font-bold text-brand-primary whitespace-nowrap" id="step-label-1">
+          معلومات الاختبار
+        </span>
+</div>
+</div>
+<!-- Connecting Line between Step 1 and 2 -->
+<div class="flex-1 h-[2.5px] mx-3 sm:mx-6 bg-blue-200/90 rounded-full transition-colors" id="line-step-1-2"></div>
+<!-- Step 2: Questions Step -->
+<div class="flex items-center gap-3 sm:gap-4 select-none cursor-pointer group" data-purpose="step-pending-1" id="step-nav-2">
+<div class="w-11 h-11 sm:w-12 sm:h-12 lg:w-13 lg:h-13 rounded-full bg-[#e8f1fd] text-[#2563eb] border border-[#bfdbfe] flex items-center justify-center transition-all group-hover:border-blue-400" id="step-badge-2" style="font-family: Outfit, sans-serif; font-weight: 500; font-size: 1.35rem; letter-spacing: 0.05em;">2</div>
+<span class="text-sm sm:text-base font-semibold text-slate-500 group-hover:text-slate-700 whitespace-nowrap" id="step-label-2">
+        الأسئلة
+      </span>
+</div>
+<!-- Connecting Line between Step 2 and 3 -->
+<div class="flex-1 h-[2.5px] mx-3 sm:mx-6 bg-slate-200 rounded-full transition-colors" id="line-step-2-3"></div>
+<!-- Step 3: Confirmation -->
+<div class="flex items-center gap-3 sm:gap-4 select-none cursor-pointer opacity-70 group" data-purpose="step-pending-2" id="step-nav-3">
+<div class="w-11 h-11 sm:w-12 sm:h-12 lg:w-13 lg:h-13 rounded-full bg-slate-100 text-slate-400 border border-slate-200 flex items-center justify-center transition-all group-hover:text-slate-500" id="step-badge-3" style="font-family: Outfit, sans-serif; font-weight: 500; font-size: 1.35rem; letter-spacing: 0.05em;">3</div>
+<span class="text-sm sm:text-base font-medium text-slate-400 group-hover:text-slate-600 whitespace-nowrap" id="step-label-3">
+        التأكيد
+      </span>
+</div>
+</nav>
+</header>
+<!-- END: StepperHeader -->
+<!-- BEGIN: FormContentSection -->
+<section class="border border-[#e5effa] rounded-3xl p-6 sm:p-8 lg:p-9 bg-white space-y-6 sm:space-y-7 shadow-[0_2px_14px_rgba(240,245,252,0.6)]" data-purpose="form-fields">
+<!-- Field 1: عنوان الاختبار (Title) -->
+<div class="space-y-2">
+<label class="flex items-center gap-1.5 text-sm sm:text-base font-bold text-[#1e3a5f]" for="exam-title">
+<span class="">عنوان الاختبار</span>
+<span class="text-red-500 font-bold leading-none text-base sm:text-lg">*</span>
+</label>
+<div class="relative">
+<input class="w-full h-12 sm:h-13 px-4 sm:px-5 text-sm sm:text-base font-semibold text-[#1e293b] placeholder-slate-400 bg-white border border-[#cfdded] rounded-2xl focus:border-brand-primary focus:ring-4 focus:ring-blue-50 outline-none transition-all" id="exam-title" name="title" form="quiz-create-form" placeholder="أدخل عنوان الاختبار" type="text" value="{% if q %}{{ q.title }}{% elif form.title.value %}{{ form.title.value }}{% endif %}" required/>
+</div>
+</div>
+<!-- Field 2: وصف الاختبار (Description) -->
+<div class="space-y-2">
+<label class="block text-sm sm:text-base font-bold text-[#1e3a5f]" for="exam-desc">
+      وصف الاختبار
+    </label>
+<div class="relative">
+<textarea class="w-full p-4 sm:p-5 text-sm sm:text-base font-medium text-[#334155] leading-relaxed placeholder-slate-400 bg-white border border-[#cfdded] rounded-2xl focus:border-brand-primary focus:ring-4 focus:ring-blue-50 outline-none resize-none transition-all" id="exam-desc" name="description" form="quiz-create-form" placeholder="اكتب وصفاً للاختبار..." rows="3">{% if q %}{{ q.description }}{% elif form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+</div>
+</div>
+<!-- Field: مدة الاختبار (Duration in minutes) -->
+<div class="space-y-2">
+<label class="block text-sm sm:text-base font-bold text-[#1e3a5f]" for="exam-duration">
+      مدة الاختبار بالدقائق
+      <span class="text-xs font-medium text-slate-400 mr-1">(اتركه 0 أو فارغًا لاختبار بلا حد زمني)</span>
+    </label>
+<div class="relative">
+<input class="w-full h-12 sm:h-13 px-4 sm:px-5 text-sm sm:text-base font-semibold text-[#1e293b] placeholder-slate-400 bg-white border border-[#cfdded] rounded-2xl focus:border-brand-primary focus:ring-4 focus:ring-blue-50 outline-none transition-all" id="exam-duration" name="duration_minutes" form="quiz-create-form" placeholder="مثال: 30" type="number" min="0" step="1" inputmode="numeric" value="{% if q %}{{ q.duration_minutes }}{% elif form.duration_minutes.value %}{{ form.duration_minutes.value }}{% else %}0{% endif %}"/>
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-xs sm:text-sm font-bold text-slate-400 pointer-events-none">دقيقة</span>
+</div>
+{% if form.duration_minutes.errors %}<p class="text-xs font-semibold text-rose-600">{{ form.duration_minutes.errors.0 }}</p>{% endif %}
+</div>
+<div class="space-y-4 pt-1" id="questions">
+<div class="flex items-center justify-between gap-3 flex-wrap">
+<h2 class="text-sm sm:text-base font-bold text-[#1e3a5f]">أسئلة الاختبار</h2>
+{% if not is_new %}<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs sm:text-sm font-bold bg-blue-50 text-blue-700 border border-blue-100">إجمالي الأسئلة: <b id="q-total">{{ questions_data|length }}</b></span>{% endif %}
+</div>
+{% if is_new %}
+<div class="rounded-2xl border border-dashed border-[#bfdbfe] bg-[#f8faff] p-6 text-center space-y-2">
+<p class="text-sm sm:text-base font-bold text-[#1e3a5f]">أدخل العنوان والوصف ثم اضغط «حفظ والمتابعة».</p>
+<p class="text-xs sm:text-sm text-slate-500">ستنتقل مباشرةً لإضافة الأسئلة — يدويًا (اختيار من متعدد أو مقالي) أو برفع ملف PDF — وكلها تُجمَّع في هذا الاختبار نفسه.</p>
+</div>
+{% else %}
+
+<div id="q-flash" class="hidden rounded-xl px-4 py-3 text-sm font-semibold"></div>
+
+<!-- الأسئلة المحفوظة في هذا الاختبار (يدوية + مستوردة معًا) -->
+<div class="space-y-3" id="saved-list"></div>
+<div id="saved-empty" class="hidden rounded-2xl border border-dashed border-slate-200 text-center text-sm text-slate-400 py-6">لم تُضف أسئلة بعد — اختر طريقة الإضافة بالأسفل.</div>
+
+<!-- اختيار طريقة الإضافة -->
+<div class="pt-2 space-y-4">
+<h3 class="text-sm sm:text-base font-bold text-[#1e3a5f]">إضافة أسئلة جديدة</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+<button type="button" id="src-manual" class="src-card px-5 py-3.5 rounded-2xl border-2 border-brand-primary bg-blue-50/25 text-sm sm:text-base font-bold text-brand-primary transition-all">✍️ إضافة سؤال يدويًا</button>
+<button type="button" id="src-pdf" class="src-card px-5 py-3.5 rounded-2xl border border-[#cfdded] bg-white text-sm sm:text-base font-semibold text-[#64748b] hover:border-slate-300 transition-all">📄 رفع من ملف PDF</button>
+</div>
+</div>
+
+<!-- لوحة الإدخال اليدوي -->
+<div id="panel-manual" class="border border-[#bfdbfe] bg-[#f8faff] rounded-2xl p-5 sm:p-7 space-y-5">
+<div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#e2e8f0]">
+<span class="text-base sm:text-lg font-extrabold text-[#1e3a5f]">سؤال جديد</span>
+<div class="flex items-center bg-white p-1 rounded-xl border border-[#cfdded] text-xs font-bold">
+<button class="px-3.5 py-1.5 rounded-lg bg-brand-primary text-white transition-all" id="tab-type-mcq" type="button">اختيار من متعدد</button>
+<button class="px-3.5 py-1.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all" id="tab-type-essay" type="button">سؤال مقالي</button>
+</div>
+</div>
+<div class="space-y-1.5">
+<label class="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#1e3a5f]" for="m-text">نص السؤال <span class="text-red-500">*</span></label>
+<textarea dir="auto" class="q-input w-full p-3.5 text-[#1e293b] bg-white border border-[#cfdded] rounded-xl focus:border-brand-primary focus:ring-4 focus:ring-blue-50 outline-none resize-none transition-all" id="m-text" placeholder="اكتب نص السؤال هنا..." rows="3"></textarea>
+</div>
+<div class="space-y-2.5" id="mcq-box">
+<label class="block text-xs sm:text-sm font-bold text-[#1e3a5f]">الاختيارات (حدّد الدائرة بجانب الإجابة الصحيحة)</label>
+<div class="space-y-2" id="m-options"></div>
+</div>
+<p id="essay-box" class="hidden text-xs sm:text-sm text-slate-500 border border-dashed border-slate-300 rounded-xl px-4 py-3 bg-white">سؤال مقالي: يكتب الطالب إجابته في مربع نصي، ولا يحتاج اختيارات ولا إجابة صحيحة.</p>
+<div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#e2e8f0]">
+<label class="flex items-center gap-2 text-xs sm:text-sm font-bold text-[#1e3a5f]">الدرجة <input id="m-points" type="number" min="1" value="1" class="w-20 h-9 px-2 text-sm font-semibold border border-[#cfdded] rounded-lg outline-none focus:border-brand-primary"/></label>
+<button id="m-save" type="button" class="inline-flex items-center gap-2 px-7 py-2.5 rounded-xl text-sm font-bold text-white bg-brand-primary hover:bg-blue-600 shadow-sm active:scale-95 transition-all">حفظ السؤال في الاختبار</button>
+</div>
+</div>
+
+<!-- لوحة رفع PDF -->
+<div id="panel-pdf" class="hidden border border-[#bbf7d0] bg-[#f6fcf8] rounded-2xl p-5 sm:p-7 space-y-5">
+<div class="space-y-2">
+<p class="text-sm sm:text-base font-bold text-[#1e3a5f]">ارفع ملف PDF يحتوي على الأسئلة</p>
+<p class="text-xs sm:text-sm text-slate-500">سيحلّل النظام الملف ويعرض الأسئلة واختياراتها هنا. راجعها وعدّلها إن لزم، ثم أضفها إلى هذا الاختبار مع أسئلتك اليدوية.</p>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<input id="pdf-file" type="file" accept="application/pdf,.pdf" class="hidden"/>
+<button id="pdf-go" type="button" class="px-7 py-3 rounded-xl text-sm sm:text-base font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all">📄 رفع ملف PDF</button>
+<span id="pdf-status" class="text-xs sm:text-sm font-semibold text-slate-500"></span>
+</div>
+<div id="pdf-results" class="hidden space-y-4">
+<div class="flex flex-wrap items-center justify-between gap-2">
+<p class="text-sm font-bold text-[#1e3a5f]" id="pdf-summary"></p>
+<label class="flex items-center gap-2 text-xs font-bold text-slate-600 cursor-pointer"><input type="checkbox" id="pdf-all" checked class="w-4 h-4"/> تحديد الكل</label>
+</div>
+<div id="pdf-items" class="space-y-4"></div>
+<div class="flex flex-wrap items-center justify-end gap-3 pt-3 border-t border-emerald-100">
+<button id="pdf-cancel" type="button" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50">تجاهل النتائج</button>
+<button id="pdf-apply" type="button" class="px-7 py-2.5 rounded-xl text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm">إضافة المحدد إلى الاختبار</button>
+</div>
+</div>
+</div>
+{% endif %}
+
+</div>
+<!-- BEGIN: FooterActions & Illustration -->
+<div class="pt-6 sm:pt-8 flex flex-col sm:flex-row items-center sm:items-end justify-between gap-6 border-t border-slate-100" data-purpose="footer-controls">
+<!-- Action Buttons (Right side visually in RTL) -->
+<div class="flex flex-wrap items-center gap-3 w-full sm:w-auto order-2 sm:order-1" data-purpose="step-actions">
+<!-- Finish and save final exam button -->
+<button class="flex-1 sm:flex-initial min-w-[210px] px-8 py-3.5 rounded-2xl text-sm sm:text-base font-bold text-white bg-brand-primary hover:bg-blue-600 transition-all shadow-btn active:scale-95 text-center flex items-center justify-center gap-2" id="btn-finish-exam" onclick="submitQuizForm()" type="button">
+<span>{% if is_new %}حفظ والمتابعة لإضافة الأسئلة{% else %}حفظ وإنهاء{% endif %}</span>
+</button>
+<!-- Cancel Button -->
+<button class="flex-1 sm:flex-initial px-8 py-3.5 rounded-2xl text-sm sm:text-base font-bold text-[#1e40af] bg-[#eff6ff] hover:bg-blue-100 transition-colors text-center" onclick="cancelQuizCreation();" type="button">
+    إلغاء
+  </button>
+</div>
+<!-- Vector Illustration / Image (Left side visually in RTL) -->
+<div class="w-36 sm:w-44 select-none pointer-events-none flex items-center justify-center order-1 sm:order-2 self-center sm:self-end" data-purpose="decorative-illustration">
+<img alt="الرسومات التعليمية للاختبار" class="w-full h-auto object-contain max-h-24 sm:max-h-28 drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDed8tgyMsULrLfO7-idiYgiIwPBG64nVxUekJNE6udo-JnPlIlkq78IyNbS_DV3LHUgouIqSYC4mUWFc285gvQIhjW_1mo9j5z1IkX5yL66JoXra1MokrhNoWetcscr79bnOUSAiQXjoUhutvJkU14aXj_8ha7tbkBi5tUzbBjbINiweHkfSDVRXPI1Yu-mYnj7zHQ1LBSEQpZ5yM58-6pLJntfvSaRR48h8rYf_WAHBNHmS8AFB2RVqC80To9bZBYT6Y"/>
+</div>
+</div>
+<!-- END: FooterActions & Illustration -->
+</section>
+<!-- END: FormContentSection -->
+</main>
+<!-- END: MainModalContainer -->
+{% if not is_new %}{{ questions_data|json_script:"saved-questions-data" }}{% endif %}
+<script>
+function submitQuizForm(){
+  var form=document.getElementById('quiz-create-form'), title=document.getElementById('exam-title');
+  if(!form||!title) return;
+  if(!title.value.trim()){ title.focus(); alert('يرجى إدخال عنوان الاختبار.'); return; }
+  var go=function(){ form.requestSubmit ? form.requestSubmit() : form.submit(); };
+  if(window.flushPdfPending){ window.flushPdfPending().then(function(ok){ if(ok) go(); }); } else { go(); }
+}
+function cancelQuizCreation(){
+  {% if q %}window.location.href="{% url 'teacher:quiz_detail' q.pk %}";
+  {% elif l %}window.location.href="{% url 'teacher:lesson_detail' l.pk %}";
+  {% elif u %}window.location.href="{% url 'teacher:unit_detail' u.pk %}";
+  {% elif c %}window.location.href="{% url 'teacher:course_detail' c.pk %}";
+  {% else %}window.history.back();{% endif %}
+}
+</script>
+
+{% if not is_new %}
+<script>
+(function(){
+  var URLS={add:"{% url 'teacher:quiz_question_add' q.pk %}",parse:"{% url 'teacher:quiz_pdf_parse' q.pk %}",apply:"{% url 'teacher:quiz_pdf_apply' q.pk %}",del:"{% url 'teacher:question_delete' 0 %}".replace(/0\/delete\/$/,'')};
+  var CSRF=document.querySelector('#quiz-create-form [name=csrfmiddlewaretoken]').value;
+  var $=function(id){return document.getElementById(id);};
+  var LETTERS=['أ','ب','ج','د'], TYPES={mcq:'اختيار من متعدد',tf:'صح / خطأ',essay:'مقالي'};
+  var saved=JSON.parse($('saved-questions-data').textContent||'[]');
+  var qtype='mcq', parsed=null;
+
+  function el(tag,cls,txt){var e=document.createElement(tag); if(cls) e.className=cls; if(txt!==undefined) e.textContent=txt; return e;}
+  function flash(msg,ok){var f=$('q-flash'); f.textContent=msg; f.className='rounded-xl px-4 py-3 text-sm font-semibold '+(ok?'bg-emerald-50 border border-emerald-200 text-emerald-700':'bg-rose-50 border border-rose-200 text-rose-700'); if(ok) setTimeout(function(){f.classList.add('hidden');},4000);}
+  function post(url,body,isJson){
+    var opt={method:'POST',headers:{'X-CSRFToken':CSRF,'X-Requested-With':'XMLHttpRequest'},body:body};
+    if(isJson){opt.headers['Content-Type']='application/json'; opt.body=JSON.stringify(body);}
+    return fetch(url,opt).then(function(r){return r.json().catch(function(){return {ok:false,error:'استجابة غير متوقعة من الخادم.'};});});
+  }
+
+  /* ---------- قائمة الأسئلة المحفوظة ---------- */
+  function renderSaved(){
+    var box=$('saved-list'); box.innerHTML='';
+    saved.forEach(function(q,i){
+      var card=el('div','bg-white border border-slate-200 rounded-2xl p-4 space-y-2');
+      var top=el('div','flex items-start justify-between gap-3');
+      var left=el('div','flex items-start gap-3 min-w-0');
+      left.appendChild(el('span','w-8 h-8 rounded-full bg-blue-50 text-blue-600 text-sm font-bold flex items-center justify-center flex-shrink-0',String(i+1)));
+      var t=el('div','min-w-0'); var tp=el('p','q-text text-slate-800 break-words',q.text); tp.dir='auto'; t.appendChild(tp);
+      t.appendChild(el('span','inline-block mt-1 text-xs font-bold px-2.5 py-0.5 rounded-full '+(q.qtype==='essay'?'bg-amber-50 text-amber-700':'bg-slate-100 text-slate-600'),TYPES[q.qtype]||q.qtype));
+      left.appendChild(t); top.appendChild(left);
+      var del=el('button','text-xs font-bold text-red-500 border border-red-200 rounded-lg px-3 py-1.5 hover:bg-red-50 flex-shrink-0','حذف'); del.type='button';
+      del.onclick=function(){ if(!confirm('حذف هذا السؤال؟')) return;
+        post(URLS.del+q.id+'/delete/',new FormData()).then(function(d){ if(d.ok){saved=saved.filter(function(x){return x.id!==q.id;}); renderSaved(); flash('تم حذف السؤال.',true);} else flash(d.error||'تعذّر الحذف.',false); }); };
+      top.appendChild(del); card.appendChild(top);
+      if(q.qtype!=='essay' && q.choices.length){
+        var g=el('div','grid grid-cols-1 sm:grid-cols-2 gap-2 pr-10');
+        q.choices.forEach(function(c,k){ var ce=el('div','q-choice rounded-lg px-3 py-2 border '+(c.is_correct?'bg-emerald-50 border-emerald-200 text-emerald-800 font-bold':'border-slate-200 text-slate-700'),(LETTERS[k]||'')+') '+c.text+(c.is_correct?'  ✓':'')); ce.dir='auto'; g.appendChild(ce); });
+        card.appendChild(g);
+      } else if(q.qtype==='essay'){ card.appendChild(el('p','pr-10 text-xs text-slate-400','يكتب الطالب إجابته في مربع نصي.')); }
+      box.appendChild(card);
+    });
+    $('saved-empty').classList.toggle('hidden',saved.length>0);
+    $('q-total').textContent=saved.length;
+  }
+
+  /* ---------- تبديل طريقة الإضافة ---------- */
+  function showSource(src){
+    var m=src==='manual';
+    $('panel-manual').classList.toggle('hidden',!m); $('panel-pdf').classList.toggle('hidden',m);
+    $('src-manual').className='src-card px-5 py-3.5 rounded-2xl text-sm sm:text-base transition-all '+(m?'border-2 border-brand-primary bg-blue-50/25 font-bold text-brand-primary':'border border-[#cfdded] bg-white font-semibold text-[#64748b]');
+    $('src-pdf').className='src-card px-5 py-3.5 rounded-2xl text-sm sm:text-base transition-all '+(!m?'border-2 border-brand-primary bg-blue-50/25 font-bold text-brand-primary':'border border-[#cfdded] bg-white font-semibold text-[#64748b]');
+  }
+  $('src-manual').onclick=function(){showSource('manual');}; $('src-pdf').onclick=function(){showSource('pdf');};
+
+  /* ---------- الإدخال اليدوي ---------- */
+  function buildOptions(){
+    var box=$('m-options'); box.innerHTML='';
+    for(var i=0;i<4;i++){
+      var row=el('div','flex items-center gap-3 bg-white p-2.5 sm:px-4 rounded-xl border border-[#cfdded] focus-within:border-brand-primary transition-all');
+      var r=el('input','w-4 h-4 cursor-pointer'); r.type='radio'; r.name='m-correct'; r.value=i; if(i===0) r.checked=true; r.title='الإجابة الصحيحة';
+      var inp=el('input','q-input w-full text-[#1e293b] border-0 p-0 focus:ring-0 outline-none bg-transparent'); inp.type='text'; inp.dir='auto'; inp.id='m-opt-'+i; inp.placeholder='الاختيار '+LETTERS[i]+(i>1?' (اختياري)':'');
+      row.appendChild(r); row.appendChild(el('span','text-xs font-bold text-slate-400 w-4',LETTERS[i])); row.appendChild(inp); box.appendChild(row);
+    }
+  }
+  function setType(t){
+    qtype=t;
+    $('tab-type-mcq').className='px-3.5 py-1.5 rounded-lg transition-all '+(t==='mcq'?'bg-brand-primary text-white':'text-slate-500 hover:text-slate-800');
+    $('tab-type-essay').className='px-3.5 py-1.5 rounded-lg transition-all '+(t==='essay'?'bg-brand-primary text-white':'text-slate-500 hover:text-slate-800');
+    $('mcq-box').classList.toggle('hidden',t==='essay'); $('essay-box').classList.toggle('hidden',t!=='essay');
+  }
+  $('tab-type-mcq').onclick=function(){setType('mcq');}; $('tab-type-essay').onclick=function(){setType('essay');};
+  $('m-save').onclick=function(){
+    var text=$('m-text').value.trim();
+    if(!text){flash('اكتب نص السؤال أولًا.',false); $('m-text').focus(); return;}
+    var fd=new FormData(); fd.append('text',text); fd.append('qtype',qtype); fd.append('points',$('m-points').value||'1');
+    if(qtype==='mcq'){
+      var filled=0; for(var i=0;i<4;i++){var v=$('m-opt-'+i).value.trim(); fd.append('options',v); if(v) filled++;}
+      if(filled<2){flash('أضف اختيارين على الأقل.',false); return;}
+      var ch=document.querySelector('input[name=m-correct]:checked'); fd.append('correct',ch?ch.value:'-1');
+      if(!$('m-opt-'+(ch?ch.value:0)).value.trim()){flash('الإجابة الصحيحة المحدّدة فارغة — اكتب نصها أو اختر غيرها.',false); return;}
+    }
+    var btn=$('m-save'); btn.disabled=true;
+    post(URLS.add,fd).then(function(d){
+      btn.disabled=false;
+      if(!d.ok){flash(d.error||'تعذّر حفظ السؤال.',false); return;}
+      saved.push(d.question); renderSaved();
+      $('m-text').value=''; buildOptions(); $('m-points').value='1';
+      flash('تم حفظ السؤال في الاختبار. يمكنك إضافة سؤال آخر.',true); $('m-text').focus();
+    }).catch(function(){btn.disabled=false; flash('تعذّر الاتصال بالخادم.',false);});
+  };
+
+  /* ---------- استيراد PDF داخل نفس الاختبار ---------- */
+  var STATUS={ready:['جاهز','bg-emerald-50 text-emerald-700 border-emerald-200'],needs_review:['يحتاج مراجعة','bg-amber-50 text-amber-700 border-amber-200'],unparsed:['تعذّر تحليله','bg-rose-50 text-rose-700 border-rose-200']};
+  function renderParsed(){
+    var box=$('pdf-items'); box.innerHTML='';
+    parsed.questions.forEach(function(q,n){
+      var ok=q.status!=='unparsed' && q.choices.length>=2 && q.correct;
+      var card=el('div','bg-white border border-slate-200 rounded-2xl p-4 space-y-3'); card.dataset.idx=n;
+      var head=el('div','flex flex-wrap items-center justify-between gap-2');
+      var l=el('label','flex items-center gap-2 cursor-pointer'); var cb=el('input','pdf-inc w-4 h-4'); cb.type='checkbox'; cb.checked=!!ok; l.appendChild(cb); l.appendChild(el('span','text-base font-extrabold text-[#1e3a5f]','السؤال '+(n+1)+(q.page?'  (صفحة '+q.page+')':''))); head.appendChild(l);
+      var st=STATUS[q.status]||STATUS.needs_review; head.appendChild(el('span','text-[11px] font-bold px-2.5 py-0.5 rounded-full border '+st[1],st[0]+(q.confidence?' · '+q.confidence+'%':'')));
+      card.appendChild(head);
+      if(q.notes) card.appendChild(el('p','q-meta text-amber-700',q.notes));
+      var ta=el('textarea','pdf-text q-input w-full p-3 border border-[#cfdded] rounded-xl outline-none focus:border-brand-primary resize-none'); ta.rows=3; ta.dir='auto'; ta.value=q.text; card.appendChild(ta);
+      for(var i=0;i<4;i++){
+        var row=el('div','flex items-center gap-3 px-3 py-1.5 rounded-xl border border-[#e2e8f0]');
+        var r=el('input','pdf-cor w-4 h-4 cursor-pointer'); r.type='radio'; r.name='pc-'+n; r.value=i+1; r.checked=(q.correct===i+1);
+        var inp=el('input','pdf-opt q-input w-full border-0 p-0 focus:ring-0 outline-none bg-transparent'); inp.type='text'; inp.dir='auto'; inp.value=q.choices[i]||''; inp.placeholder='الاختيار '+LETTERS[i];
+        row.appendChild(r); row.appendChild(el('span','text-xs font-bold text-slate-400 w-4',LETTERS[i])); row.appendChild(inp); card.appendChild(row);
+      }
+      box.appendChild(card);
+    });
+    $('pdf-summary').textContent='تم العثور على '+parsed.questions.length+' سؤالًا في «'+parsed.filename+'» — راجعها ثم أضف المحدد.';
+    $('pdf-all').checked=true; $('pdf-results').classList.remove('hidden');
+  }
+  $('pdf-all').onchange=function(){document.querySelectorAll('.pdf-inc').forEach(function(c){c.checked=$('pdf-all').checked;});};
+  $('pdf-cancel').onclick=function(){parsed=null; $('pdf-results').classList.add('hidden'); $('pdf-items').innerHTML=''; $('pdf-file').value=''; $('pdf-status').textContent='';};
+  $('pdf-go').onclick=function(){ $('pdf-file').click(); };
+  $('pdf-file').onchange=function(){
+    var f=this.files[0];
+    if(!f) return;
+    if(!/\.pdf$/i.test(f.name)){flash('الملف يجب أن يكون بصيغة PDF.',false); this.value=''; return;}
+    var fd=new FormData(); fd.append('pdf_file',f);
+    var btn=$('pdf-go'); btn.disabled=true; $('pdf-status').textContent='جارٍ رفع الملف وتحليله تلقائيًا... قد يستغرق ذلك لحظات.'; $('pdf-results').classList.add('hidden');
+    var input=this;
+    post(URLS.parse,fd).then(function(d){
+      btn.disabled=false; input.value='';
+      if(!d.ok){$('pdf-status').textContent=''; flash(d.error||'تعذّر تحليل الملف.',false); return;}
+      parsed=d; $('pdf-status').textContent=''; renderParsed();
+    }).catch(function(){btn.disabled=false; input.value=''; $('pdf-status').textContent=''; flash('تعذّر الاتصال بالخادم.',false);});
+  };
+  /* يضيف الأسئلة المحدّدة من نتيجة تحليل الـ PDF إلى الاختبار. يعيد Promise<true|false> (true = لا شيء معلّق أو تمت الإضافة). */
+  function applyPdf(silent){
+    return new Promise(function(resolve){
+      if(!parsed){resolve(true); return;}
+      var out=[], bad='', any=false;
+      document.querySelectorAll('#pdf-items > div').forEach(function(card){
+        if(bad||!card.querySelector('.pdf-inc').checked) return;
+        any=true;
+        var n=+card.dataset.idx+1, text=card.querySelector('.pdf-text').value.trim();
+        var opts=[].map.call(card.querySelectorAll('.pdf-opt'),function(i){return i.value.trim();});
+        var c=card.querySelector('.pdf-cor:checked'), cor=c?+c.value:0;
+        if(!text) bad='السؤال '+n+': نص السؤال فارغ.';
+        else if(opts.filter(Boolean).length<2) bad='السؤال '+n+': أضف اختيارين على الأقل.';
+        else if(!cor||!opts[cor-1]) bad='السؤال '+n+': حدّد الإجابة الصحيحة من الاختيارات المكتوبة (أو ألغِ تحديده).';
+        else out.push({id:parsed.questions[n-1].id,text:text,choices:opts,correct:cor});
+      });
+      if(bad){flash(bad,false); resolve(false); return;}
+      if(!out.length){ if(silent){resolve(true);} else {flash('حدّد سؤالًا واحدًا على الأقل.',false); resolve(false);} return; }
+      var btn=$('pdf-apply'); btn.disabled=true;
+      post(URLS.apply,{batch:parsed.batch,questions:out},true).then(function(d){
+        btn.disabled=false;
+        if(!d.ok){flash(d.error||'تعذّرت الإضافة.',false); resolve(false); return;}
+        d.questions.forEach(function(q){saved.push(q);}); renderSaved();
+        $('pdf-cancel').onclick(); showSource('manual');
+        flash('تمت إضافة '+d.questions.length+' سؤالًا من الملف إلى الاختبار، وهي الآن مع باقي أسئلته.',true);
+        resolve(true);
+      }).catch(function(){btn.disabled=false; flash('تعذّر الاتصال بالخادم.',false); resolve(false);});
+    });
+  }
+  $('pdf-apply').onclick=function(){ applyPdf(false).then(function(ok){ if(ok) window.scrollTo({top:$('questions').offsetTop-20,behavior:'smooth'}); }); };
+  /* عند «حفظ وإنهاء»: أي أسئلة PDF محلَّلة ولم تُضَف بعد تُضاف تلقائيًا حتى لا تضيع */
+  window.flushPdfPending=function(){ return applyPdf(true); };
+
+  buildOptions(); setType('mcq'); renderSaved(); showSource('manual');
+})();
+</script>
+{% endif %}
+
+
+</div>
+{% endblock %}

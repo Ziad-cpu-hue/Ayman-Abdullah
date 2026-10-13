@@ -1,0 +1,465 @@
+{% extends "teacher/base.html" %}
+{% block title %}الغياب والحضور{% endblock %}
+{% block page %}
+<style>
+  .shadow-card{box-shadow:0 10px 25px -5px rgba(31,64,120,.08),0 8px 10px -6px rgba(31,64,120,.04)}
+  .custom-scroll::-webkit-scrollbar{height:6px;width:6px}
+  .custom-scroll::-webkit-scrollbar-thumb{background-color:#DCE8F8;border-radius:9999px}
+  .num-sleek{font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+  .kpi-num{font-family:'Tajawal','Oswald',sans-serif;font-weight:700;letter-spacing:-.02em}
+</style>
+<div id="att-root" class="max-w-[1520px] mx-auto w-full p-4 md:p-6 lg:p-8 space-y-6" data-date="{{ d }}" data-grade="{{ grade }}">
+<!-- BEGIN: BannerAndFiltersSection -->
+<section class="bg-white rounded-3xl p-6 border border-[#DCE8F8] shadow-card" data-purpose="banner-and-filters">
+<div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+<!-- Right: Title, Subtitle, and Graphic Illustration -->
+<div class="flex items-center gap-5 w-full lg:w-auto">
+<!-- 3D Checklist Illustration Graphic -->
+<div class="relative w-24 h-24 flex-shrink-0 flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4DNngq4rUG2iYAvpYdd2e8b1FjyjoHU61BixInQaZzpMKjGUjqw_MrBrQNr82tmnX2YOGEaI3UiDl2GP1YneBETRA4dbSxxRT6YAjQzOTdrjBfF2RxOXaKCWP4UqoJLSBJizzppIQDiidPMX4dRkSQ3GnnTC4i1PJzRNF8-nlze_QqYDX1CEHlFeDy_1inIsCLQAgdFDVIN2T8geLCkgUXEDhRmlAsuKFPKkNrVwd98-hDu_tSU4TKMjCELhosIBKHLU" alt="تسجيل الحضور والغياب" class="w-20 h-20 object-contain drop-shadow-sm"></div>
+<div>
+<div class="flex items-center gap-2.5 mb-1.5">
+<h2 class="text-2xl lg:text-3xl font-extrabold text-[#173A73]">الحضور والغياب</h2>
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuB08r4FGRTNW1kkgdJoTbCBbevk4TeEqpSKdsFPvnukmhjjaYEvZzWlRa2Ohs-7g9zCAFyaQ7GsoXJJ1D_Z6g6bmvSRWMqkD9fCVhD7WD5vkGmEOgAm5iC3s8Y6h13y90fC5In2wY8zm3D6Qbpx6XcntVT1rXnL0KPr4N-Ph0j3HbRnXNMc8Qllh9sbMcNzT5DG0grFSsVgCtW74wB6e7Vz_WgD_Rh9VwCqfnsVU5gbp2pLbzwfkHgITKRlyGD6OiiqY5g" alt="تقويم الحضور والغياب" class="w-8 h-8 object-contain drop-shadow-sm inline-block">
+</div>
+<p class="text-xs md:text-sm text-[#6F7F9A] font-medium">متابعة حضور وغياب الطلاب في المنصة والمركز التعليمي</p>
+</div>
+</div>
+<!-- Left: Filters & PDF Upload Action -->
+<div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+<!-- Search Field -->
+<div class="relative flex-1 sm:w-64 min-w-[210px]">
+<input id="att-search" autocomplete="off" class="w-full h-12 pr-10 pl-4 bg-white border border-[#DCE8F8] rounded-2xl text-xs text-[#13233D] placeholder-[#91A0BA] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent transition-all shadow-xs" placeholder="ابحث بالاسم أو رقم الطالب..." type="text">
+<div class="absolute inset-y-0 right-3.5 flex items-center pointer-events-none text-[#3B82F6]">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+<path d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+<!-- Academic Grade Dropdown Filter -->
+<div class="relative min-w-[190px]">
+<select form="filter-form" name="grade" aria-label="الصف الدراسي" onchange="this.form.submit()" class="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer"><option value="0"{% if not grade %} selected{% endif %}>كل الصفوف</option>{% for val, label in grades %}<option value="{{ val }}"{% if grade == val %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+<div class="h-12 bg-white border border-[#DCE8F8] rounded-2xl px-3.5 flex items-center justify-between shadow-xs cursor-pointer hover:border-[#3B82F6] transition-all">
+<svg class="w-4 h-4 text-[#91A0BA] ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<div class="text-right">
+<span class="text-[10px] text-[#91A0BA] block font-medium leading-none">الصف الدراسي</span>
+<span class="text-xs font-bold text-[#173A73]">{% if grade %}{{ grade_label }}{% else %}كل الصفوف{% endif %}</span>
+</div>
+<div class="w-7 h-7 rounded-xl bg-[#EEF5FF] flex items-center justify-center text-[#2563EB] mr-1.5">
+<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Date Picker Filter -->
+<div class="relative min-w-[170px]" id="att-date-wrap">
+<input form="filter-form" type="date" name="date" id="att-date" value="{{ d }}" aria-label="تحديد التاريخ" onchange="this.form.submit()" class="absolute inset-0 z-10 w-full h-full opacity-0 cursor-pointer">
+<div class="h-12 bg-white border border-[#DCE8F8] rounded-2xl px-3.5 flex items-center justify-between shadow-xs cursor-pointer hover:border-[#3B82F6] transition-all">
+<svg class="w-4 h-4 text-[#91A0BA] ml-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<div class="text-right">
+<span class="text-[10px] text-[#91A0BA] block font-medium leading-none">تحديد التاريخ</span>
+<span class="text-xs font-bold text-[#173A73] num-sleek tracking-wide">{{ d_label }}</span>
+</div>
+<div class="w-7 h-7 rounded-xl bg-[#EEF5FF] flex items-center justify-center text-[#3B82F6] mr-1.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Upload PDF Button & Sub-label -->
+<div class="flex flex-col justify-center min-w-[200px]"><button id="att-upload-btn" class="h-12 px-5 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-2xl shadow-md shadow-blue-600/20 flex items-center justify-center gap-2.5 font-bold text-xs transition-all active:scale-[0.98] w-full" type="button" title="استيراد قائمة الطلاب من ملف PDF"><svg class="w-4 h-4 text-white flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="leading-none">رفع ملف أرقام الطلاب (PDF)</span></button></div>
+</div>
+</div>
+</section>
+<!-- END: BannerAndFiltersSection -->
+<!-- BEGIN: MetricCardsSection -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5" data-purpose="metric-kpis">
+<!-- Card 1: Attended Center -->
+<article class="bg-white rounded-[20px] p-5 border border-[#DCE8F8] shadow-card flex items-center justify-between hover:shadow-lg transition-all duration-200">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-[#ECFDF3] text-[#22C55E] flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkz_VtPKc9aeSV6pmsXddEiBanHnLaslf68yMgHx939GwkvrKwk3mJ7eEPW7B1iuv_sjc4_IXxPkEesLfN4UBhS2yHIIOCoTfK668KGsNc_bWfKCblfBmCMu_-08dVHBmxmALnaazUrunURfN5zOzt8QWXtmJFYwJaKc8h8UWajM4kys88U647I7g1JFsTFUexfZJiF2TT1uXVv3ZjoMa6sXR2z4wDwfToXfVUnmIp6sPg_mCKk92kUeEspwETKzlno4s" alt="المركز التعليمي" class="w-10 h-10 object-contain drop-shadow-sm"></div>
+<div>
+<span class="text-xs text-[#4C658D] font-bold block mb-1">الحضور في المركز التعليمي</span>
+<div class="flex items-baseline gap-2">
+<span id="k-center-p" class="text-3xl lg:text-4xl kpi-num text-[#173A73] leading-none">0</span>
+<svg class="w-4 h-4 text-[#91A0BA] -translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-[#6F7F9A] font-medium">من أصل <span id="kt-center-p" class="num-sleek font-bold text-[#173A73]">0</span> طالب</span>
+</div>
+</div>
+</article>
+<!-- Card 2: Absent Center -->
+<article class="bg-white rounded-[20px] p-5 border border-[#DCE8F8] shadow-card flex items-center justify-between hover:shadow-lg transition-all duration-200">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-[#FFF1F2] text-[#F43F5E] flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8dwJ05TmB5o9wzzSPAUUvPnGAIMIhBsQ5Oas6jVS022qbAKRYDFkIHDAY9fd_qVJc-nXYoklmDETSVLJqqXemP4mdSRPalJZWsHbNxywMtIgO_S1EDHIUzedCYQprQYL2I9QnSfECecSINSpJIEfhu_JEI8Dxlp8RY-318Z-rMpVql23dgSaYI8Gc9EjXIyecK9GQuYfcxaj4Vz8RVSqpgRLUmURze-UnczKKKhqL75LJfVLaUx_IwIOWTcTrs-WNtm4" alt="المركز التعليمي" class="w-10 h-10 object-contain drop-shadow-sm"></div>
+<div>
+<span class="text-xs text-[#F43F5E] font-bold block mb-1">الغياب في المركز التعليمي</span>
+<div class="flex items-baseline gap-2">
+<span id="k-center-a" class="text-3xl lg:text-4xl kpi-num text-[#F43F5E] leading-none">0</span>
+<svg class="w-4 h-4 text-[#F43F5E]/60 -translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-[#6F7F9A] font-medium">من أصل <span id="kt-center-a" class="num-sleek font-bold text-[#173A73]">0</span> طالب</span>
+</div>
+</div>
+</article>
+<!-- Card 3: Attended Platform -->
+<article class="bg-white rounded-[20px] p-5 border border-[#DCE8F8] shadow-card flex items-center justify-between hover:shadow-lg transition-all duration-200">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-[#F3EEFF] text-[#8B5CF6] flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOnSFVxpC3MsCAYiG0wGDPLv_iU0rmGh4IW-_kJR42tAsG_ky_D9drbBl_Q1QhYAyqO6asnjaMFpAlNkN0uQy_JDAZppi5NggnhbTY9qmWvYu9VNEnflI9nBm4HCY7pCKYT49TL60SA_pxMQX6K9SS1iiXJgEiAnN2SZo0NpCgv6aBbSYXiZzXcV_7sEFew105RirHRmbf6qN3cSMqLaepitGndPrL8BvS0wbLdH-zYdEmN5aPwNOObufHzdlS8l-v_CA" alt="المنصة" class="w-10 h-10 object-contain drop-shadow-sm"></div>
+<div>
+<span class="text-xs text-[#8B5CF6] font-bold block mb-1">الحضور في المنصة</span>
+<div class="flex items-baseline gap-2">
+<span id="k-platform-p" class="text-3xl lg:text-4xl kpi-num text-[#8B5CF6] leading-none">0</span>
+<svg class="w-4 h-4 text-[#8B5CF6]/60 -translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-[#6F7F9A] font-medium">من أصل <span id="kt-platform-p" class="num-sleek font-bold text-[#173A73]">0</span> طالب</span>
+</div>
+</div>
+</article>
+<!-- Card 4: Absent Platform -->
+<article class="bg-white rounded-[20px] p-5 border border-[#DCE8F8] shadow-card flex items-center justify-between hover:shadow-lg transition-all duration-200">
+<div class="flex items-center gap-4">
+<div class="w-14 h-14 rounded-2xl bg-[#FFF1F2] text-[#F43F5E] flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCb4aSAcZXAaRwIGV8-A_sfMhAz6CU34oyo8cyvLPyceknLbpyqeyJLWky1HcH9onpTh71si_FlWiiBckXdDpZfuCqYWKTQnFL5cNxWwE-FluoAe33wYoVK0mb363qDT-lPBEtBk1xIligOgkkUWSU_rf8rUQ19u_Sty1pW3PtDDfMwUDKXnUmvJuUsqdUJCwIBxSrTUGt_HtirzI8zARuoH6tZ55qg1OqQ-Uzof5CDmgMOJI-9UN5zHrLulpTma6lq9eg" alt="المنصة" class="w-10 h-10 object-contain drop-shadow-sm"></div>
+<div>
+<span class="text-xs text-[#F43F5E] font-bold block mb-1">الغياب في المنصة</span>
+<div class="flex items-baseline gap-2">
+<span id="k-platform-a" class="text-3xl lg:text-4xl kpi-num text-[#F43F5E] leading-none">0</span>
+<svg class="w-4 h-4 text-[#F43F5E]/60 -translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+<path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] text-[#6F7F9A] font-medium">من أصل <span id="kt-platform-a" class="num-sleek font-bold text-[#173A73]">0</span> طالب</span>
+</div>
+</div>
+</article>
+</section>
+<!-- END: MetricCardsSection -->
+<!-- BEGIN: AttendanceTablesSection -->
+<section class="grid grid-cols-1 xl:grid-cols-2 gap-6" data-purpose="attendance-tables">
+<div class="bg-white rounded-[22px] p-6 border border-[#DCE8F8] shadow-card flex flex-col justify-between" data-purpose="present-students-table">
+<div>
+<div class="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-[#E6EEF8]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-[#ECFDF3] text-[#22C55E] flex items-center justify-center border border-[#22C55E]/10">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h3 class="text-lg font-bold text-[#173A73]">الطلاب الحاضرون</h3>
+<span class="px-3 py-1 rounded-full bg-[#ECFDF3] text-[#22C55E] text-xs font-bold border border-[#22C55E]/20">
+<span id="cnt-present" class="num-sleek font-bold">0</span> طالب
+                </span>
+</div>
+<div class="flex items-center bg-[#F7FAFF] p-1 rounded-2xl border border-[#DCE8F8] text-xs font-bold" id="seg-present"><button class="seg-btn px-4 py-1.5 rounded-xl text-[#6F7F9A] hover:text-[#173A73] flex items-center gap-1.5 transition-all" type="button" data-panel="present" data-src="center"><img src="" alt="" class="seg-ico w-4 h-4 object-contain inline-block"><span class="">المركز التعليمي</span></button><button class="seg-btn px-4 py-1.5 rounded-xl text-[#6F7F9A] hover:text-[#173A73] flex items-center gap-1.5 transition-all" type="button" data-panel="present" data-src="platform"><img src="" alt="" class="seg-ico w-4 h-4 object-contain inline-block"><span class="">المنصة</span></button></div>
+</div>
+<div class="overflow-x-auto custom-scroll mt-4">
+<table class="w-full text-right text-xs">
+<thead>
+<tr class="bg-[#F8FBFF] text-[#4C658D] border-b border-[#E6EEF8] font-bold">
+<th class="py-3 px-3 rounded-r-xl" scope="col">م</th>
+<th class="py-3 px-3" scope="col">رقم الطالب</th>
+<th class="py-3 px-3" scope="col">الاسم</th>
+<th class="py-3 px-3" scope="col">الصف</th>
+<th class="py-3 px-3 text-center" scope="col">الحالة</th>
+<th class="py-3 px-3 text-center rounded-l-xl" scope="col">آخر دخول</th>
+</tr>
+</thead>
+<tbody id="body-present" class="divide-y divide-[#E6EEF8] font-medium text-[#173A73]"></tbody>
+</table>
+</div>
+</div>
+<div id="pg-present" class="flex items-center justify-center gap-2 pt-5 mt-3 border-t border-[#E6EEF8]"></div>
+</div>
+<div class="bg-white rounded-[22px] p-6 border border-[#DCE8F8] shadow-card flex flex-col justify-between" data-purpose="absent-students-table">
+<div>
+<div class="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-[#E6EEF8]">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-2xl bg-[#FFF1F2] text-[#F43F5E] flex items-center justify-center border border-[#F43F5E]/10">
+<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"></path>
+</svg>
+</div>
+<h3 class="text-lg font-bold text-[#F43F5E]">الطلاب الغائبون</h3>
+<span class="px-3 py-1 rounded-full bg-[#FFF1F2] text-[#F43F5E] text-xs font-bold border border-[#F43F5E]/20">
+<span id="cnt-absent" class="num-sleek font-bold">0</span> طالب
+                </span>
+</div>
+<div class="flex items-center bg-[#F7FAFF] p-1 rounded-2xl border border-[#DCE8F8] text-xs font-bold" id="seg-absent"><button class="seg-btn px-4 py-1.5 rounded-xl text-[#6F7F9A] hover:text-[#173A73] flex items-center gap-1.5 transition-all" type="button" data-panel="absent" data-src="platform"><img src="" alt="" class="seg-ico w-4 h-4 object-contain inline-block"><span class="">المنصة</span></button><button class="seg-btn px-4 py-1.5 rounded-xl text-[#6F7F9A] hover:text-[#173A73] flex items-center gap-1.5 transition-all" type="button" data-panel="absent" data-src="center"><img src="" alt="" class="seg-ico w-4 h-4 object-contain inline-block"><span class="">المركز التعليمي</span></button></div>
+</div>
+<div class="overflow-x-auto custom-scroll mt-4">
+<table class="w-full text-right text-xs">
+<thead>
+<tr class="bg-[#F8FBFF] text-[#4C658D] border-b border-[#E6EEF8] font-bold">
+<th class="py-3 px-3 rounded-r-xl" scope="col">م</th>
+<th class="py-3 px-3" scope="col">رقم الطالب</th>
+<th class="py-3 px-3" scope="col">الاسم</th>
+<th class="py-3 px-3" scope="col">الصف</th>
+<th class="py-3 px-3 text-center" scope="col">الحالة</th>
+<th class="py-3 px-3 text-center rounded-l-xl" scope="col">آخر دخول</th>
+</tr>
+</thead>
+<tbody id="body-absent" class="divide-y divide-[#E6EEF8] font-medium text-[#173A73]"></tbody>
+</table>
+</div>
+</div>
+<div id="pg-absent" class="flex items-center justify-center gap-2 pt-5 mt-3 border-t border-[#E6EEF8]"></div>
+</div>
+</section>
+<!-- END: AttendanceTablesSection -->
+
+<form id="filter-form" method="get" class="hidden"></form>
+<form id="upload-form" method="post" enctype="multipart/form-data" class="hidden">{% csrf_token %}
+  <input type="hidden" name="action" value="upload"><input type="hidden" name="date" value="{{ d }}"><input type="hidden" name="grade" value="{{ grade }}">
+  <input type="file" name="file" id="att-file" accept=".pdf,.jpg,.jpeg,.png,.webp">
+</form>
+{% if review %}
+<!-- نافذة مراجعة الأرقام المقروءة من الملف قبل الحفظ (تظهر فقط بعد رفع ملف) -->
+<div id="review-modal" class="fixed inset-0 z-[90] bg-[#13233D]/45 flex items-center justify-center p-4">
+  <div class="bg-white rounded-[22px] border border-[#DCE8F8] shadow-card w-full max-w-4xl max-h-[90vh] overflow-y-auto custom-scroll p-6 space-y-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-[#E6EEF8]">
+      <h3 class="text-lg font-bold text-[#173A73] m-0">راجع الأرقام المقروءة ثم أكّد الحفظ</h3>
+      <div class="flex items-center gap-2">
+        {% if review.method %}<span class="text-[11px] font-bold px-3 py-1 rounded-full bg-[#EEF5FF] text-[#4C658D]">طريقة القراءة: {% if review.method == "text" %}نص الملف{% elif review.method == "ai" %}ذكاء اصطناعي{% elif review.method == "ocr" %}تعرّف ضوئي{% else %}{{ review.method }}{% endif %}</span>{% endif %}
+        <button type="button" id="review-close" aria-label="إغلاق" class="w-8 h-8 flex items-center justify-center rounded-xl text-[#6F7F9A] hover:text-[#173A73] hover:bg-[#EEF5FF] transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>
+      </div>
+    </div>
+    {% if review.warning %}<div class="rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold px-4 py-3">{{ review.warning }}</div>{% endif %}
+
+    <form method="post" class="m-0 space-y-3">{% csrf_token %}
+      <input type="hidden" name="date" value="{{ d }}">
+      <input type="hidden" name="grade" value="{{ grade }}">
+      <label class="block text-xs font-bold text-[#4C658D]">الأرقام المقروءة (<span class="num-sleek">{{ review.count }}</span>) — يمكنك التعديل بالحذف أو الإضافة، افصل بينها بمسافة أو فاصلة</label>
+      <textarea name="numbers" rows="3" dir="ltr" class="w-full rounded-2xl border border-[#DCE8F8] bg-[#F7FAFF] p-3 text-sm num-sleek font-semibold text-[#13233D] focus:outline-none focus:ring-2 focus:ring-[#3B82F6] focus:border-transparent">{{ review.numbers_text }}</textarea>
+      <label class="flex items-center gap-2 text-sm font-semibold text-[#4C658D]">
+        <input type="checkbox" name="mark_absent" value="1" {% if review.mark_absent %}checked{% endif %}>
+        تسجيل باقي طلاب {% if grade %}الصف المحدد{% else %}الكشف{% endif %} غائبين تلقائيًا
+      </label>
+      <div class="flex flex-wrap gap-2">
+        <button type="submit" name="action" value="confirm" class="h-11 px-6 bg-[#2563EB] hover:bg-[#1d4ed8] text-white rounded-2xl shadow-md shadow-blue-600/20 font-bold text-xs transition-all active:scale-[0.98]">تأكيد وحفظ الحضور</button>
+        <button type="submit" name="action" value="preview" class="h-11 px-5 bg-[#F7FAFF] hover:bg-[#EEF5FF] text-[#173A73] border border-[#DCE8F8] rounded-2xl font-bold text-xs transition-all">تحديث المعاينة</button>
+      </div>
+    </form>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="rounded-2xl border border-[#22C55E]/20 bg-[#ECFDF3]/60 p-4">
+        <h4 class="text-sm font-bold text-[#22C55E] m-0 mb-2">سيُسجَّلون حاضرين (<span class="num-sleek">{{ review.present|length }}</span>)</h4>
+        <ul class="m-0 p-0 list-none space-y-1 max-h-64 overflow-y-auto custom-scroll text-xs">
+          {% for p in review.present %}<li class="flex items-center gap-2"><span class="num-sleek font-bold text-[#2563EB] w-16">ST-{{ p.student_number|stringformat:"04d" }}</span><span class="font-bold text-[#173A73]">{{ p.user.full_name }}</span><span class="text-[11px] text-[#91A0BA]">{{ p.get_grade_display|cut:"الصف " }}</span></li>{% empty %}<li class="text-[#91A0BA]">لا أحد.</li>{% endfor %}
+        </ul>
+        {% if review.other_grade %}<p class="text-[11px] text-amber-700 font-bold mt-3 mb-0">{{ review.other_grade|length }} منهم من صف مختلف عن الصف المحدد — تأكد من صحة أرقامهم.</p>{% endif %}
+      </div>
+      <div class="rounded-2xl border border-[#F43F5E]/20 bg-[#FFF1F2]/60 p-4">
+        <h4 class="text-sm font-bold text-[#F43F5E] m-0 mb-2">سيُسجَّلون غائبين (<span class="num-sleek">{% if review.mark_absent %}{{ review.absent|length }}{% else %}0{% endif %}</span>)</h4>
+        <ul class="m-0 p-0 list-none space-y-1 max-h-64 overflow-y-auto custom-scroll text-xs">
+          {% for p in review.absent %}<li class="flex items-center gap-2"><span class="num-sleek font-bold text-[#2563EB] w-16">ST-{{ p.student_number|stringformat:"04d" }}</span><span class="font-bold text-[#173A73]">{{ p.user.full_name }}</span><span class="text-[11px] text-[#91A0BA]">{{ p.get_grade_display|cut:"الصف " }}</span></li>{% empty %}<li class="text-[#91A0BA]">لا أحد.</li>{% endfor %}
+        </ul>
+      </div>
+      <div class="rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+        <h4 class="text-sm font-bold text-amber-800 m-0 mb-2">أرقام غير معروفة (<span class="num-sleek">{{ review.unknown|length }}</span>)</h4>
+        <p class="text-xs text-[#6F7F9A] mt-0 mb-2">لا يوجد طالب بهذه الأرقام، وستُتجاهل. غالبًا خطأ في القراءة — صحّحها في الحقل أعلاه.</p>
+        <div class="flex flex-wrap gap-1.5">{% for n in review.unknown %}<span class="num-sleek font-bold text-xs px-2.5 py-1 rounded-lg bg-white border border-amber-200 text-amber-800">{{ n }}</span>{% empty %}<span class="text-[#91A0BA] text-xs">لا توجد.</span>{% endfor %}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+</div>
+{{ att_data|json_script:"att-data" }}
+{% endblock %}
+{% block scripts %}<script>
+(function(){
+  var root = document.getElementById('att-root');
+  var DATA = JSON.parse(document.getElementById('att-data').textContent);
+  var DATE = root.getAttribute('data-date'), GRADE = root.getAttribute('data-grade');
+  var PAGE = 7;
+  var ICONS = {
+    center:   {on: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDe6-7Btd55xT42kkEHkmfsOum0CH_XRfKCviejiItCJIragKjSdDLDZd-tAH13dTl3umA9fKdW0jxINHaEarPRsTxLE2QifmsPOub7ehcdlV4M2qRSvHmOnNhaBPgDVSjbrWL5AxkvOPzTjnxAQuyijzoquU2Tt8Mq5jKEPVqDUSkQLDrDi9kPfVZU691USJ5dD_wIcN72-grSn0WSSL0caqvxU9o7onrNn0sqCAZw3bQUK4xy1jUxfl1DXnF-dk_pSsc',   off: 'https://lh3.googleusercontent.com/aida-public/AB6AXuD4LTiD1gU-8xWTnfAzyi6nttAaQnOp4t2ZKxYSSAkU--EY-BOsRTnqs3xDWxa6_YwzbP7z0_tWfh7S9lZax37iE6xz4Wmt-ZFWNhFvxduC1vghGD6atLy4zw2erIFJjxaweRYR5aqbQ3tUrG3ZWGcnv60bw87f4G6OJA6FZ7Juu38VHzWV8QKYgFWbIC5AvluCQs5VquxVEJyELdVTA6jUHUn_P-4WXAgTkC1oaFIDvIkmTKOiBvpLGMyUu4-9o4C6sZU'},
+    platform: {on: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCsJZk8GUtDewUmWwVLZLFfhA7U2JQ5TzIZ8vAHmmAvZhsh7886uO6hg7v5tAn7BBnwYMfsP1ZC361kJRAqIiKmo5HtSIe07YcK98AD6nsV6bLOYsMwMgpCzqINn70d38JkzZ7VZ0dXYPnMQlflOGP7aJ1yX9u1cXAwSZPPkSm3H2pREiEQyLEM81SLn0RePjr1ht630wpKqhmTFpMANLyoZxN8VO2rEUGGKfCv6FwY4Kwn4nFcaYw3durgV_90-7gHBQ8', off: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBWoUacO9P96tLbwxzpcSi3ePtEFzp464xYmn0vSHs7QRfKhcZ7F0XlRmAIgig3XNMBoCA0n4dEeEwIPyimyyPvcImKHMYShrJb-_QSZTHsVUSUoG87FeC_SefeD1IEA8cY04RKZH75JrnbZ8bFpoBz3Z4r6LKId4vOIW6jJ5af2yvmOBndtP3NTX91k1VRW5a5gBd9zhzMmjWu2sAzpfoNZsr2AZD2tcKjvTJbG3uGmSQjgI7KjFG5LNpb0DY-fDI9N98'}
+  };
+  var CHECK_IMG = 'https://lh3.googleusercontent.com/aida-public/AB6AXuBjgKgoEajON0g9kl_fjJatH7kM-zhB7IxaDy6SAPXEzmjirYXcTm-uR2bETM8J_EJZAdDe2xSwp79-BQwaXfwj6TE1TTNO0vpFxAx5XgsMQCmm42JXl6RBO3AwgFegR1uvnEvqM2RokR7D03mOztm3Zbr5SZOXKchLiFDrCQ47rJREDt5B6-_CMRFB42c6GayWl70ZF9cn1zD4xj7UTV2VYeUkWlAMeM3pvDp6nDNvI9kFKIkQK1rHHISg3ypMOtCKVkU';
+  var ACTIVE = {present: 'bg-[#2563EB]', absent: 'bg-[#F43F5E]'};
+  var state = {present: {src: 'center', page: 1}, absent: {src: 'center', page: 1}};
+  var query = '';
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }); }
+  function code(n){ return n ? 'ST-' + String(n).padStart(4, '0') : '—'; }
+  function norm(s){
+    return String(s == null ? '' : s)
+      .replace(/[\u0660-\u0669]/g, function(d){ return d.charCodeAt(0) - 0x0660; })
+      .replace(/[\u06F0-\u06F9]/g, function(d){ return d.charCodeAt(0) - 0x06F0; })
+      .toLowerCase();
+  }
+  function matches(r){
+    if (!query) return true;
+    return norm(r.name).indexOf(query) !== -1 || norm(code(r.num)).indexOf(query) !== -1 || String(r.num) === query.replace(/^#/, '');
+  }
+  function count(src, status){ return DATA[src].filter(function(r){ return r.status === status; }).length; }
+
+  function kpis(){
+    ['center', 'platform'].forEach(function(s){
+      $('k-' + s + '-p').textContent = count(s, 'present');
+      $('k-' + s + '-a').textContent = count(s, 'absent');
+      $('kt-' + s + '-p').textContent = DATA[s].length;
+      $('kt-' + s + '-a').textContent = DATA[s].length;
+    });
+  }
+
+  var PILL = {
+    present: '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ECFDF3] text-[#22C55E] border border-[#22C55E]/30 font-bold text-[11px]">'
+           + '<span class="">حاضر</span><img src="' + CHECK_IMG + '" alt="" class="w-3.5 h-3.5 object-contain"></span>',
+    absent: '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FFF1F2] text-[#F43F5E] border border-[#F43F5E]/30 font-bold text-[11px]">'
+          + '<span class="">غائب</span><svg class="w-3.5 h-3.5 text-[#F43F5E]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">'
+          + '<circle cx="12" cy="12" r="9"></circle><path d="M15 9l-6 6m0-6l6 6" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>'
+  };
+
+  function rowHtml(r, i, panel, src){
+    var name = r.url ? '<a href="' + esc(r.url) + '" class="no-underline hover:text-[#2563EB] transition-colors" style="color:inherit">' + esc(r.name) + '</a>' : esc(r.name);
+    var pill = src === 'platform'
+      ? '<button type="button" data-toggle="' + r.id + '" title="اضغط لتبديل الحالة" class="cursor-pointer hover:opacity-80 transition-opacity">' + PILL[panel] + '</button>'
+      : PILL[panel];
+    var login = r.login
+      ? '<td class="py-3 px-3 text-center num-sleek text-[#4C658D] font-medium" dir="ltr">' + esc(r.login) + '</td>'
+      : '<td class="py-3 px-3 text-center text-[#91A0BA] font-bold">-</td>';
+    return '<tr class="hover:bg-[#F8FBFF] transition-colors">'
+      + '<td class="py-3 px-3 text-[#91A0BA] num-sleek">' + i + '</td>'
+      + '<td class="py-3 px-3 num-sleek text-[#2563EB] font-bold">' + code(r.num) + '</td>'
+      + '<td class="py-3 px-3 font-bold text-[#173A73]">' + name + '</td>'
+      + '<td class="py-3 px-3 text-[#6F7F9A]">' + esc(r.grade || '—') + '</td>'
+      + '<td class="py-3 px-3 text-center">' + pill + '</td>' + login + '</tr>';
+  }
+
+  function emptyHtml(panel, src){
+    var recorded = DATA[src].some(function(r){ return r.status !== 'none'; });
+    var msg;
+    if (query && DATA[src].length) msg = 'لا توجد نتائج مطابقة.';
+    else if (!DATA[src].length) msg = 'لا يوجد طلاب في هذا الصف بعد.';
+    else if (src === 'center' && !recorded) msg = 'لم يُسجَّل حضور المركز لهذا اليوم بعد — ارفع ملف أرقام الطلاب (PDF).';
+    else msg = panel === 'present' ? 'لا يوجد حاضرون في هذا اليوم.' : 'لا يوجد غائبون في هذا اليوم.';
+    return '<tr><td colspan="6" class="py-10 px-3 text-center text-[#91A0BA] font-bold">' + msg + '</td></tr>';
+  }
+
+  var CHEV_PREV = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+  var CHEV_NEXT = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-linecap="round" stroke-linejoin="round"></path></svg>';
+  function pagerHtml(panel, cur, pages){
+    var color = panel === 'present' ? 'bg-[#22C55E]' : 'bg-[#F43F5E]';
+    var start = Math.max(1, Math.min(cur - 2, pages - 4)), end = Math.min(pages, start + 4);
+    var nav = 'w-8 h-8 flex items-center justify-center rounded-xl text-[#6F7F9A] hover:text-[#173A73] hover:bg-[#EEF5FF] transition-colors';
+    var h = '<button aria-label="الصفحة السابقة" class="' + nav + (cur <= 1 ? ' opacity-40 pointer-events-none' : '') + '" type="button" data-pg="' + (cur - 1) + '">' + CHEV_PREV + '</button>';
+    for (var p = start; p <= end; p++){
+      h += p === cur
+        ? '<button class="w-8 h-8 rounded-full ' + color + ' text-white font-bold text-xs flex items-center justify-center shadow-xs num-sleek" type="button" data-pg="' + p + '">' + p + '</button>'
+        : '<button class="w-8 h-8 rounded-full text-[#4C658D] hover:bg-[#EEF5FF] font-bold text-xs flex items-center justify-center num-sleek transition-colors" type="button" data-pg="' + p + '">' + p + '</button>';
+    }
+    h += '<button aria-label="الصفحة التالية" class="' + nav + (cur >= pages ? ' opacity-40 pointer-events-none' : '') + '" type="button" data-pg="' + (cur + 1) + '">' + CHEV_NEXT + '</button>';
+    return h;
+  }
+
+  function renderSeg(panel){
+    var on = ACTIVE[panel];
+    [].forEach.call(document.querySelectorAll('#seg-' + panel + ' .seg-btn'), function(b){
+      var s = b.getAttribute('data-src'), active = state[panel].src === s;
+      b.className = 'seg-btn px-4 py-1.5 rounded-xl flex items-center gap-1.5 transition-all ' +
+        (active ? on + ' text-white shadow-xs' : 'text-[#6F7F9A] hover:text-[#173A73]');
+      b.querySelector('img').src = ICONS[s][active ? 'on' : 'off'];
+    });
+  }
+
+  function render(panel){
+    var st = state[panel];
+    var all = DATA[st.src].filter(function(r){ return r.status === panel; });
+    var rows = all.filter(matches);
+    var pages = Math.max(1, Math.ceil(rows.length / PAGE));
+    if (st.page > pages) st.page = pages;
+    if (st.page < 1) st.page = 1;
+    var from = (st.page - 1) * PAGE;
+    var slice = rows.slice(from, from + PAGE);
+    $('body-' + panel).innerHTML = slice.length
+      ? slice.map(function(r, i){ return rowHtml(r, from + i + 1, panel, st.src); }).join('')
+      : emptyHtml(panel, st.src);
+    $('cnt-' + panel).textContent = all.length;
+    $('pg-' + panel).innerHTML = pagerHtml(panel, st.page, pages);
+    renderSeg(panel);
+  }
+  function renderAll(){ kpis(); render('present'); render('absent'); }
+
+  // تبديل المصدر (المركز التعليمي / المنصة) داخل كل لوحة
+  [].forEach.call(document.querySelectorAll('.seg-btn'), function(b){
+    b.addEventListener('click', function(){
+      var p = b.getAttribute('data-panel');
+      state[p].src = b.getAttribute('data-src'); state[p].page = 1; render(p);
+    });
+  });
+  // الترقيم
+  ['present', 'absent'].forEach(function(p){
+    $('pg-' + p).addEventListener('click', function(e){
+      var b = e.target.closest('[data-pg]'); if (!b) return;
+      state[p].page = parseInt(b.getAttribute('data-pg'), 10) || 1; render(p);
+    });
+  });
+  // البحث
+  $('att-search').addEventListener('input', function(){
+    query = norm(this.value.trim()).replace(/^#/, '');
+    state.present.page = 1; state.absent.page = 1; render('present'); render('absent');
+  });
+
+  // تبديل حالة طالب في حضور المنصة (حفظ فوري)
+  var tokenEl = document.querySelector('#upload-form input[name=csrfmiddlewaretoken]');
+  function onToggle(e){
+    var b = e.target.closest('[data-toggle]'); if (!b || b.disabled) return;
+    var id = parseInt(b.getAttribute('data-toggle'), 10);
+    var row = DATA.platform.filter(function(r){ return r.id === id; })[0]; if (!row) return;
+    var next = row.status === 'present' ? 'absent' : 'present';
+    var fd = new FormData();
+    fd.append('action', 'toggle'); fd.append('student_id', id); fd.append('present', next === 'present' ? '1' : '0');
+    fd.append('date', DATE); fd.append('grade', GRADE);
+    fd.append('csrfmiddlewaretoken', tokenEl ? tokenEl.value : '');
+    b.disabled = true;
+    fetch(window.location.pathname + window.location.search, {method: 'POST', body: fd, credentials: 'same-origin', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(function(r){ return r.json(); })
+      .then(function(j){
+        if (!j.ok) throw new Error('fail');
+        row.status = next; renderAll();
+      })
+      .catch(function(){ b.disabled = false; alert('تعذّر حفظ الحالة، حاول مرة أخرى.'); });
+  }
+  $('body-present').addEventListener('click', onToggle);
+  $('body-absent').addEventListener('click', onToggle);
+
+  // رفع ملف الأرقام (PDF)
+  var upBtn = $('att-upload-btn'), file = $('att-file');
+  upBtn.addEventListener('click', function(){ file.click(); });
+  file.addEventListener('change', function(){
+    if (!file.files.length) return;
+    upBtn.disabled = true; upBtn.style.opacity = '.7';
+    upBtn.querySelector('span').textContent = 'جارٍ قراءة الأرقام...';
+    $('upload-form').submit();
+  });
+
+  // اختيار التاريخ: فتح المنتقي عند الضغط على الحقل
+  var dt = $('att-date');
+  if (dt) dt.addEventListener('click', function(){ try { dt.showPicker(); } catch (e) {} });
+
+  // إغلاق نافذة المراجعة
+  var modal = $('review-modal');
+  if (modal){
+    $('review-close').addEventListener('click', function(){ modal.remove(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && modal.parentNode) modal.remove(); });
+  }
+
+  renderAll();
+})();
+
+</script>{% endblock %}

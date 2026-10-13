@@ -1,0 +1,50 @@
+{% extends "teacher/base.html" %}
+{% block title %}شرح الدرس{% endblock %}
+{% block page %}
+<div class="p-4 sm:p-6 md:p-8 flex-1 space-y-6"><div class="max-w-5xl mx-auto space-y-6">
+  <nav class="text-xs text-slate-500"><a href="{% url 'teacher:lesson_detail' lesson.pk %}" class="hover:text-blue-600">{{ lesson.title }}</a> ← شرح الدرس</nav>
+  <section class="rounded-[28px] border border-violet-100 shadow-md p-7" style="background:linear-gradient(135deg,#f5f3ff,#eff6ff)">
+    <span class="text-[11px] font-black px-3 py-1 rounded-full bg-violet-100 text-violet-700">✨ ذكاء اصطناعي</span>
+    <h1 class="text-3xl font-black text-slate-900 mt-3 mb-1">شرح درس «{{ lesson.title }}»</h1>
+    <p class="text-slate-600 text-sm m-0">اكتب الشرح أو الصقه كنص كبير غير مرتّب، أو ارفع ملفاً/صورة، وسيقوم النظام بتنظيمه إلى عناوين وقواعد وشرح وأمثلة يراها الطالب مرتّبة.{% if existing %} <b>يوجد حالياً <span class="num-font">{{ existing }}</span> قسم في هذا الدرس.</b>{% endif %}</p>
+  </section>
+
+  {% if stage == 'input' %}
+  <form method="post" enctype="multipart/form-data" class="wz bg-white rounded-[28px] border border-blue-100 shadow-md p-7 space-y-5" data-once>{% csrf_token %}<input type="hidden" name="action" value="analyze">
+    <div class="flex gap-2"><button type="button" class="fbtn {% if tab != 'file' %}is-on{% endif %}" data-tab="text">✍️ كتابة / لصق نص</button><button type="button" class="fbtn {% if tab == 'file' %}is-on{% endif %}" data-tab="file">📄 رفع ملف أو صورة</button></div>
+    <div id="tab-text" class="{% if tab == 'file' %}hidden{% endif %}"><label class="ui-label">نص الشرح</label><textarea name="lecture_text" rows="14" placeholder="الصق شرح الدرس هنا كما هو، حتى لو كان نصاً واحداً كبيراً بلا تنسيق…">{{ text }}</textarea></div>
+    <div id="tab-file" class="{% if tab != 'file' %}hidden{% endif %}"><div class="dropzone rounded-3xl border-2 border-dashed border-violet-300 bg-violet-50/50 p-10 text-center"><i class="fa-solid fa-file-arrow-up text-5xl text-violet-500 mb-3"></i><p class="font-black text-slate-700 text-lg m-0">اسحب ملف الشرح أو صورته هنا</p><p class="text-xs text-slate-500 mt-1">PDF أو صور JPG / PNG / WEBP — يُقرأ النص تلقائياً (OCR)</p><input type="file" name="files" multiple accept=".pdf,.jpg,.jpeg,.png,.webp" class="block mx-auto mt-4 text-sm"><p data-file-names class="text-xs text-violet-700 font-bold mt-2"></p></div></div>
+    <div class="text-left"><button class="px-10 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black shadow-lg shadow-violet-600/30" type="submit">✨ تحليل وتنظيم الشرح</button></div>
+    {% if provider == 'heuristic' %}<p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2">لم يُضبط مفتاح الذكاء الاصطناعي، لذا سيتم التنظيم بمحلّل نصي بسيط يعتمد على العناوين الظاهرة في النص.</p>{% endif %}
+  </form>
+  {% else %}
+  <form method="post" class="wz space-y-5" id="sf" data-once>{% csrf_token %}<input type="hidden" name="action" value="save">
+    {% if note %}<div class="rounded-2xl border border-amber-200 bg-amber-50 text-amber-900 text-sm px-4 py-3">{{ note }}</div>{% endif %}
+    <div class="bg-white rounded-[28px] border border-blue-100 shadow-md p-6"><div class="flex items-center justify-between flex-wrap gap-3 mb-4"><div><h2 class="font-black text-lg m-0">راجع الأقسام (<span id="cnt" class="num-font">{{ sections|length }}</span>)</h2>{% if ai_title %}<p class="text-xs text-slate-500 m-0 mt-1">العنوان المقترح للدرس: <b>{{ ai_title }}</b></p>{% endif %}</div><button type="button" id="add-sec" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold">+ قسم جديد</button></div>
+      <div id="secs" class="space-y-4">
+        {% for s in sections %}<div class="sec rounded-2xl border border-slate-200 p-4 space-y-2 bg-slate-50/50">
+          <div class="flex items-center gap-2"><select name="kind" class="!w-44">{% for k,label in kinds %}<option value="{{ k }}" {% if s.kind == k %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><input type="text" name="title" value="{{ s.title }}" placeholder="عنوان القسم"><button type="button" class="up w-9 h-9 shrink-0 rounded-xl bg-white border text-slate-500" title="أعلى">↑</button><button type="button" class="dn w-9 h-9 shrink-0 rounded-xl bg-white border text-slate-500" title="أسفل">↓</button><button type="button" class="rm w-9 h-9 shrink-0 rounded-xl bg-rose-50 text-rose-600" title="حذف"><i class="fa-solid fa-trash"></i></button></div>
+          <textarea name="content" rows="5">{{ s.content }}</textarea></div>{% endfor %}
+      </div></div>
+    <div class="bg-white rounded-[28px] border border-blue-100 shadow-md p-6 flex flex-wrap items-center gap-5">
+      <label class="flex items-center gap-2 text-sm font-bold cursor-pointer"><input type="radio" name="mode" value="append" checked class="w-4 h-4"> إضافة إلى الشرح الحالي</label>
+      <label class="flex items-center gap-2 text-sm font-bold cursor-pointer"><input type="radio" name="mode" value="replace" class="w-4 h-4"> استبدال الشرح الحالي بالكامل</label>
+      {% if lesson.status != 'published' %}<label class="flex items-center gap-2 text-sm cursor-pointer mr-auto"><input type="checkbox" name="publish" class="w-4 h-4"> نشر الدرس للطلاب بعد الحفظ</label>{% endif %}
+    </div>
+    <div class="flex justify-between"><a href="{% url 'uikit:ai_script' lesson.pk %}" class="px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold no-underline">→ نص آخر</a><button class="px-10 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black shadow-lg shadow-violet-600/30" type="submit">💾 حفظ الشرح في الدرس</button></div>
+  </form>
+  {% endif %}
+</div></div>
+{% endblock %}
+{% block scripts %}<script>
+(function(){
+  document.querySelectorAll('[data-tab]').forEach(function(b){b.onclick=function(){document.querySelectorAll('[data-tab]').forEach(function(x){x.classList.toggle('is-on',x===b)});document.getElementById('tab-text').classList.toggle('hidden',b.dataset.tab!=='text');document.getElementById('tab-file').classList.toggle('hidden',b.dataset.tab!=='file')}});
+  var secs=document.getElementById('secs');if(!secs)return;var cnt=document.getElementById('cnt');
+  function bind(s){s.querySelector('.rm').onclick=function(){s.remove();cnt.textContent=secs.children.length};
+    s.querySelector('.up').onclick=function(){if(s.previousElementSibling)secs.insertBefore(s,s.previousElementSibling)};
+    s.querySelector('.dn').onclick=function(){if(s.nextElementSibling)secs.insertBefore(s.nextElementSibling,s)};}
+  [].forEach.call(secs.children,bind);
+  document.getElementById('add-sec').onclick=function(){var c=secs.firstElementChild?secs.firstElementChild.cloneNode(true):null;if(!c)return;c.querySelector('[name=title]').value='';c.querySelector('[name=content]').value='';c.querySelector('[name=kind]').value='text';secs.appendChild(c);bind(c);cnt.textContent=secs.children.length;c.querySelector('[name=title]').focus()};
+  document.getElementById('sf').addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName==='INPUT')e.preventDefault()});
+})();
+</script>{% endblock %}

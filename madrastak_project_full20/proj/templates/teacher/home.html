@@ -1,0 +1,181 @@
+{% load ui_extras static %}{% teacher_avg_score t as AVG %}{% teacher_courses_overview t 1 as CO %}<!DOCTYPE html><html dir="rtl" lang="ar" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>لوحة تحكم المعلم - مدرستك Madrasatak</title>
+<!-- Google Fonts: Tajawal & Plus Jakarta Sans for numbers -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+{% include "teacher/_sidebar_head.html" %}
+<!-- Tailwind CSS v3 -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Tajawal', 'sans-serif'],
+          },
+          colors: {
+            sidebar: '#1e293b',
+            sidebarHover: '#2a374f',
+            brandBlue: '#0085ff',
+            cardBg: '#f8fafc',
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom Typography and Utilities -->
+<style data-purpose="typography">
+    body, button, input, select, textarea, h1, h2, h3, h4, span, p, a, div {
+      font-family: 'Tajawal', sans-serif !important;
+    }
+    .num-font {
+      font-family: 'Plus Jakarta Sans', 'Tajawal', sans-serif !important;
+    }
+    body {
+      background-color: #f1f6fd;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+  </style>
+<!-- Custom Decorative Styling -->
+<style data-purpose="custom-decorations">
+    .stat-card {
+      transition: all 0.2s ease-in-out;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+    /* Subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-row overflow-x-hidden text-slate-800">
+{% if messages %}<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">{% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}</div>
+<script>setTimeout(function(){document.querySelectorAll(".toast").forEach(function(t){t.style.transition="opacity .5s";t.style.opacity="0";setTimeout(function(){t.remove()},600)})},5200);</script>{% endif %}
+{% include "teacher/_sidebar.html" with active="home" home_toggle=True %}
+<!-- BEGIN: MainContentArea (To the left of Sidebar in RTL) -->
+<main class="flex-1 flex flex-col min-w-0 bg-[#eff4fc]">
+<!-- BEGIN: TopNavigation -->
+<header class="h-20 bg-white border border-blue-100/70 rounded-2xl mx-6 mt-4 px-6 flex items-center justify-between gap-4 sticky top-4 z-30 shadow-md backdrop-blur-md" data-purpose="top-header" style="box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05); border-radius: 20px;">
+<!-- Right Side (RTL Start near Sidebar): Notification Bell -->
+<div class="flex items-center gap-3">
+<a href="{% url 'teacher:messages' %}" class="relative w-11 h-11 rounded-full bg-[#f4f7fc] border border-blue-100/80 flex items-center justify-center text-blue-600 hover:bg-blue-50 transition-colors shadow-sm" data-purpose="notifications-bell" aria-label="الرسائل">
+<i class="fa-solid fa-bell text-lg"></i>
+{% if ui_unread %}<span class="absolute top-2 left-2.5 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full"></span>{% endif %}
+</a>
+</div>
+<!-- Center: Pill Search Bar -->
+<div class="flex-1 max-w-2xl mx-4" data-purpose="search-bar-container">
+<form action="{% url 'uikit:teacher_search' %}" method="get" class="m-0">
+<div class="relative w-full">
+<input name="q" value="{{ request.GET.q|default:'' }}" class="w-full h-11 pr-11 pl-10 rounded-full bg-[#f4f7fc] border border-blue-100 focus:bg-white focus:border-brandBlue focus:ring-2 focus:ring-blue-100 text-sm placeholder-slate-400 text-right transition-all outline-none" placeholder="ابحث عن طالب أو دورة أو محتوى..." type="text">
+<div class="absolute right-4 top-1/2 -translate-y-1/2 text-blue-400 pointer-events-none text-sm">
+<i class="fa-solid fa-magnifying-glass"></i>
+</div>
+<button type="button" class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 text-xs">
+<i class="fa-solid fa-sliders"></i>
+</button>
+</div>
+</form>
+</div>
+<!-- Left Side (RTL End): Academic Term Pill and Graduation Cap Logo -->
+<div class="flex items-center gap-3">
+<button class="relative w-10 h-10 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center hover:bg-blue-100 transition-colors">
+<i class="fa-regular fa-bell text-base"></i>
+<span class="absolute top-2 left-2 w-2 h-2 bg-rose-500 rounded-full"></span>
+</button>
+<div class="h-9 px-4 rounded-full bg-blue-50/70 border border-blue-100 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+<span class="text-xs font-semibold text-blue-700">الفصل الدراسي الأول</span>
+</div>
+<a href="{% url 'teacher:home' %}" title="الرئيسية" class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
+<i class="fa-solid fa-graduation-cap text-lg"></i>
+</a>
+</div>
+</header>
+<!-- END: TopNavigation -->
+{% if impersonating %}<div class="rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 mx-6 mt-4 flex flex-wrap items-center justify-between gap-3"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div>{% endif %}
+<!-- BEGIN: DashboardBody -->
+<div class="p-6 md:p-8 space-y-6 flex-1 overflow-y-auto">
+<!-- BEGIN: HeroWelcomeBanner -->
+<section class="relative rounded-3xl overflow-hidden border border-blue-100/80 shadow-md min-h-[300px] flex items-center" data-purpose="welcome-hero" style="background-color: #eaf2ff;"><svg class="hidden md:block absolute left-0 top-0 h-full w-[50%] pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0,0 H66 V38 C66,72 54,100 26,100 H0 Z" fill="#d3e3ff"></path></svg><div class="relative z-10 p-8 md:p-10 w-full md:w-[56%] flex flex-col justify-center text-right"><div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-200 text-blue-700 text-xs font-bold mb-3 w-fit"><span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>لوحة المتابعة الأكاديمية</div><h1 class="text-4xl md:text-5xl font-black leading-tight mb-3 tracking-tight" style="font-weight: 900; letter-spacing: -0.03em; -webkit-text-stroke: 0.5px currentColor; font-family: Somar, &quot;Somar Sans&quot;, Tajawal, system-ui, sans-serif !important;"><span class="block" style="color:#2563eb;">مرحباً بك في</span><span class="block" style="color:#6d3df0; padding-right:1.75rem;">منصة مدرستك</span></h1><p class="text-slate-700 text-base md:text-lg font-medium max-w-xl leading-relaxed">إليك نظرة سريعة على آخر دوراتك ومتابعة طلابك بكل سهولة وسلاسة</p></div><img src="{% static 'ui/img/hero-study.png' %}" alt="" class="hidden md:block absolute left-6 top-3 bottom-3 h-[calc(100%-1.5rem)] w-auto max-w-[40%] object-contain pointer-events-none select-none"></section>
+<!-- END: HeroWelcomeBanner -->
+<!-- BEGIN: MetricsOverviewCards (From Right to Left in RTL: الطلاب النشطين -> المحاضرات -> الإختبارات -> متوسط التقييم) -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5" data-purpose="metrics-summary">
+<!-- Metric 1: الطلاب النشطين (Far Right) -->
+<div class="stat-card bg-[#eefaf3] border border-emerald-200/80 rounded-2xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-between min-h-[145px]" data-purpose="metric-active-students"><div class="flex items-center justify-between"><span class="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center p-1.5 shadow-sm"><img alt="الطلاب النشطين" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpJXhkX31r9CP9BLfYA3JbsQE_RaQbuNC5enOem62LTBk27VvSM8MO6TOCtxsDGGVK7m7uWiOnGuAVVF0rdXm9Fj0o1a44wUrYam2vXCMeK31q2OIKob_vNhXLuKN2mvNQCWSbGfTaEyMA1wrlaNf-wP4XJkokb5QGnRYyzvz1IQmF5Sgz-sqxXmPHKjeIf6Sd3s4BDQtBJLUAQ37dCm_rQoZuQI9CAXQXyEgtreZ8PuVIGn32Unzd3tWQsYrGx_6I-nE"></span><h3 class="text-sm font-bold text-slate-700">الطلاب النشطين</h3></div><div class="mt-3 flex items-baseline justify-between"><div class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-md shadow-emerald-500/20"><i class="fa-solid fa-arrow-trend-up text-sm"></i></div><div class="text-right"><div class="text-3xl font-extrabold text-slate-800 num-font tracking-tight">{{ stats.active_students }}</div><span class="text-xs text-slate-500 font-medium">من إجمالي <span class="num-font">{{ stats.students }}</span> طالب</span></div></div></div>
+<!-- Metric 2: المحاضرات (Middle Right) -->
+<div class="stat-card bg-[#e8f8f7] border border-teal-200/80 rounded-2xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-between min-h-[145px]" data-purpose="metric-lectures"><div class="flex items-center justify-between"><span class="w-9 h-9 rounded-full bg-teal-100 flex items-center justify-center p-1.5 shadow-sm"><img alt="المحاضرات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0V89L0ayRhtfbzO3Vqywl4bv-unX7xQ4Dh9IUa-8pu5K8HjEAcjrXG6rJ-2LDoT48VACOU0pkqhe0MoXiTt0fCIZIaia8RnV83dUEHGxAlXw-kNZ-vb7DI3wtIO0k72vFXqf9FryUFsmgBJao_2Q9o6mZWj2K6jHNo5ww-e1y8i_4cytitrjjwIMt84bRMZezwWo6vXBVbdvFDCetH3kTWFrl6LoY9JgQbFeOgME6pvTf1KNGRvNJ9mAXB-UXRJp9g-k"></span><h3 class="text-sm font-bold text-slate-700">المحاضرات</h3></div><div class="mt-3 flex items-baseline justify-between"><div class="w-8 h-8 rounded-xl bg-teal-400 text-white flex items-center justify-center shadow-md shadow-teal-400/20"><i class="fa-solid fa-chalkboard-user text-sm"></i></div><div class="text-right"><div class="text-3xl font-extrabold text-slate-800 num-font tracking-tight">{{ stats.lessons }}</div><span class="text-xs text-slate-500 font-medium">تم رفعها</span></div></div></div>
+<!-- Metric 3: الإختبارات (Middle Left) -->
+<div class="stat-card bg-[#f3edfd] border border-purple-200/80 rounded-2xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-between min-h-[145px]" data-purpose="metric-quizzes"><div class="flex items-center justify-between"><span class="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center p-1.5 shadow-sm"><img alt="الإختبارات" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9CzQ88ahnH5dd-b5AHQfFXRQwUixhI05ZfHL0wZ_RTq7bRWoKCMXHbc9joS1s3JTYc7PZX-uPaPRa_UzWC86HkSgakXiucTAqKInM-Vb6zR9nVCQjKjevifagFir95F0D3paL33kqAItzaZdNL1d8sG1bsg7Sfxbal8IffXWSRg7r02QB1wQHVbR0TsoNUgTG8sZ4qBQm8mbD4Z1G3SWC46Xo3KtOFRIQfkEWY-7wDo8J5LgtP6ta8tdJ65gbxLiMxPk"></span><h3 class="text-sm font-bold text-slate-700">الإختبارات</h3></div><div class="mt-3 flex items-baseline justify-between"><div class="w-8 h-8 rounded-xl bg-purple-500 text-white flex items-center justify-center shadow-md shadow-purple-500/20"><svg class="w-4 h-4 fill-current" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"></path></svg></div><div class="text-right"><div class="text-3xl font-extrabold text-slate-800 num-font tracking-tight">{{ stats.quizzes }}</div><span class="text-xs text-slate-500 font-medium">تم إنشاؤها</span></div></div></div>
+<!-- Metric 4: متوسط التقييم (Far Left) -->
+<div class="stat-card bg-[#fdeded] border border-rose-200/80 rounded-2xl p-5 relative overflow-hidden shadow-sm flex flex-col justify-between min-h-[145px]" data-purpose="metric-average-rating"><div class="flex items-center justify-between"><span class="w-9 h-9 rounded-full bg-rose-100 flex items-center justify-center p-1.5 shadow-sm"><img alt="متوسط التقييم" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZHwMFPsYRtUHcW_gHRZXELryacQmeHmiSLRBgsad2bm5RorwbPDsNDsZ5XTPms_OEUzEXRMUDx4gc-0g0IwjeheNbcpOW3-HwhHLhogLCeHHtCS78AFdF4WD9H2Hw8ILEHpjSAgkmvHmFinloKIYwXWx4nI9r25SdufcnJqFa-uUCLKG_mJ0NL8BTluJTDA_EvMt4QV0v4XPLyfOz5rA8Ce0Nnzb7XHSv7Pj3aFvfKDuvvQrV39bSmQT9PLDq--J8GM8"></span><h3 class="text-sm font-bold text-slate-700">متوسط التقييم</h3></div><div class="mt-3 flex items-baseline justify-between"><div class="w-8 h-8 rounded-full bg-rose-200 text-rose-500 flex items-center justify-center shadow-sm"><i class="fa-solid fa-star text-xs"></i></div><div class="text-right"><div class="text-3xl font-extrabold text-slate-800 num-font tracking-tight">{% if AVG is not None %}{{ AVG }}%{% else %}—{% endif %}</div><span class="text-xs text-slate-500 font-medium">متوسط درجات الاختبارات</span></div></div></div>
+</section>
+<!-- END: MetricsOverviewCards -->
+<!-- BEGIN: BottomColumnsSection (Right: أدواتك الحالية 5 cols, Left: أحدث الطلاب المسجلين 7 cols) -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch" data-purpose="dashboard-details">
+<!-- Right Column (RTL): أدواتك الحالية (Current Tools / Active Course) - 5 cols -->
+<div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-blue-50 shadow-sm flex flex-col justify-between h-full" data-purpose="current-tools-card">
+<!-- Card Title -->
+<div class="flex items-center justify-between mb-4">
+<span class="text-blue-500 text-sm">
+<i class="fa-solid fa-shapes"></i>
+</span>
+<h2 class="text-base font-bold text-slate-800">أدواتك الحالية</h2>
+</div>
+<!-- Active Course Inner Card -->
+{% if CO %}{% with CUR=CO.0 %}<div class="bg-[#f7fafe] border border-blue-100/70 rounded-2xl p-6 flex flex-col justify-between flex-1 gap-6"><div class="space-y-4"><div class="flex items-center justify-between gap-3.5"><div class="w-14 h-14 rounded-2xl bg-white p-1.5 shadow-md border border-blue-100 flex items-center justify-center flex-shrink-0"><img alt="كتاب المنهج" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhIxzWN8uBgM93ZQCriPQbqQ89l6JrC4Qo7ysCuNQSoQSxXwkPfa7IH0P9IfXS5Ja18ZcIqdrmwzq1tEgmUFsxNyCo5kNLJHpukWDi6TO-VyUOerWDBpUbPNw1vpL7hx9Jq_oCWi3gQS1CrdFJwWgVt0122blyHQH8yw-eS4KyJ4YdgNCG9R7tbgJY43PYDNGKxboiiUFY998jXq75dyh4ur-rUxgvyCM9lbhy4KAbix6jUDeXo-Ukrr0o5Ec4vdcAVDs"></div><div class="text-right flex-1"><h4 class="text-base font-bold text-slate-800 leading-snug">{{ CUR.c.title }}</h4><div class="flex items-center gap-1.5 justify-end text-xs text-slate-500 mt-1.5 font-medium"><span class="num-font font-bold text-slate-700 text-sm">{{ CUR.students }}</span><span class="">طالب مسجل</span><span class="text-amber-400 text-xs">★</span></div></div></div><div class="space-y-2 pt-3"><div class="flex items-center justify-between text-xs font-bold text-slate-600"><span class="">اكتمال المحتوى</span><span class="text-brandBlue num-font text-sm font-extrabold">{{ CUR.completion }}%</span></div><div class="w-full h-2.5 bg-blue-100/70 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-600 to-sky-400 rounded-full" style="width: {{ CUR.completion }}%;"></div></div></div></div><a href="{% url 'teacher:course_detail' CUR.c.pk %}" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2 mt-2"><span class="">إدارة الدورة</span><i class="fa-solid fa-arrow-left text-xs"></i></a></div>{% endwith %}{% else %}<div class="bg-[#f7fafe] border border-blue-100/70 rounded-2xl p-6 flex flex-col items-center justify-center flex-1 gap-4 text-center"><p class="text-sm font-bold text-slate-600">لا توجد دورات بعد.</p><a href="{% url 'teacher:course_new' %}" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 text-white font-bold text-sm shadow-md shadow-blue-500/25 transition-all flex items-center justify-center gap-2"><span class="">إنشاء أول دورة</span><i class="fa-solid fa-arrow-left text-xs"></i></a></div>{% endif %}
+</div>
+<!-- Left Column (RTL): أحدث الطلاب المسجلين (Recent Students) - 7 cols -->
+<div class="lg:col-span-7 bg-white rounded-3xl p-6 border border-blue-50 shadow-sm h-full" data-purpose="recent-students-card">
+<!-- Card Header -->
+<div class="flex items-center justify-between mb-5">
+<h2 class="text-base font-bold text-slate-800">أحدث الطلاب المسجلين</h2>
+<a class="px-3.5 py-1 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors" href="{% url 'teacher:students' %}">
+              عرض الكل ←
+            </a>
+</div>
+<!-- Students Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-right text-xs">
+<thead>
+<tr class="bg-blue-50/50 text-slate-500 border-b border-blue-50">
+<th class="py-2.5 px-3 font-semibold rounded-r-xl">الاسم</th>
+<th class="py-2.5 px-3 font-semibold">الصف</th>
+<th class="py-2.5 px-3 font-semibold">تاريخ التسجيل</th>
+<th class="py-2.5 px-3 font-semibold rounded-l-xl text-center">الحالة</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">{% for e in recent_students %}<tr class="hover:bg-slate-50/70 transition-colors"><td class="py-4 px-4"><a href="{% url 'teacher:student_detail' e.pk %}" class="flex items-center gap-3.5 no-underline">{% if forloop.counter0|divisibleby:3 %}<div class="w-10 h-10 rounded-full bg-blue-50 border-blue-200/80 flex items-center justify-center p-1.5 shadow-sm"><img alt="{{ e.student.full_name }}" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtHdBrx2GlM4pLfgR0Sa7mOBtvgzNaHlrnrOnCbOkQfVXPlaACw_WC3RjloSbZsq_31dCZzLoc_0SHttOZMvWnZHgT95At37RgMKJ-ItTxTNN3N2LYyORii5TLkEZU5DKjqB6tSYHYBAYeuL61M7R1WRw3y6QJoYhwc1xRUPDrsfsjXWNJ0dW2IVPjA8YxKgtNC9pIGG5OEwDkA_fvrJ1qIt3H174ixKod7IbSZFujNWauDzMfcYUXGM99rvIg2hQsEPg"></div>{% elif forloop.counter0|add:"-1"|divisibleby:3 %}<div class="w-10 h-10 rounded-full bg-purple-50 border-purple-200/80 flex items-center justify-center p-1.5 shadow-sm"><img alt="{{ e.student.full_name }}" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnNL_Q8VsU3Q0_r6Ff-xCJ1KvP5AHSzT_gfkswt_3QkePaBDh9gxqa_urmdP6V-Uv0hhoFt36fzfN-qvAd9YJvIjSy3hi-N_R4t04oFqamqr3L1CLD06Kub6rFhTxi7s5k-QXVnLrnLwmHQfiG8TIXiVDXBz2U-fPzBvLymfjh9hcdcbzTj0KLf7gPVyEtmd8Z4YmiOmbjaflMPmAt-qB9hDDksSXb_m4-XskZbwEiaFMAXJw4Y7-bIyXzD-jCnYIBgds"></div>{% else %}<div class="w-10 h-10 rounded-full bg-teal-50 border-teal-200/80 flex items-center justify-center p-1.5 shadow-sm"><img alt="{{ e.student.full_name }}" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIAWafpPhzvX-pzQzYIiK84vzsGVVQu42j05WBASG0O7lc2ac8R8awG3hsfNeAFuJc_h2tzpp3Cl6b3iFqC-KWJJG2z15Y8C-0wmBHzZ5RP_Fk85XGtmY__oCsu8_qGM8diiuyxIrGfTUFTvr4cNgIMepRPmTXw2hhhQSYbIJ5u8neei-OCRNXnKRcXBP66VJPohROLLX36b6IBMsEgPbW9qsDtq8iMTqYpzskjY8lT5jOhuLeTjHeUVWq4IY06hHjQNI"></div>{% endif %}<span class="font-bold text-slate-800 text-sm">{{ e.student.full_name }}</span></a></td><td class="py-4 px-4 text-slate-600 font-semibold text-sm">{{ e.student.student_profile.get_grade_display|default:"—" }}</td><td class="py-4 px-4 text-slate-600 num-font text-xs font-bold">{{ e.created_at|date:"Y/m/d" }}</td><td class="py-4 px-4 text-center">{% if e.display_status == 'active' %}<span class="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-sm font-bold bg-[#dcfce7] text-[#15803d] border border-emerald-300/60" style="box-shadow: 0 0 14px rgba(34, 197, 94, 0.45);">{{ e.display_label }}</span>{% else %}<span class="inline-flex items-center justify-center px-4 py-1.5 rounded-full text-sm font-bold bg-amber-100 text-amber-700 border border-amber-300/60">{{ e.display_label }}</span>{% endif %}</td></tr>{% empty %}<tr><td colspan="4" class="py-10 px-4 text-center text-slate-400 text-sm font-semibold">لا اشتراكات جديدة خلال آخر 14 يوماً.</td></tr>{% endfor %}</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- END: BottomColumnsSection -->
+</div>
+<!-- END: DashboardBody -->
+</main>
+<!-- END: MainContentArea -->
+
+
+
+
+
+
+
+
+
+
+</body></html>

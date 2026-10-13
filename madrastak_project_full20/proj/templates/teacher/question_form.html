@@ -1,0 +1,24 @@
+{% extends "teacher/base.html" %}
+{% block title %}سؤال جديد{% endblock %}
+{% block topbar_title %}{{ q.title }} — سؤال جديد{% endblock %}
+{% block content %}
+<div class="card" style="max-width:680px">
+<form method="post" enctype="multipart/form-data" data-once>{% csrf_token %}
+  {% include "partials/form.html" %}
+  <div class="row"><button class="btn" type="submit">إضافة السؤال</button><button class="btn ghost" type="submit" name="add_another" value="1">إضافة ومتابعة لسؤال آخر</button></div>
+</form>
+</div>
+{% endblock %}
+{% block scripts %}<script>(function(){
+  var qt=document.getElementById('id_qtype'); if(!qt) return;
+  var names=['correct'];
+  for(var i=1;i<=4;i++){names.push('choice_text_'+i,'choice_wrong_'+i);}
+  function upd(){
+    var essay=qt.value==='essay';
+    names.forEach(function(n){
+      var el=document.querySelector('[name='+n+']'); var w=el&&el.closest('.field');
+      if(w) w.style.display=essay?'none':'';
+    });
+  }
+  qt.addEventListener('change',upd); upd();
+})();</script>{% endblock %}

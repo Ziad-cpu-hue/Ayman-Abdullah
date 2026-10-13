@@ -1,0 +1,262 @@
+{% extends "teacher/base.html" %}
+{% load static %}
+{% block title %}{{ c.title }} - مدرستك{% endblock %}
+{% block head %}{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Tajawal:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Tajawal:wght@400;500;700;800;900&amp;display=swap" rel="stylesheet" class="">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;display=swap" rel="stylesheet" class="">
+<style>
+    .tpage {
+      font-family: 'Cairo', sans-serif;
+      background-color: #F3F7FC;
+      color: #1e293b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .custom-shadow-card {
+      box-shadow: 0 4px 20px -2px rgba(37, 99, 235, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+    }
+  </style>
+<script>(function(){var p={
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              navy: '#133664',
+              title: '#173A73',
+              muted: '#6F7F9A',
+            },
+            danger: {
+              DEFAULT: '#f43f5e',
+              hover: '#e11d48',
+            },
+            surface: {
+              card: '#FFFFFF',
+              border: '#E2EAF4',
+              bg: '#F4F8FC',
+            }
+          }
+        }
+      }
+    };function m(a,b){for(var k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])){a[k]=m(a[k]||{},b[k]);}else{a[k]=b[k];}}return a;}window.tailwind=window.tailwind||{};tailwind.config=m(tailwind.config||{},p);})();</script>
+{% endblock %}
+{% block page %}
+<div class="tpage min-h-[calc(100vh-7rem)] text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-700" style="font-family: Tajawal, sans-serif;">
+
+<!-- BEGIN: MainHeader -->
+
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+<!-- BEGIN: HeroCourseCard -->
+<section class="bg-white border border-[#DCE8F8] rounded-[24px] p-6 lg:p-8 custom-shadow-card">
+<div class="flex flex-col-reverse lg:flex-row items-center justify-between gap-8">
+<!-- Left Side: 3D Illustration Graphic (Matching Reference Image) -->
+<div class="w-full lg:w-5/12 max-w-[360px] aspect-[4/3] rounded-2xl bg-gradient-to-b from-[#EDF5FF] to-[#E2EFFF] border border-[#DCEAF8] flex items-center justify-center p-6 relative overflow-hidden shadow-inner group"><div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-200/50 rounded-full blur-2xl"></div><img src="{% if c.cover %}{{ c.cover.url }}{% else %}https://lh3.googleusercontent.com/aida-public/AB6AXuDGHPvOLMk4Ifh0o_4cIlD56TUVLlGaczxH-e6qkx4yxxbl-OktuYEFu3xWhotAXjsTfzKweXCKSFqIeysbOnCI6YZBPd_daVEpGY3s0sReFHBwbZtt9_h5GM9Q_t1hBG9OY8i_amqBFfBa3UyuYr2TR6svHQhbczSavi1tmVf_mgFxJ6lWU4P7Y8-HaN5d0Bkd5Leb72X9zWdZMa87BFozrT8grMWk0iyA8SHqhCvBBIhrI5x7JGaOAtDwMlQ96BNK{% endif %}" alt="{{ c.title }}" class="w-full h-full object-contain p-2 drop-shadow-md relative z-10 transition-transform duration-300 group-hover:scale-105"></div>
+<!-- Right Side: Course Header Information & Actions -->
+<div class="w-full lg:w-7/12 flex flex-col justify-between space-y-6">
+<!-- Top Row: Title & Action Buttons -->
+<div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+<h1 class="text-2xl sm:text-3xl font-extrabold text-brand-title tracking-normal">
+                {{ c.title }}
+              </h1>
+<!-- Action Buttons -->
+<div class="flex items-center gap-2.5 self-end sm:self-auto shrink-0">
+<a class="inline-flex items-center gap-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-all shadow-blue-500/20 active:scale-95" href="{% url 'teacher:course_edit' c.pk %}">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">تعديل</span>
+</a>
+<form method="post" action="{% url 'teacher:course_delete' c.pk %}" onsubmit="return confirm('سيتم حذف الدورة وكل محتواها نهائيًا. هل أنت متأكد؟');">{% csrf_token %}<button class="inline-flex items-center gap-2 px-4 py-2 bg-danger hover:bg-danger-hover text-white text-sm font-semibold rounded-lg shadow-sm transition-all shadow-rose-500/20 active:scale-95" type="submit">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">حذف</span>
+</button></form>
+</div>
+</div>
+<!-- Subtitle and Badge -->
+<div class="mt-2.5 space-y-2">
+<span class="inline-block px-3 py-1 bg-[#EEF5FF] text-brand-600 text-xs font-bold rounded-full border border-blue-200/50">
+                {{ c.get_course_type_display }}
+              </span>
+<p class="text-brand-muted text-sm sm:text-base font-normal leading-relaxed">
+                {{ c.description }}
+              </p>
+</div>
+</div>
+<!-- Bottom Row: Metadata Indicators -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100">
+<!-- Meta 1: Grade -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center shrink-0 border border-blue-100">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<p class="text-xs text-brand-muted font-medium">الصف المستهدف</p>
+<p class="text-sm font-bold text-slate-800">{{ c.get_grade_display }}</p>
+</div>
+</div>
+<!-- Meta 2: Target Date -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center shrink-0 border border-blue-100">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<p class="text-xs text-brand-muted font-medium">تاريخ المستهدف</p>
+<p class="text-sm font-bold text-slate-800 font-mono">{% if c.publish_at %}{{ c.publish_at|date:"Y/m/d" }}{% else %}—{% endif %}</p>
+</div>
+</div>
+<!-- Meta 3: End Date -->
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-brand-600 flex items-center justify-center shrink-0 border border-blue-100">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M8 7V3m8 3V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<div>
+<p class="text-xs text-brand-muted font-medium">تاريخ الانتهاء</p>
+<p class="text-sm font-bold text-slate-800 font-mono">غير محدد</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: HeroCourseCard -->
+<!-- BEGIN: KeyMetricsCards -->
+<section aria-label="Course Metrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"><!-- Card 1: Units (Warm Amber Theme) -->
+<div class="bg-[#FFFBF5] border border-[#FED7AA] rounded-[20px] p-6 flex flex-col items-center justify-center text-center transition-all hover:translate-y-[-2px] hover:shadow-lg hover:shadow-amber-500/10 hover:border-[#F59E0B]/40 group relative overflow-hidden">
+<div class="w-14 h-14 rounded-2xl bg-[#FEF3C7] text-[#D97706] flex items-center justify-center mb-3 shadow-sm transition-transform group-hover:scale-105">
+<svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+<path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-1.5V9a3 3 0 00-3-3h-3.379a3 3 0 01-2.121-.879L8.379 4.12A3 3 0 006.26 3.242H4.5A3 3 0 001.5 6.242V18a3 3 0 003 3h15z"></path>
+</svg>
+</div>
+<span class="stat-number text-[#B45309] mb-1.5" style="font-family: &quot;Plus Jakarta Sans&quot;, Tajawal, sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1;">{{ units.count }}</span>
+<span class="text-sm font-bold text-[#78350F]">عدد الوحدات</span>
+</div>
+
+<!-- Card 2: Lessons (Royal Blue Theme) -->
+<div class="bg-[#F0F7FF] border border-[#BFDBFE] rounded-[20px] p-6 flex flex-col items-center justify-center text-center transition-all hover:translate-y-[-2px] hover:shadow-lg hover:shadow-blue-500/10 hover:border-[#3B82F6]/40 group relative overflow-hidden">
+<div class="w-14 h-14 rounded-2xl bg-[#DBEAFE] text-[#1D4ED8] flex items-center justify-center mb-3 shadow-sm transition-transform group-hover:scale-105">
+<svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+<path d="M11.25 4.533A9.707 9.707 0 006 3a9.735 9.735 0 00-3.25.555.75.75 0 00-.5.707v14.25a.75.75 0 001 .707A8.237 8.237 0 016 18.75c1.995 0 3.823.707 5.25 1.886V4.533zM12.75 20.636A8.214 8.214 0 0118 18.75c.966 0 1.89.166 2.75.47a.75.75 0 001-.708V4.262a.75.75 0 00-.5-.707A9.735 9.735 0 0018 3a9.707 9.707 0 00-5.25 1.533v16.103z"></path>
+</svg>
+</div>
+<span class="stat-number text-[#1D4ED8] mb-1.5" style="font-family: &quot;Plus Jakarta Sans&quot;, Tajawal, sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1;">{{ total_lessons }}</span>
+<span class="text-sm font-bold text-[#1E3A8A]">عدد الدروس</span>
+</div>
+
+<!-- Card 3: Exams (Emerald Green Theme) -->
+<a href="{% url 'teacher:quiz_new_course' c.pk %}" class="bg-[#F0FDF4] border border-[#BBF7D0] rounded-[20px] p-6 flex flex-col items-center justify-center text-center transition-all hover:translate-y-[-2px] hover:shadow-lg hover:shadow-emerald-500/10 hover:border-[#22C55E]/40 group relative overflow-hidden no-underline">
+<div class="w-14 h-14 rounded-2xl bg-[#DCFCE7] text-[#15803D] flex items-center justify-center mb-3 shadow-sm transition-transform group-hover:scale-105">
+<svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+<path clip-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625zM7.5 15a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5A.75.75 0 017.5 15zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H8.25z" fill-rule="evenodd"></path>
+<path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z"></path>
+</svg>
+</div>
+<span class="stat-number text-[#15803D] mb-1.5" style="font-family: &quot;Plus Jakarta Sans&quot;, Tajawal, sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1;">{{ total_quizzes }}</span>
+<span class="text-sm font-bold text-[#14532D]">عدد الاختبارات</span>
+</a>
+
+<!-- Card 4: Students (Vibrant Purple Theme) -->
+<div class="bg-[#FAF5FF] border border-[#E9D5FF] rounded-[20px] p-6 flex flex-col items-center justify-center text-center transition-all hover:translate-y-[-2px] hover:shadow-lg hover:shadow-purple-500/10 hover:border-[#8B5CF6]/40 group relative overflow-hidden">
+<div class="w-14 h-14 rounded-2xl bg-[#F3E8FF] text-[#7C3AED] flex items-center justify-center mb-3 shadow-sm transition-transform group-hover:scale-105">
+<svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
+<path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.104.75.75 0 00.424-.67v-.019a5.25 5.25 0 00-5.25-5.25h-1.5a5.234 5.234 0 00-2.853.84 8.618 8.618 0 014.377 5.099z"></path>
+</svg>
+</div>
+<span class="stat-number text-[#6D28D9] mb-1.5" style="font-family: &quot;Plus Jakarta Sans&quot;, Tajawal, sans-serif; font-size: 2.5rem; font-weight: 800; letter-spacing: 0.05em; line-height: 1;">{{ n_students }}</span>
+<span class="text-sm font-bold text-[#4C1D95]">عدد الطلاب المسجلين</span>
+</div></section>
+<!-- END: KeyMetricsCards -->
+<!-- BEGIN: UnitsSection -->
+<section class="bg-white border border-[#DCE8F8] rounded-[24px] p-6 lg:p-8 custom-shadow-card">
+<!-- Section Header -->
+<div class="flex items-center justify-between pb-6 mb-2">
+<h2 class="text-xl sm:text-2xl font-bold text-brand-title tracking-tight">الوحدات</h2>
+<a class="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl shadow transition-all shadow-blue-500/25 active:scale-95 no-underline" href="{% url 'teacher:unit_new' c.pk %}">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+<span class="">إنشاء وحدة جديدة</span>
+</a>
+</div>
+<!-- Responsive Units Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-right border-collapse min-w-[720px]">
+<thead>
+<tr class="text-xs font-bold text-brand-muted uppercase border-b border-[#E6EFF8]">
+<th class="pb-4 pr-3 text-right" scope="col">اسم الوحدة</th>
+<th class="pb-4 px-4 text-center" scope="col">عدد الدروس</th>
+<th class="pb-4 px-4 text-center" scope="col">عدد الاختبارات</th>
+<th class="pb-4 px-4 text-center" scope="col">التاريخ</th>
+<th class="pb-4 pl-3 text-left" scope="col">الإجراءات</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#EDF3FA] text-sm font-medium">
+{% for u in units %}
+<tr class="group hover:bg-[#F9FCFF] transition-colors">
+  <td class="py-5 pr-3">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-blue-50 text-brand-600 flex items-center justify-center shrink-0">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+      </div>
+      <span class="font-bold text-slate-800 text-sm sm:text-base">الوحدة <span class="font-mono">{{ forloop.counter }}</span>: {{ u.title }}</span>
+    </div>
+  </td>
+  <td class="py-5 px-4 text-center text-slate-600 font-semibold">{{ u.n_lessons }}</td>
+  <td class="py-5 px-4 text-center text-slate-600 font-semibold">{{ u.quizzes.count }}</td>
+  <td class="py-5 px-4 text-center text-brand-muted font-mono">—</td>
+  <td class="py-5 pl-3 text-left">
+    <div class="flex items-center justify-end gap-2">
+      <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#CDE1F8] bg-white text-brand-600 hover:bg-blue-50 text-xs font-semibold transition-colors" href="{% url 'teacher:unit_detail' u.pk %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+          <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+        </svg>
+        <span class="">عرض</span>
+      </a>
+      <a aria-label="تعديل الوحدة" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors" href="{% url 'teacher:unit_edit' u.pk %}">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"></path>
+        </svg>
+      </a>
+    </div>
+  </td>
+</tr>
+{% empty %}
+<tr><td colspan="5" class="py-10 text-center text-slate-400 font-semibold">لا توجد وحدات في هذه الدورة بعد.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+<!-- END: UnitsSection -->
+</main>
+<!-- END: MainContent -->
+
+
+
+
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{# ترقيم الصفحات بألوان الصفحات المبهجة (التقارير / الاشتراكات). الاستخدام: {% include "teacher/_pager_soft.html" %} #}
+{% if page.paginator.num_pages > 1 %}
+<nav class="flex flex-wrap items-center justify-between gap-3 mt-2" aria-label="تنقل الصفحات">
+  <span class="text-sm text-slate-500 font-semibold">صفحة <b class="num-font text-slate-800">{{ page.number }}</b> من <b class="num-font text-slate-800">{{ page.paginator.num_pages }}</b> — <b class="num-font text-slate-800">{{ page.paginator.count }}</b> نتيجة</span>
+  <span class="flex gap-2">
+    {% if page.has_previous %}<a class="px-5 py-2.5 rounded-2xl bg-white border-2 border-violet-100 hover:border-violet-300 hover:bg-violet-50 text-violet-600 text-sm font-extrabold no-underline transition-all" href="?{{ qs }}page={{ page.previous_page_number }}">→ السابق</a>{% endif %}
+    {% if page.has_next %}<a class="px-5 py-2.5 rounded-2xl text-white text-sm font-extrabold no-underline hover:opacity-90 transition-all" style="background:#8b7ed6" href="?{{ qs }}page={{ page.next_page_number }}">التالي ←</a>{% endif %}
+  </span>
+</nav>
+{% endif %}

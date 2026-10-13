@@ -1,0 +1,131 @@
+{# الشريط الجانبي الموحّد للمدرّس — مأخوذ حرفيًا من صفحة الرئيسية. الاستخدام: {% include "teacher/_sidebar.html" with active="home" %} #}
+{# home_toggle=True: يُطبّق زر الطي بتصميم لوحة الطالب وخط Tajawal على العنوان (مستخدم في الرئيسية فقط). #}
+{# قيم active: home, courses, content, students, reports, subscriptions, attendance, analytics, profile #}
+<!-- BEGIN: RightSidebar (Collapsed by default, shows icons only; expands on toggle or hover) -->
+<aside class="collapsed bg-gradient-to-b from-[#1e293b] via-[#223048] to-[#182337] text-white flex flex-col justify-between shrink-0 shadow-2xl relative z-40 min-h-screen transition-all duration-300 ease-in-out border-l border-slate-700/40" data-purpose="main-sidebar" id="main-sidebar" style="font-family: Tajawal, sans-serif !important;">
+<!-- Top Area: Profile & Navigation -->
+<div class="p-3">
+<!-- Brand / Profile Header: Logo enlarged, padding and empty gaps reduced to fill space -->
+<div class="user-profile-header flex items-center justify-center pt-1 pb-2 px-1 border-b border-slate-700/60 transition-all overflow-hidden" data-purpose="user-profile">
+  <img alt="Madrasatak Logo" class="w-full h-20 max-h-24 object-contain transition-all duration-200" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCz2RFrTm7KcUJkFKsTmyf9QStZXuiUgWOdBam-uTPof8w2rGD22XWxbPCWVFfBDHgXD0-ffvXGM7zdbvds9f02MEk6J_CIsiTyaYSYjg7MRre15ITFZcyKbXXxeUFjkVpNALC_kk-s6F8fYCyFRgEUV6UAmx8eBMrRVcRfOf8bBPpFbZ6W76bA-zIXyCxwJT1VmoOxmsAdeGWn48xVvwC1uy8bWuBmA8CGKZccHKl69L79akFJM7mjqkJyXuM_C01IHA">
+</div>
+<!-- Interactive Sidebar Toggle (Collapse / Expand) -->
+<div class="toggle-btn-container flex items-center justify-between mt-3 mb-2 px-1">
+{% if home_toggle %}<span class="toggle-label text-xs font-semibold text-slate-400" style="font-family: 'Tajawal', sans-serif !important;">القائمة الجانبية</span>
+<button aria-label="Toggle Sidebar" class="rounded-xl hover:bg-slate-800/70 text-white flex items-center justify-center transition-all shadow group w-11 h-11" id="sidebar-toggle-btn" title="طي / توسيع القائمة" style="background-color: rgba(51, 65, 85, 0.6);"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt5tI1IXhKseHc2kDmzddDHK1VUMH9KjHq57ORYXzS3ZwRkZJHEHDB7QcJ56OoNHg-FqMCa1igX0sCckAdhMURKc-sb4BaYWItH_FySLT9Ou3a05so5dJWXhFcu8w_r_f17K7I2IWahns6_OMUVzJoraxO-ylkf8nJwuXfwZT3aL_1noQC01QB42K6vFD3cSkksz9oOpd1PgLxSeQYSKQtHu3wyiPfe9aczNZ2QhJoShFPiZ_2pWN_LUsiOnbbAuw5BA" id="toggle-icon" alt="Toggle" class="object-contain transition-transform duration-300 pointer-events-none w-5 h-5"></button>
+{% else %}<span class="toggle-label text-xs font-semibold text-slate-400">القائمة الجانبية</span>
+<button aria-label="Toggle Sidebar" class="w-8 h-8 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition-all shadow-md group border border-blue-400/40" id="sidebar-toggle-btn" title="طي / توسيع القائمة">
+<i class="fa-solid fa-chevron-right text-sm text-white transition-transform duration-300" id="toggle-icon"></i>
+</button>{% endif %}
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-2" data-purpose="sidebar-navigation" style="font-family: Tajawal, sans-serif !important;"><!-- 1. الرئيسية -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'home' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:home' %}" title="الرئيسية"{% if active == 'home' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center p-2 flex-shrink-0 shadow-inner group-hover:scale-105 transition-transform">
+<img alt="الرئيسية" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdZoH7NgVGa4-tn07TrN2SVW6ImKfrBnYPq-oagVwlJ1AlEhZ-bzjF1AfFRrys9ug7IrLjFBr0xqEv166yf3rVGWq6M6lBn2z6ebN_J1C-ZKS4M6q1iMv7wEHDZZXlamw5DY-yYuPYtlg5slsIV4I06DoEQf3KcDPSAqVaUF1RaL0aiYj67ROHEcneqlC00OpaxFYQUySB9IV2He3A0F5dBeJamM-TlhQO5OplU2o4SzFOmK9wyIc9BbQLUjKKzzhm6YE">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">الرئيسية</span>
+</div>
+
+</a>
+<!-- 2. محتوى المنهج -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'courses' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:courses' %}" title="محتوى المنهج"{% if active == 'courses' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="محتوى المنهج" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqwlFcjP_BAwnTBLhyp4WzQVs5YvS-uQJrPIJayvdrhfVT1wiHvMpxpOaMQj6eqH3xFq2ESjZYP683bRv50VvqeqbotUZ8_u2ThUKy_NrheYkdNJCU-sEHmJ2jRSAxcyK2RYodW1zUvilfm-EOJCo4DM7wg-Xy44EYONHvFzTEht1SVR7uPOo6SbPd6G2d63uJj9Y3jRTAJJMsEMdRSzuFTyGKddmHQUzdD-9zXQYgdSCEA-cT_twM8vW14GD31Hy7k4c">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">محتوى المنهج</span>
+</div>
+</a>
+<!-- New Tab: إدارة المحتوى الحالي -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'content' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'uikit:content_manage' %}" title="إدارة المحتوى الحالي"{% if active == 'content' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-cyan-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="إدارة المحتوى الحالي" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHuRiWGsL813PWSEgq1ogUvuuAxGo6lUp1vybcBLB-3Jif7nmIeF2tFsmvWO62iswHumrxXIVneqsWhFUel-1QqPdYLLA94RkXO-W_TJPZcMeGaEQonSqrQy1OoLjzPVV2wbfV_14LbSUqh-DWcOcFMZZgb2P1j_feje1RXuQhtQfVDSdkP1Zyax8YjZISeLCtGRbisKd7aw0M4j40krP3Gs90Vh28sCRKPUWsl0zCbqKnjI09JbrkGsOPh1_diKcjSdo">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">إدارة المحتوى الحالي</span>
+</div>
+</a>
+<!-- 3. الطلاب -->
+
+<!-- New Tab: قائمة الطلاب -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'students' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:students' %}" title="قائمة الطلاب"{% if active == 'students' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-blue-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="قائمة الطلاب" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6J8r_SQ1DjIvuS-lU_Nu0QRCW4Cp-3jDY-bk8ZWfjSn6xqZKdSSlSh1Kh5vX6Yp-WkX0Bpb4hvlc-nl5QPdIHbjV76fVwj3vTWWmvYSP2Z3A4VyCbNUo5b7Sbmp5IDczkQxrR5lbCvHCjLd37f1RBAkt2eyCQh5BCHxLTRaxXgkySqz4ZJwdUAX_w-T-d1QVM1Hd1K5196G48sCGGGi8689t5HAtKeoKAHT-eBhCqU3O1WKmJLcifVnoQBeDERAWuIsU">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">قائمة الطلاب</span>
+</div>
+</a>
+<!-- New Tab: تقرير الطلاب -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'reports' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'uikit:student_reports' %}" title="تقرير الطلاب"{% if active == 'reports' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="تقرير الطلاب" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTzie-oIA1j5SqZhEVR5DoTOO1LBvz1vHpfBi6ZC7YVJNUv0hQ56HbwWueXQAO-ykJ6HiMpj7bebQX4RXswbhIGoMsw2_1L6IqdpJGOmrKmaa-hhWBv7cCpmAnseAXrQ7NY2MKArl5AVrCyeXFc01r6ne-jCqjL3BZ5a083cbCQ5YSPlOonk54F4iEcF0tBIa5jTxeMBKHN4GH0gf1z361pIqQftpqeHMHyYJY1Eclec-u4HSG4yEz6ZaFytuvDDw8a_I">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">تقرير الطلاب</span>
+</div>
+</a>
+<!-- 4. الاشتراكات -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'subscriptions' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:subscriptions' %}" title="الاشتراكات"{% if active == 'subscriptions' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-emerald-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="الاشتراكات" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxAdXrx2JyJzf3Dl9sMnwPTUFnwBRs1LorqNWuw9mzfRRzrlz2eloj42rYf8CYhUMuXI2pEIDCpyB2OsLKulrgRQ2C5Res07A3Ak8T4Opmk3uXAtcCmyfTZDlozNnGClfwh__v88USTyEll9PnOdaWyT4QGCIYilZGqUM5w61lttCaFhkFaAoaE1SlADhHmORCBhNpjxn9pt_clrPCnxdUJ2z6l8QGsZUJyLKxsctVv1Nc_ISTw9qrvtBOO7VQKkNDoK8">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">الاشتراكات</span>
+</div>
+</a>
+<!-- 5. الغياب والحضور -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'attendance' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:attendance' %}" title="الغياب والحضور"{% if active == 'attendance' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-teal-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="الغياب والحضور" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALGvnB7_bM5DKwRymW35QGYuxXVmSnVFHoPToKK_qIeQGE5vxkaCo6I0v6ouQQNVsLp0LDnExwaf1zfJO2zp4RzIwfSBZ38eCs_tC41nXA1HBoHRYdXpPEMF0V9T9e9m7occ1strpyNwFXpfLJK2liyGTyJYd-iT3hDBwUH2Qo31yyAmpoPRidGvK1ABntS49eTZ0E9ffbYcs6NjxbKFmVXCxoPqyZIKO6csyeQIjJcG7mjW2K4UEpYUk0ww9k9tnWUPg">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">الغياب والحضور</span>
+</div>
+</a>
+<!-- 6. التحليلات -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'analytics' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:analytics' %}" title="التحليلات"{% if active == 'analytics' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-purple-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="التحليلات" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTzie-oIA1j5SqZhEVR5DoTOO1LBvz1vHpfBi6ZC7YVJNUv0hQ56HbwWueXQAO-ykJ6HiMpj7bebQX4RXswbhIGoMsw2_1L6IqdpJGOmrKmaa-hhWBv7cCpmAnseAXrQ7NY2MKArl5AVrCyeXFc01r6ne-jCqjL3BZ5a083cbCQ5YSPlOonk54F4iEcF0tBIa5jTxeMBKHN4GH0gf1z361pIqQftpqeHMHyYJY1Eclec-u4HSG4yEz6ZaFytuvDDw8a_I">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">التحليلات</span>
+</div>
+</a>
+<!-- المساعد الذكي -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'assistant' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="/teacher/assistant/" title="المساعد الذكي"{% if active == 'assistant' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-sky-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform text-sky-400"><i class="fa-solid fa-robot text-xl"></i></div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">المساعد الذكي</span>
+</div>
+</a>
+<!-- 7. الملف الشخصي -->
+<a class="nav-item-link flex items-center justify-between px-3 py-2.5 rounded-2xl {% if active == 'profile' %}text-white font-bold transition-all group shadow-md{% else %}text-slate-300 hover:text-white hover:bg-slate-800/70 font-semibold transition-all group{% endif %}" href="{% url 'teacher:profile' %}" title="الملف الشخصي"{% if active == 'profile' %} style="background: linear-gradient(135deg, rgba(42, 60, 90, 0.95), rgba(30, 48, 75, 0.95)); border: none;"{% endif %}>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-indigo-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+<img alt="الملف الشخصي" class="w-full h-full object-contain filter drop-shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCizyaPGiBl4zT3uQXfVA6o2Pljz6nETZK5ddDDinHgEYV82zXWSj8L42VBkkGJYDGgzVQch0rbAjumqKxwOykMLe0NDPbECw97cNTGsB2-D8C6M_ixIWll6pmtr600wGafUQlWY0_0ymJUN2bW8imn_R_df3Y9FBaXVU7-oV1BZvZTi1LkM5Q1JiqQznGGZVJc8chntj_rlrVRxarsag38hsrD1CN9MJqRMrrhJWNiZrGDHWDcjWJMU7MIB7Gce_BCB2k">
+</div>
+<span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">الملف الشخصي</span>
+</div>
+</a>
+<form method="post" action="{% url 'logout' %}" class="m-0">{% csrf_token %}<button type="submit" class="nav-item-link w-full flex items-center justify-between px-3 py-2.5 rounded-2xl text-rose-300 hover:text-rose-200 hover:bg-rose-500/10 font-semibold transition-all group" title="تسجيل الخروج"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-rose-500/15 flex items-center justify-center p-2 flex-shrink-0 shadow-sm group-hover:scale-105 transition-transform"><i class="fa-solid fa-arrow-right-from-bracket text-base"></i></div><span class="sidebar-text tracking-tight" style="font-size: 20px !important; font-weight: 800 !important; letter-spacing: 0.02em !important; font-family: Tajawal, sans-serif !important;">تسجيل الخروج</span></div></button></form></nav>
+</div>
+<!-- Bottom: Glowing Botanical / Abstract Illustration Graphic -->
+<div class="sidebar-bottom-artwork relative overflow-hidden flex flex-col items-center justify-end p-2" data-purpose="sidebar-bottom-artwork"><div class="w-full flex items-center justify-center"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxADHglJLxP8yMFGcC_xBCmg3unskRnZOoKaEJmjGWwZOCfFHM-DwahOGlHrUSdg7OVHAsje6jn9KOnW9rTMn07rH-zQFr8GEDLv3ChPmlIsY_LiCgTWD_xrzLRZIpDmWedztTYMQLryICZALWA2priqTEILMmae8Pm_ySznGAQsO3T0nsOFdcQKUprWfJJeUbI_TDOpPJ7omWEvlWeRGRRrhUTrRlSya4_KPcK9o4Kl_IOXIdravgf7MT5je1NLgG3A" alt="Madrasatak Illustration" class="w-full h-auto object-contain filter drop-shadow-md rounded-xl transition-all duration-300"></div></div>
+</aside>
+<!-- END: RightSidebar -->
+<!-- JavaScript for Sidebar Collapse/Expand Toggle -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const sidebar = document.getElementById('main-sidebar');
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    
+    if (toggleBtn && sidebar) {
+      toggleBtn.addEventListener('click', function () {
+        sidebar.classList.toggle('collapsed');
+      });
+    }
+  });
+</script>

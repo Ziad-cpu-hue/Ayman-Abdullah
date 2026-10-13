@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>إدارة المحتوى الحالي</title>
+<!-- Google Fonts: Tajawal & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Tajawal:wght@300;400;500;700;800&amp;display=swap" rel="stylesheet"/>
+{% include "teacher/_sidebar_head.html" %}
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            sidebar: '#1e293b',
+            sidebarHover: '#2a374f',
+            brandBlue: '#0085ff',
+            cardBg: '#f8fafc',
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              500: '#1d63ed',
+              600: '#0052e0',
+              700: '#0043bd',
+            }
+          }
+        }
+      }
+    }
+</script>
+<!-- Custom Typography, dimensional text effects and base styling -->
+<style data-purpose="custom-typography">
+    body {
+      font-family: 'Tajawal', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .text-sculpted-title {
+      text-shadow: 0 2px 4px rgba(25, 45, 90, 0.08), 0 1px 1px rgba(255, 255, 255, 0.9);
+      letter-spacing: -0.01em;
+    }
+    .date-numeric {
+      font-family: 'Inter', 'Tajawal', sans-serif;
+      letter-spacing: 0.12em;
+      font-variant-numeric: tabular-nums;
+    }
+</style>
+</head>
+<body class="relative min-h-screen flex flex-row overflow-x-hidden text-slate-800">
+{% if messages %}<div id="toasts" class="fixed top-4 inset-x-0 z-[100] flex flex-col items-center gap-2 pointer-events-none">{% for m in messages %}<div class="toast pointer-events-auto min-w-[260px] max-w-[92vw] px-5 py-3 rounded-xl shadow-xl text-white font-bold text-sm {% if m.tags == 'success' %}bg-emerald-600{% elif m.tags == 'error' %}bg-rose-600{% elif m.tags == 'warning' %}bg-amber-500{% else %}bg-slate-800{% endif %}">{{ m }}</div>{% endfor %}</div>
+<script>setTimeout(function(){document.querySelectorAll(".toast").forEach(function(t){t.style.transition="opacity .5s";t.style.opacity="0";setTimeout(function(){t.remove()},600)})},5200);</script>{% endif %}
+{% include "teacher/_sidebar.html" with active="content" %}
+<main class="flex-1 min-w-0 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12">
+{% if impersonating %}<div class="w-full max-w-6xl rounded-2xl bg-rose-600 text-white text-sm font-bold px-5 py-3 mb-4 flex flex-wrap items-center justify-between gap-3 z-10"><span>👁️ أنت تتصفّح حساب <b>{{ user.full_name }}</b> بصلاحية الإدارة. كل ما تفعله يُسجَّل.</span><form method="post" action="{% url 'owner:stop_impersonate' %}">{% csrf_token %}<button class="px-4 py-1.5 rounded-lg bg-white text-rose-700 text-xs font-black">العودة لحسابي</button></form></div>{% endif %}
+<!-- BEGIN: Two-tone solid background with wave divider -->
+<div aria-hidden="true" class="fixed inset-0 -z-10 w-full h-full pointer-events-none select-none overflow-hidden bg-[#eef3f9]"><svg class="absolute inset-0 w-full h-full block" fill="none" preserveaspectratio="none" viewbox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg"><path d="M0,450 C320,410 440,510 720,460 C1000,410 1120,490 1440,440 L1440,900 L0,900 Z" fill="#dce5f0"></path></svg></div>
+<!-- END: Two-tone solid background -->
+<!-- BEGIN: MainContainer -->
+<div class="w-full max-w-6xl mx-auto z-10" data-purpose="content-management-wrapper">
+<!-- Top Title Section (Unpill/Sculpted text without container badge or number 7) -->
+<!-- BEGIN: HeaderSection -->
+<header class="mb-6 px-3 flex items-center justify-between">
+<h1 class="text-2xl sm:text-3xl font-extrabold text-[#1e293b] text-sculpted-title">
+      إدارة المحتوى الحالي
+    </h1>
+</header>
+<!-- END: HeaderSection -->
+<!-- BEGIN: ContentCard -->
+<main class="bg-white rounded-[2rem] shadow-xl shadow-slate-900/5 border border-slate-200/80 p-6 sm:p-9 lg:p-10" data-purpose="main-table-card">
+<!-- Toolbar: Add Action (Left) & Filter Tabs (Right) -->
+<!-- BEGIN: ToolbarSection -->
+<section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-8 border-b border-slate-100 mb-6" data-purpose="table-controls"><div><a href="{% url 'teacher:courses' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-7 py-3 rounded-full font-bold text-base shadow-md shadow-blue-500/25 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] no-underline"><svg class="w-5 h-5 text-white stroke-[2.5]" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="16"></line><line x1="8" x2="16" y1="12" y2="12"></line></svg><span>إضافة محتوى جديد</span></a></div><nav aria-label="أنواع المحتوى" class="flex flex-wrap items-center justify-end gap-2.5 sm:gap-3" data-purpose="filter-tabs"><a href="?type=all" class="{% if type == 'all' %}inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-700{% else %}inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 transition shadow-sm{% endif %} no-underline"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect height="18" rx="2" ry="2" width="18" x="3" y="3"></rect><line x1="9" x2="15" y1="9" y2="9"></line><line x1="9" x2="15" y1="15" y2="15"></line></svg><span>جميع المحتوى</span></a><a href="?type=lesson" class="{% if type == 'lesson' %}inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-700{% else %}inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 transition shadow-sm{% endif %} no-underline"><span>تحضيرات</span></a><a href="?type=quiz" class="{% if type == 'quiz' %}inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-700{% else %}inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 transition shadow-sm{% endif %} no-underline"><span>اختبارات</span></a><a href="?type=text" class="{% if type == 'text' %}inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-md shadow-blue-500/20 transition hover:bg-blue-700{% else %}inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200/80 transition shadow-sm{% endif %} no-underline"><svg class="w-4 h-4 {% if type == 'text' %}text-white{% else %}text-slate-400{% endif %}" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>النصوص</span></a></nav></section>
+<!-- END: ToolbarSection -->
+<!-- Table Section with Flipped LTR Column Ordering -->
+<!-- BEGIN: TableDataView -->
+<div class="overflow-x-auto rounded-2xl border border-sky-100/80 bg-white" data-purpose="table-container">
+<table class="w-full text-left border-collapse min-w-[760px]" id="content-table">
+<!-- Table Header (Column 1 to 5: Name, Type, Unit, Date, Actions) -->
+<thead><tr class="border-b border-sky-100 text-slate-600 text-sm font-bold bg-slate-50/75"><th class="py-4.5 px-6 w-[28%] text-right" scope="col">الاسم</th><th class="py-4.5 px-6 w-[15%] text-right" scope="col">النوع</th><th class="py-4.5 px-6 w-[18%] text-right" scope="col">الوحدة</th><th class="py-4.5 px-6 w-[20%] text-right" scope="col">تاريخ الإضافة</th><th class="py-4.5 px-6 w-[19%] text-center" scope="col">الإجراءات</th></tr></thead>
+<!-- Table Body Rows -->
+<tbody class="divide-y divide-sky-100/60 text-slate-700 text-sm font-medium">{% for r in page %}<tr class="hover:bg-blue-50/30 transition-colors group" data-purpose="table-row"><td class="py-5 px-6 text-right"><div class="flex items-center gap-3.5"><div class="p-2.5 rounded-xl bg-blue-100/80 text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-200"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg></div><span class="text-slate-900 font-bold text-base">{{ r.title }}</span></div></td><td class="py-5 px-6 text-right text-slate-600 text-sm font-medium">{{ r.label }}</td><td class="py-5 px-6 text-right font-bold text-blue-700 text-sm">{{ r.unit }}</td><td class="py-5 px-6 text-right"><span class="date-numeric text-slate-600 font-medium text-sm">{{ r.date|date:"Y / m / d" }}</span></td><td class="py-5 px-6 text-center"><div class="flex items-center justify-center gap-3"><a href="{{ r.open }}" aria-label="تعديل" title="فتح / تعديل" class="w-10 h-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 shadow-sm"><svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round"></path></svg></a><form method="post" action="{% url 'uikit:content_delete' %}" class="m-0" onsubmit="return confirm('حذف «{{ r.title|escapejs }}» نهائياً؟');">{% csrf_token %}<input type="hidden" name="kind" value="{{ r.type }}"><input type="hidden" name="pk" value="{{ r.pk }}"><button type="submit" aria-label="حذف" title="حذف" class="w-10 h-10 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-500 flex items-center justify-center transition-all duration-150 hover:scale-110 active:scale-95 shadow-sm"><svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></form></div></td></tr>{% empty %}<tr><td colspan="5" class="py-14 px-6 text-center text-slate-500 text-sm font-semibold">لا يوجد محتوى مطابق. <a class="font-bold text-blue-600" href="{% url 'teacher:courses' %}">أضف محتوى الآن</a></td></tr>{% endfor %}</tbody>
+</table>
+</div>
+<!-- END: TableDataView -->
+{% include "ui/_pager.html" %}
+</main>
+<!-- END: ContentCard -->
+</div>
+<!-- END: MainContainer -->
+</main>
+</body></html>

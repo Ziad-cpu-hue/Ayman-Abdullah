@@ -1,0 +1,78 @@
+{% extends "teacher/base.html" %}
+{% block title %}{% if mode == 'lesson' %}إضافة درس{% else %}إضافة وحدة{% endif %}{% endblock %}
+{% block page %}
+<div class="p-4 sm:p-6 md:p-8 flex-1"><div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <aside class="rounded-[28px] p-7 text-white shadow-xl h-fit" style="background:linear-gradient(160deg,#1e3a8a,#2563eb 60%,#38bdf8)">
+    <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-2xl mb-4"><i class="fa-solid fa-layer-group"></i></div>
+    <h1 class="text-2xl font-black text-white m-0">{% if mode == 'lesson' %}إضافة درس جديد{% else %}إضافة وحدة جديدة{% endif %}</h1>
+    <p class="text-sm text-blue-100 mt-2">أدخل بيانات الوحدة ثم أسماء الدروس ووصفها، واضغط «إنشاء».</p>
+    <ol class="mt-6 space-y-4 list-none p-0 text-sm" id="wz-steps">
+      <li data-step="1" class="flex items-center gap-3"><span class="wz-dot w-8 h-8 rounded-full bg-white text-blue-700 font-black flex items-center justify-center num-font">1</span>معلومات الوحدة</li>
+      <li data-step="2" class="flex items-center gap-3 opacity-70"><span class="wz-dot w-8 h-8 rounded-full bg-white/25 font-black flex items-center justify-center num-font">2</span>إضافة الدروس</li>
+      <li data-step="3" class="flex items-center gap-3 opacity-70"><span class="wz-dot w-8 h-8 rounded-full bg-white/25 font-black flex items-center justify-center num-font">3</span>مراجعة وإنهاء</li>
+    </ol>
+  </aside>
+  <form method="post" class="wz lg:col-span-2 bg-white rounded-[28px] border border-blue-100 shadow-md p-7 space-y-5" id="wz" data-once>{% csrf_token %}
+    <input type="hidden" name="mode" value="{{ mode }}">
+    {% if form.non_field_errors %}<div class="rounded-2xl border border-rose-200 bg-rose-50 text-rose-700 text-sm px-4 py-3">{% for e in form.non_field_errors %}{{ e }}<br>{% endfor %}</div>{% endif %}
+    <!-- الخطوة 1 -->
+    <div data-pane="1" class="space-y-4">
+      <h2 class="font-black text-lg text-slate-800 m-0">معلومات الوحدة</h2>
+      <div><label class="ui-label">الدورة</label>{{ form.course }}{{ form.course.errors }}</div>
+      <div class="flex gap-4 flex-wrap">
+        <label class="flex items-center gap-2 text-sm font-bold cursor-pointer"><input type="radio" name="unit_mode" value="new" class="w-4 h-4" {% if form.unit_mode.value != 'existing' %}checked{% endif %}> وحدة جديدة</label>
+        <label class="flex items-center gap-2 text-sm font-bold cursor-pointer"><input type="radio" name="unit_mode" value="existing" class="w-4 h-4" {% if form.unit_mode.value == 'existing' %}checked{% endif %}> إضافة إلى وحدة موجودة</label></div>
+      <div id="mode-new" class="space-y-4">
+        <div><label class="ui-label">اسم الوحدة</label>{{ form.unit_title }}{{ form.unit_title.errors }}</div>
+        <div><label class="ui-label">وصف الوحدة</label>{{ form.unit_description }}</div>
+        <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" name="publish_unit" class="w-4 h-4" {% if form.publish_unit.value %}checked{% endif %}> {{ form.publish_unit.label }}</label>
+      </div>
+      <div id="mode-existing" class="hidden"><label class="ui-label">الوحدة</label>{{ form.unit_existing }}{{ form.unit_existing.errors }}</div>
+      <div class="text-left"><button type="button" data-go="2" class="px-8 py-3 rounded-xl bg-blue-600 text-white text-sm font-bold">التالي ←</button></div>
+    </div>
+    <!-- الخطوة 2 -->
+    <div data-pane="2" class="space-y-4 hidden">
+      <div class="flex items-center justify-between"><h2 class="font-black text-lg text-slate-800 m-0">الدروس{% if mode == 'unit' %} <span class="text-xs text-slate-400 font-normal">(اختياري)</span>{% endif %}</h2><button type="button" id="add-lesson" class="px-4 py-2 rounded-xl bg-blue-50 text-blue-700 text-xs font-bold">+ درس آخر</button></div>
+      <div id="lesson-rows" class="space-y-3">
+        {% for r in lesson_rows %}<div class="lesson-row rounded-2xl border border-slate-200 p-4 space-y-2 bg-slate-50/50"><div class="flex items-center justify-between"><b class="text-xs text-slate-500">الدرس <span class="ln num-font">{{ forloop.counter }}</span></b><button type="button" class="rm text-rose-500 text-xs font-bold">حذف</button></div><input type="text" name="lesson_title" placeholder="اسم الدرس" value="{{ r.title }}"><textarea name="lesson_summary" rows="2" placeholder="وصف الدرس (اختياري)">{{ r.summary }}</textarea></div>{% endfor %}
+      </div>
+      <div class="flex justify-between"><button type="button" data-go="1" class="px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold">→ السابق</button><button type="button" data-go="3" class="px-8 py-3 rounded-xl bg-blue-600 text-white text-sm font-bold">التالي ←</button></div>
+    </div>
+    <!-- الخطوة 3 -->
+    <div data-pane="3" class="space-y-4 hidden">
+      <h2 class="font-black text-lg text-slate-800 m-0">مراجعة وإنهاء</h2>
+      <div id="summary" class="rounded-2xl bg-slate-50 border border-slate-200 p-5 text-sm leading-loose"></div>
+      <p class="text-xs text-slate-500">تُنشأ الدروس كمسوّدات. أضف شرح الدرس والمفردات ثم انشر الدرس ليظهر للطلاب.</p>
+      <div class="flex justify-between"><button type="button" data-go="2" class="px-6 py-3 rounded-xl bg-white border border-slate-200 text-slate-600 text-sm font-bold">→ السابق</button><button type="submit" class="px-10 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black shadow-lg shadow-emerald-600/30">إنشاء ✓</button></div>
+    </div>
+  </form>
+</div></div>
+{{ unit_map|json_script:"unit-map" }}
+{% endblock %}
+{% block scripts %}<script>
+(function(){
+  var f=document.getElementById('wz'),map=JSON.parse(document.getElementById('unit-map').textContent);
+  f.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.tagName==='INPUT')e.preventDefault()});
+  var panes=f.querySelectorAll('[data-pane]');
+  function go(n){panes.forEach(function(p){p.classList.toggle('hidden',p.getAttribute('data-pane')!==String(n))});
+    document.querySelectorAll('#wz-steps li').forEach(function(li){var s=+li.getAttribute('data-step'),d=li.querySelector('.wz-dot');li.style.opacity=s<=n?1:.7;d.className='wz-dot w-8 h-8 rounded-full font-black flex items-center justify-center num-font '+(s<n?'bg-emerald-400 text-white':s===n?'bg-white text-blue-700':'bg-white/25');});
+    if(n===3)summary();window.scrollTo({top:0,behavior:'smooth'});}
+  f.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){go(b.getAttribute('data-go'))}});
+  var course=f.querySelector('[name=course]'),ex=f.querySelector('[name=unit_existing]');
+  function mode(){return f.querySelector('[name=unit_mode]:checked').value}
+  function sync(){var m=mode();document.getElementById('mode-new').classList.toggle('hidden',m!=='new');document.getElementById('mode-existing').classList.toggle('hidden',m!=='existing');
+    var ids=(map[course.value]||[]).map(function(u){return String(u.id)});
+    [].forEach.call(ex.options,function(o){if(!o.value)return;var ok=ids.indexOf(o.value)!==-1;o.hidden=!ok;o.disabled=!ok;});
+    if(ex.value&&ids.indexOf(ex.value)===-1)ex.value='';}
+  f.querySelectorAll('[name=unit_mode]').forEach(function(r){r.onchange=sync});course.onchange=sync;sync();
+  var rows=document.getElementById('lesson-rows');
+  function renum(){rows.querySelectorAll('.ln').forEach(function(s,i){s.textContent=i+1})}
+  function bind(r){r.querySelector('.rm').onclick=function(){if(rows.children.length>1){r.remove();renum()}else{r.querySelectorAll('input,textarea').forEach(function(x){x.value=''})}}}
+  rows.querySelectorAll('.lesson-row').forEach(bind);
+  document.getElementById('add-lesson').onclick=function(){var c=rows.lastElementChild.cloneNode(true);c.querySelectorAll('input,textarea').forEach(function(x){x.value=''});rows.appendChild(c);bind(c);renum();c.querySelector('input').focus()};
+  function summary(){var ct=course.options[course.selectedIndex];var t=mode()==='new'?(f.querySelector('[name=unit_title]').value||'—'):(ex.options[ex.selectedIndex]?ex.options[ex.selectedIndex].text:'—');
+    var ls=[].map.call(rows.querySelectorAll('[name=lesson_title]'),function(i){return i.value.trim()}).filter(Boolean);
+    document.getElementById('summary').innerHTML='<b>الدورة:</b> '+(ct?ct.text:'—')+'<br><b>الوحدة:</b> '+t.replace(/</g,'&lt;')+'<br><b>الدروس ('+ls.length+'):</b> '+(ls.length?ls.map(function(x){return '• '+x.replace(/</g,'&lt;')}).join('<br>'):'لا توجد');}
+  {% if form.errors %}go(1);{% endif %}
+})();
+</script>{% endblock %}

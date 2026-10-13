@@ -1,0 +1,174 @@
+{% extends "teacher/base.html" %}
+{% load static %}
+{% block title %}{% if is_new %}إنشاء الكورس - معالج الإنشاء{% else %}تعديل الكورس{% endif %}{% endblock %}
+{% block head %}{{ block.super }}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&amp;family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+    .tpage {
+      font-family: 'Tajawal', sans-serif;
+    }
+    .wizard-card {
+      box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.12),
+                  0 12px 30px -8px rgba(0, 102, 254, 0.14),
+                  0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+    }
+    .subtle-input-border {
+      border: 1.5px solid #dce8fa;
+    }
+    .subtle-input-border:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    }
+  </style>
+<script>(function(){var p={
+      theme: {
+        extend: {
+          fontFamily: {
+            tajawal: ['Tajawal', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0f7ff',
+              100: '#e0effe',
+              500: '#0066fe',
+              600: '#0058e6',
+              700: '#0047be',
+            }
+          }
+        }
+      }
+    };function m(a,b){for(var k in b){if(b[k]&&typeof b[k]==='object'&&!Array.isArray(b[k])){a[k]=m(a[k]||{},b[k]);}else{a[k]=b[k];}}return a;}window.tailwind=window.tailwind||{};tailwind.config=m(tailwind.config||{},p);})();</script>
+{% endblock %}
+{% block page %}
+<div class="tpage min-h-[calc(100vh-7rem)] flex items-center justify-center p-4 sm:p-6 lg:p-8 antialiased text-slate-800 selection:bg-blue-100 selection:text-blue-800 relative overflow-x-hidden bg-[#eef5fc]" style="">
+
+<div aria-hidden="true" class="fixed inset-0 pointer-events-none overflow-hidden z-0">
+  <div class="absolute inset-0 bg-[#eef5fc]"></div>
+  <svg class="absolute inset-0 w-full h-full object-cover" fill="none" preserveAspectRatio="none" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 L1440 0 L1440 450 C1080 560 620 320 0 490 Z" fill="#d9ebfc"></path>
+  </svg>
+</div>
+<main class="w-full max-w-[720px] relative z-10 my-auto" data-purpose="wizard-modal">
+  <div class="wizard-card bg-[#f8fbff] rounded-[36px] p-8 sm:p-11 lg:p-12 relative overflow-hidden flex flex-col min-h-[640px] border-2 border-white" style="background: linear-gradient(rgb(255, 255, 255) 0%, rgb(240, 247, 255) 100%); box-shadow: rgba(0, 102, 254, 0.12) 0px 25px 60px -12px, rgba(15, 23, 42, 0.08) 0px 10px 25px -8px, rgba(255, 255, 255, 0.9) 0px 0px 0px 1px inset;">
+    <header class="w-full mb-8 pb-3 border-b border-blue-100/70" data-purpose="stepper-navigation">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-6 sm:gap-8" data-purpose="stepper-steps">
+          <div class="flex items-center gap-3.5 sm:gap-4" data-purpose="step-active"><span class="w-14 h-14 rounded-full bg-[#0066fe] text-white text-2xl sm:text-3xl font-extrabold flex items-center justify-center shadow-[0_4px_16px_rgba(0,102,254,0.45)] ring-4 ring-blue-100/80 leading-none select-none shrink-0" style="font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;">1</span><span class="text-sm sm:text-base font-extrabold text-[#0066fe] tracking-tight whitespace-nowrap">بيانات الكورس</span></div>
+          <div class="flex items-center gap-3 sm:gap-3.5 opacity-80 hover:opacity-100 transition-opacity" data-purpose="step-pending"><span class="w-12 h-12 rounded-full bg-white text-slate-700 text-xl sm:text-2xl font-bold flex items-center justify-center border border-slate-200 shadow-sm leading-none select-none shrink-0" style="font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;">2</span><span class="text-sm sm:text-base font-bold text-slate-500 whitespace-nowrap">الوحدات والدروس</span></div>
+          <div class="flex items-center gap-3 sm:gap-3.5 opacity-80 hover:opacity-100 transition-opacity" data-purpose="step-pending"><span class="w-12 h-12 rounded-full bg-white text-slate-700 text-xl sm:text-2xl font-bold flex items-center justify-center border border-slate-200 shadow-sm leading-none select-none shrink-0" style="font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;">3</span><span class="text-sm sm:text-base font-bold text-slate-500 whitespace-nowrap">إنهاء ونشر</span></div>
+        </div>
+        <button aria-label="الرجوع" class="w-9 h-9 rounded-full bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-200 flex items-center justify-center text-slate-500 hover:text-[#0066fe] transition-all shadow-sm active:scale-95" data-purpose="back-navigation-button" type="button" data-cancel-url="{% if is_new %}{% url 'teacher:courses' %}{% else %}{% url 'teacher:course_detail' c.pk %}{% endif %}">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+      </div>
+    </header>
+
+    <form method="post" enctype="multipart/form-data" data-purpose="course-form" id="course-form">
+      {% csrf_token %}
+      {% for error in errors %}
+      <div role="alert" class="mb-5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">{{ error }}</div>
+      {% endfor %}
+      <input type="hidden" name="course_type" id="course-type-value" value="{% if c %}{{ form.course_type.value|default:'monthly' }}{% else %}{{ course_type_value|default:form.course_type.value|default:'monthly' }}{% endif %}">
+      <input type="hidden" name="grade" id="grade-value" value="{{ form.grade.value|default:3 }}">
+      <input type="hidden" name="term_label" value="{{ form.term_label.value|default_if_none:'' }}">
+      <input type="hidden" name="status" value="{% if c %}{{ form.status.value|default:c.status }}{% else %}published{% endif %}">
+      <input type="hidden" name="publish_at" value="{% if c and c.publish_at %}{{ c.publish_at|date:'Y-m-d\TH:i' }}{% endif %}">
+
+      <section class="flex-1 flex flex-col space-y-6 z-10" data-purpose="lesson-info-form">
+        <div class="space-y-2.5" data-purpose="input-group-name">
+          <label class="flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-slate-800" for="course-title"><span class="">اسم الكورس</span><span class="text-rose-500 text-lg leading-none font-black">*</span></label>
+          <div class="relative"><input class="w-full rounded-2xl subtle-input-border bg-white py-3.5 px-5 text-sm sm:text-base font-bold text-slate-700 placeholder-slate-400 focus:outline-none transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="course-title" name="title" placeholder="أدخل اسم الكورس التعليمي" type="text" value="{{ form.title.value|default:'' }}" required autofocus></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="space-y-2.5">
+            <label class="flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-slate-800"><span class="">نوع الكورس</span></label>
+            <div class="grid grid-cols-3 gap-2" data-course-type-group>
+              <button data-course-type="monthly" class="py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center text-center" type="button">شهري</button>
+              <button data-course-type="semester" class="py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center text-center" type="button">ترم / فصلي</button>
+              <button data-course-type="free" class="py-2.5 px-3 rounded-2xl text-xs sm:text-sm font-bold transition-all flex items-center justify-center text-center" type="button">مجاني</button>
+            </div>
+          </div>
+
+          <div class="space-y-2.5">
+            <label class="flex items-center gap-1.5 text-sm sm:text-base font-extrabold text-slate-800" for="grade-level"><span class="">المرحلة الدراسية</span></label>
+            <div class="relative group">
+              <select class="w-full rounded-2xl subtle-input-border bg-white py-3 sm:py-3.5 pr-4 pl-11 text-sm sm:text-base font-bold text-slate-700 hover:border-blue-300 focus:outline-none focus:border-[#0066fe] transition-all shadow-[0_2px_4px_rgba(0,0,0,0.02)] cursor-pointer appearance-none !bg-none border border-slate-200/90" id="grade-level">
+                <option value="0" {% if form.grade.value|stringformat:'s' == '0' %}selected{% endif %} hidden>كل الصفوف</option>
+                <option value="3" {% if form.grade.value|stringformat:'s' == '3' %}selected{% endif %} class="font-bold py-2 text-slate-800">الصف الثالث الثانوي</option>
+                <option value="2" {% if form.grade.value|stringformat:'s' == '2' %}selected{% endif %} class="font-bold py-2 text-slate-800">الصف الثاني الثانوي</option>
+                <option value="1" {% if form.grade.value|stringformat:'s' == '1' %}selected{% endif %} class="font-bold py-2 text-slate-800">الصف الأول الثانوي</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 pr-2 text-slate-400 group-hover:text-[#0066fe] transition-colors"><div class="w-8 h-8 rounded-xl bg-blue-50/70 flex items-center justify-center"><svg class="w-4 h-4 transition-transform group-focus-within:rotate-180" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-2.5" data-purpose="input-group-description">
+          <label class="block text-sm sm:text-base font-extrabold text-slate-800" for="course-description">وصف الكورس</label>
+          <textarea class="w-full rounded-2xl subtle-input-border bg-white py-3.5 px-5 text-sm sm:text-[15px] leading-relaxed font-semibold text-slate-700 placeholder-slate-400 focus:outline-none transition-all resize-none shadow-[0_2px_4px_rgba(0,0,0,0.02)]" id="course-description" name="description" placeholder="اكتب وصفاً شاملاً للكورس وأهم المحاور التعليمية..." rows="3">{{ form.description.value|default:'' }}</textarea>
+        </div>
+      </section>
+
+      <footer class="mt-6 pt-4 flex items-end justify-between relative z-10 gap-4" data-purpose="modal-footer">
+        <div class="flex items-center gap-4 pb-2" data-purpose="form-action-buttons">
+          <button class="min-w-[190px] px-12 sm:px-14 py-3.5 sm:py-4 rounded-2xl bg-[#0066fe] hover:bg-[#0055d4] text-white text-base sm:text-lg font-bold tracking-normal transition-all shadow-[0_8px_20px_rgba(0,102,254,0.38)] hover:shadow-[0_10px_25px_rgba(0,102,254,0.48)] active:scale-95 text-center flex items-center justify-center" data-purpose="next-button" type="submit">{% if is_new %}إنشاء الكورس{% else %}حفظ التعديلات{% endif %}</button>
+          <button class="min-w-[105px] px-7 sm:px-8 py-3 sm:py-3.5 bg-white hover:bg-blue-50 text-[#0066fe] text-base sm:text-lg font-bold tracking-normal transition-all border-2 border-blue-200/90 hover:border-blue-300 shadow-sm active:scale-95 text-center flex items-center justify-center rounded-2xl" data-purpose="cancel-button" type="button" data-cancel-url="{% if is_new %}{% url 'teacher:courses' %}{% else %}{% url 'teacher:course_detail' c.pk %}{% endif %}">إلغاء</button>
+        </div>
+        <div class="w-52 sm:w-64 h-32 sm:h-36 relative -mb-4 -ml-2 pointer-events-none select-none flex-shrink-0 flex items-end justify-end" data-purpose="educational-illustration">
+          <img alt="كتب وتخرج وقرطاسية ثلاثية الأبعاد" class="w-full h-full object-contain object-bottom drop-shadow-md" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBg2tcPiSjh2lPBAFICWxWLavTm8yBGK_zOHPhKXUVc4ySA0QO4k1FuErHk_63bl1SEBdvqNHB02iTE-zcz-uP-slPy9jOBMWqbMsmkNhvkY3gVkaPEbaAj4rV5-z0tb5Yf5eLxmGyeC9e5H8OE-1OKhpT2mibXo4rw7wPfgzc5HfOtsOrx1g8y6QGE3rS7C1wtwLGYpTSHQD7C_9r6kpOigyY9OJ6MrebqqvwcGaoOmbUMKxvVL5grjuyKzpeW9yp71w">
+        </div>
+      </footer>
+    </form>
+  </div>
+</main>
+<script>
+(function () {
+  const form = document.getElementById('course-form');
+  const typeInput = document.getElementById('course-type-value');
+  const gradeInput = document.getElementById('grade-value');
+  const gradeSelect = document.getElementById('grade-level');
+  const typeButtons = document.querySelectorAll('[data-course-type]');
+
+  function setType(value) {
+    typeInput.value = value;
+    typeButtons.forEach((button) => {
+      const active = button.dataset.courseType === value;
+      button.classList.toggle('bg-[#0066fe]', active);
+      button.classList.toggle('text-white', active);
+      button.classList.toggle('shadow-[0_4px_12px_rgba(0,102,254,0.3)]', active);
+      button.classList.toggle('border', active);
+      button.classList.toggle('border-[#0066fe]', active);
+      if (!active) {
+        button.classList.add('bg-white', 'text-slate-700', 'border', 'border-slate-200/90', 'hover:bg-blue-50', 'hover:text-[#0066fe]', 'hover:border-blue-200', 'shadow-sm');
+      } else {
+        button.classList.remove('bg-white', 'text-slate-700', 'border-slate-200/90', 'hover:bg-blue-50', 'hover:text-[#0066fe]', 'hover:border-blue-200', 'shadow-sm');
+      }
+    });
+  }
+
+  typeButtons.forEach((button) => button.addEventListener('click', () => setType(button.dataset.courseType)));
+  gradeSelect.addEventListener('change', () => { gradeInput.value = gradeSelect.value; });
+  gradeInput.value = gradeSelect.value;
+  setType(typeInput.value || 'monthly');
+
+  document.querySelectorAll('[data-cancel-url]').forEach((button) => {
+    button.addEventListener('click', () => { window.location.href = button.dataset.cancelUrl; });
+  });
+
+  form.addEventListener('submit', (event) => {
+    const title = document.getElementById('course-title');
+    if (!title.value.trim()) {
+      event.preventDefault();
+      title.focus();
+      return;
+    }
+    const submit = form.querySelector('[data-purpose="next-button"]');
+    submit.disabled = true;
+    submit.classList.add('opacity-75', 'cursor-wait');
+  });
+})();
+</script>
+
+</div>
+{% endblock %}

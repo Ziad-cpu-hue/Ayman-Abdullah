@@ -1,0 +1,8 @@
+{% if page.paginator.num_pages > 1 %}
+<div class="row spread mt small">
+  <span class="muted">صفحة {{ page.number }} من {{ page.paginator.num_pages }} — {{ page.paginator.count }} نتيجة</span>
+  <span class="row">
+    {% if page.has_previous %}<a class="btn sm ghost" href="?{{ qs }}page={{ page.previous_page_number }}">السابق</a>{% endif %}
+    {% if page.has_next %}<a class="btn sm ghost" href="?{{ qs }}page={{ page.next_page_number }}">التالي</a>{% endif %}
+  </span>
+</div>{% endif %}

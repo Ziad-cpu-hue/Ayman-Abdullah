@@ -1,0 +1,170 @@
+{% extends "teacher/base.html" %}
+{% block title %}حضور السنتر{% endblock %}
+{% block page %}
+<style>
+  .ca-soft{box-shadow:0 10px 25px -5px rgba(14,140,233,.08),0 8px 10px -6px rgba(14,140,233,.04)}
+  .ca-chip{transition:all .15s}
+  .ca-chip.is-on{background:#0369a1;color:#fff;border-color:#0369a1}
+</style>
+<div class="p-4 sm:p-6 md:p-8 flex-1 space-y-6">
+
+  <header class="bg-white/90 rounded-3xl p-5 border border-blue-100/70 ca-soft">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-slate-800 m-0">الغياب والحضور</h1>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1 mb-0">سجّل حضور السنتر برفع ملف PDF فيه أرقام الطلاب، وسيُحدَّد الحاضرون والغائبون تلقائيًا.</p>
+      </div>
+      <div class="inline-flex bg-slate-100 p-1 rounded-2xl gap-1 text-sm font-bold">
+        <a href="{% url 'teacher:attendance' %}?date={{ d }}&grade={{ grade }}" class="px-4 py-2 rounded-xl text-slate-600 hover:text-sky-700 no-underline"><i class="fa-solid fa-laptop ml-1"></i>حضور المنصة</a>
+        <span class="px-4 py-2 rounded-xl bg-white text-sky-700 shadow-sm"><i class="fa-solid fa-building ml-1"></i>حضور السنتر</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- التاريخ + فلتر الصف -->
+  <section class="bg-white rounded-3xl border border-slate-100 ca-soft p-5 space-y-4">
+    <form method="get" id="filter-form" class="m-0 flex flex-wrap items-center gap-3">
+      <input type="hidden" name="grade" value="{{ grade }}">
+      <label class="flex items-center gap-2 bg-slate-50 border border-slate-200/80 px-3.5 py-2 rounded-2xl text-sm font-bold text-slate-600">
+        <i class="fa-regular fa-calendar text-sky-500"></i>
+        <input class="border-0 focus:ring-0 text-sm font-bold num-font bg-transparent p-0" type="date" name="date" value="{{ d }}" onchange="this.form.submit()">
+      </label>
+    </form>
+    <div>
+      <p class="text-xs font-bold text-slate-400 mb-2">تصفية حسب الصف الدراسي</p>
+      <div class="flex flex-wrap gap-2" id="grade-chips">
+        <a href="?date={{ d }}&grade=0" class="ca-chip {% if not grade %}is-on{% endif %} px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 no-underline">كل الصفوف</a>
+        {% for val, label in grades %}
+        <a href="?date={{ d }}&grade={{ val }}" class="ca-chip {% if grade == val %}is-on{% endif %} px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 no-underline">{{ label|cut:"الصف " }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- رفع الملف -->
+  <section class="bg-white rounded-3xl border border-slate-100 ca-soft p-5">
+    <h2 class="text-base font-extrabold text-slate-800 m-0 mb-1"><i class="fa-solid fa-file-pdf text-rose-500 ml-1"></i>رفع كشف الحضور (PDF)</h2>
+    <p class="text-xs text-slate-500 mt-0 mb-4">الكشف سيُطبَّق على <b>{% if grade %}{% for val, label in grades %}{% if val == grade %}{{ label }}{% endif %}{% endfor %}{% else %}كل الصفوف{% endif %}</b> بتاريخ <b class="num-font">{{ d }}</b>. اختر الصف أعلاه أولًا حتى لا يُحسب طلاب الصفوف الأخرى غائبين.</p>
+    <form method="post" enctype="multipart/form-data" class="m-0 flex flex-col md:flex-row md:items-end gap-3">{% csrf_token %}
+      <input type="hidden" name="action" value="upload">
+      <input type="hidden" name="date" value="{{ d }}">
+      <input type="hidden" name="grade" value="{{ grade }}">
+      <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png,.webp" required class="flex-1 text-sm bg-slate-50 border border-dashed border-slate-300 rounded-2xl p-3">
+      <button type="submit" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold text-sm px-6 py-3 rounded-2xl shadow-md shadow-blue-500/25 active:scale-95 transition"><i class="fa-solid fa-wand-magic-sparkles"></i>قراءة الأرقام</button>
+    </form>
+  </section>
+
+  {% if review %}
+  <!-- معاينة قبل الحفظ -->
+  <section class="bg-white rounded-3xl border-2 border-sky-200 ca-soft p-5 space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <h2 class="text-base font-extrabold text-slate-800 m-0"><i class="fa-solid fa-list-check text-sky-600 ml-1"></i>راجع النتيجة ثم أكّد الحفظ</h2>
+      {% if review.method %}<span class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-100 text-slate-500">طريقة القراءة: {% if review.method == "text" %}نص الملف{% elif review.method == "ai" %}ذكاء اصطناعي{% elif review.method == "ocr" %}تعرّف ضوئي{% else %}{{ review.method }}{% endif %}</span>{% endif %}
+    </div>
+    {% if review.warning %}<div class="rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold px-4 py-3">{{ review.warning }}</div>{% endif %}
+
+    <form method="post" class="m-0 space-y-3">{% csrf_token %}
+      <input type="hidden" name="date" value="{{ d }}">
+      <input type="hidden" name="grade" value="{{ grade }}">
+      <label class="block text-xs font-bold text-slate-500">الأرقام المقروءة (<span class="num-font">{{ review.count }}</span>) — يمكنك التعديل بالحذف أو الإضافة، افصل بينها بمسافة أو فاصلة</label>
+      <textarea name="numbers" rows="3" dir="ltr" class="w-full rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm num-font font-semibold">{{ review.numbers_text }}</textarea>
+      <label class="flex items-center gap-2 text-sm font-semibold text-slate-600">
+        <input type="checkbox" name="mark_absent" value="1" {% if review.mark_absent %}checked{% endif %}>
+        تسجيل باقي طلاب {% if grade %}الصف المحدد{% else %}الكشف{% endif %} غائبين تلقائيًا
+      </label>
+      <div class="flex flex-wrap gap-2">
+        <button type="submit" name="action" value="confirm" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-extrabold text-sm px-7 py-3 rounded-2xl shadow-md active:scale-95 transition"><i class="fa-solid fa-floppy-disk"></i>تأكيد وحفظ الحضور</button>
+        <button type="submit" name="action" value="preview" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm px-5 py-3 rounded-2xl transition"><i class="fa-solid fa-rotate"></i>تحديث المعاينة</button>
+      </div>
+    </form>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-4">
+        <h3 class="text-sm font-extrabold text-emerald-800 m-0 mb-2">سيُسجَّلون حاضرين (<span class="num-font">{{ review.present|length }}</span>)</h3>
+        <ul class="m-0 p-0 list-none space-y-1 max-h-64 overflow-y-auto text-sm">
+          {% for p in review.present %}<li class="flex items-center gap-2"><span class="num-font font-black text-emerald-700 w-10">#{{ p.student_number }}</span><span class="font-semibold text-slate-700">{{ p.user.full_name }}</span><span class="text-[11px] text-slate-400">{{ p.get_grade_display|cut:"الصف " }}</span></li>{% empty %}<li class="text-slate-400 text-xs">لا أحد.</li>{% endfor %}
+        </ul>
+        {% if review.other_grade %}<p class="text-[11px] text-amber-700 font-bold mt-3 mb-0"><i class="fa-solid fa-triangle-exclamation ml-1"></i>{{ review.other_grade|length }} منهم من صف مختلف عن الصف المحدد — تأكد من صحة أرقامهم.</p>{% endif %}
+      </div>
+      <div class="rounded-2xl border border-rose-100 bg-rose-50/40 p-4">
+        <h3 class="text-sm font-extrabold text-rose-800 m-0 mb-2">سيُسجَّلون غائبين (<span class="num-font">{% if review.mark_absent %}{{ review.absent|length }}{% else %}0{% endif %}</span>)</h3>
+        <ul class="m-0 p-0 list-none space-y-1 max-h-64 overflow-y-auto text-sm">
+          {% for p in review.absent %}<li class="flex items-center gap-2"><span class="num-font font-black text-rose-700 w-10">#{{ p.student_number }}</span><span class="font-semibold text-slate-700">{{ p.user.full_name }}</span><span class="text-[11px] text-slate-400">{{ p.get_grade_display|cut:"الصف " }}</span></li>{% empty %}<li class="text-slate-400 text-xs">لا أحد.</li>{% endfor %}
+        </ul>
+      </div>
+      <div class="rounded-2xl border border-amber-100 bg-amber-50/40 p-4">
+        <h3 class="text-sm font-extrabold text-amber-800 m-0 mb-2">أرقام غير معروفة (<span class="num-font">{{ review.unknown|length }}</span>)</h3>
+        <p class="text-xs text-slate-500 mt-0 mb-2">لا يوجد طالب بهذه الأرقام، وستُتجاهل. غالبًا خطأ في القراءة — صحّحها في الحقل أعلاه.</p>
+        <div class="flex flex-wrap gap-1.5">{% for n in review.unknown %}<span class="num-font font-bold text-xs px-2.5 py-1 rounded-lg bg-white border border-amber-200 text-amber-800">{{ n }}</span>{% empty %}<span class="text-slate-400 text-xs">لا توجد.</span>{% endfor %}</div>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- سجل اليوم -->
+  <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="bg-white rounded-3xl p-5 border border-blue-100 ca-soft"><span class="text-xs font-bold text-slate-500">طلاب الكشف</span><div class="text-3xl font-extrabold text-slate-800 num-font mt-1">{{ stats.total }}</div></div>
+    <div class="bg-white rounded-3xl p-5 border border-emerald-100 ca-soft"><span class="text-xs font-bold text-emerald-800">حاضر</span><div class="text-3xl font-extrabold text-emerald-600 num-font mt-1">{{ stats.present }}</div></div>
+    <div class="bg-white rounded-3xl p-5 border border-rose-100 ca-soft"><span class="text-xs font-bold text-rose-800">غائب</span><div class="text-3xl font-extrabold text-rose-600 num-font mt-1">{{ stats.absent }}</div></div>
+    <div class="bg-white rounded-3xl p-5 border border-amber-100 ca-soft"><span class="text-xs font-bold text-amber-800">نسبة الحضور</span><div class="text-3xl font-extrabold text-amber-600 num-font mt-1">{{ stats.rate }}%</div></div>
+  </section>
+
+  <section class="bg-white rounded-3xl border border-slate-100 ca-soft overflow-hidden">
+    <div class="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-slate-100">
+      <input id="ca-search" type="search" placeholder="ابحث بالاسم أو الرقم..." class="w-full lg:w-80 bg-slate-50 text-sm font-medium px-4 py-2.5 rounded-2xl border border-slate-200">
+      <div class="inline-flex bg-slate-100 p-1 rounded-2xl gap-1 text-xs font-bold text-slate-600">
+        <button type="button" class="ca-tab px-3.5 py-1.5 rounded-xl bg-white text-sky-700" data-tab="all">الكل</button>
+        <button type="button" class="ca-tab px-3 py-1.5 rounded-xl" data-tab="present">الحاضرون</button>
+        <button type="button" class="ca-tab px-3 py-1.5 rounded-xl" data-tab="absent">الغائبون</button>
+        <button type="button" class="ca-tab px-3 py-1.5 rounded-xl" data-tab="none">غير مسجّل</button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-right border-collapse">
+        <thead><tr class="text-[13px] font-bold text-slate-400 border-b border-slate-100">
+          <th class="py-4 px-5">الرقم</th><th class="py-4 px-4">الطالب</th><th class="py-4 px-4 text-center">الصف</th>
+          <th class="py-4 px-4 text-center">حالة {{ d }}</th><th class="py-4 px-4 text-center">مرات الحضور</th><th class="py-4 px-4 text-center">مرات الغياب</th>
+        </tr></thead>
+        <tbody class="divide-y divide-slate-100 text-sm">
+        {% for r in rows %}
+          <tr data-row data-status="{{ r.status }}">
+            <td class="py-3 px-5 num-font font-black text-sky-700">#{{ r.sp.student_number }}</td>
+            <td class="py-3 px-4 font-extrabold text-slate-800">{{ r.sp.user.full_name }}</td>
+            <td class="py-3 px-4 text-center text-xs font-bold text-slate-600">{{ r.sp.get_grade_display|cut:"الصف " }}</td>
+            <td class="py-3 px-4 text-center">
+              {% if r.status == "present" %}<span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200">حاضر</span>
+              {% elif r.status == "absent" %}<span class="px-3 py-1 rounded-full text-xs font-extrabold bg-rose-50 text-rose-700 border border-rose-200">غائب</span>
+              {% else %}<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-50 text-slate-400 border border-slate-200">غير مسجّل</span>{% endif %}
+            </td>
+            <td class="py-3 px-4 text-center num-font font-bold text-emerald-700">{{ r.p }}</td>
+            <td class="py-3 px-4 text-center num-font font-bold text-rose-600">{{ r.a }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="6" class="p-14 text-center text-slate-500"><i class="fa-solid fa-user-slash text-3xl text-slate-300 block mb-3"></i>لا يوجد طلاب في هذا الصف بعد. ارفع كشفًا لتبدأ.</td></tr>
+        {% endfor %}
+          <tr id="ca-none" style="display:none"><td colspan="6" class="p-10 text-center text-slate-400 font-semibold">لا توجد نتائج مطابقة.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script>
+(function(){
+  var rows=[].slice.call(document.querySelectorAll('[data-row]')), tab='all';
+  var search=document.getElementById('ca-search'), none=document.getElementById('ca-none');
+  function apply(){
+    var t=search.value.trim().toLowerCase().replace('#',''), shown=0;
+    rows.forEach(function(r){
+      var ok=(tab==='all'||r.getAttribute('data-status')===tab)&&(!t||r.textContent.toLowerCase().indexOf(t)!==-1);
+      r.style.display=ok?'':'none'; if(ok)shown++;
+    });
+    if(none)none.style.display=(rows.length&&!shown)?'':'none';
+  }
+  search.addEventListener('input',apply);
+  document.querySelectorAll('.ca-tab').forEach(function(b){b.addEventListener('click',function(){
+    document.querySelectorAll('.ca-tab').forEach(function(x){x.className='ca-tab px-3 py-1.5 rounded-xl'});
+    b.className='ca-tab px-3.5 py-1.5 rounded-xl bg-white text-sky-700'; tab=b.getAttribute('data-tab'); apply();
+  })});
+})();
+</script>{% endblock %}
