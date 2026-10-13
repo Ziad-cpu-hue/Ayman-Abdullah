@@ -1,0 +1,37 @@
+from django.urls import path
+from . import views as v
+
+app_name = "owner"
+urlpatterns = [
+    path("", v.overview, name="overview"),
+    path("teachers/", v.teachers, name="teachers"),
+    path("teachers/new/", v.teacher_new, name="teacher_new"),
+    path("teachers/<int:pk>/", v.teacher_detail, name="teacher_detail"),
+    path("teachers/<int:pk>/edit/", v.teacher_edit, name="teacher_edit"),
+    path("teachers/<int:pk>/toggle/", v.teacher_toggle, name="teacher_toggle"),
+    path("teachers/<int:pk>/reset-password/", v.teacher_reset_password, name="teacher_reset_password"),
+    path("students/", v.students, name="students"),
+    path("students/<int:pk>/", v.student_detail, name="student_detail"),
+    path("students/<int:pk>/toggle/", v.student_toggle, name="student_toggle"),
+    path("students/<int:pk>/reset-password/", v.student_reset_password, name="student_reset_password"),
+    path("enrollments/", v.enrollments, name="enrollments"),
+    path("payments/", v.payments, name="payments"),
+    path("payments/<int:pk>/approve/", v.payment_approve, name="payment_approve"),
+    path("payments/<int:pk>/reject/", v.payment_reject, name="payment_reject"),
+    path("payments/<int:pk>/receipt/", v.payment_receipt, name="payment_receipt"),
+    path("enrollments/manual/", v.enrollment_manual, name="enrollment_manual"),
+    path("revenue/", v.revenue, name="revenue"),
+    path("analytics/", v.analytics, name="analytics"),
+    path("content/", v.content, name="content"),
+    path("notifications/", v.notifications, name="notifications"),
+    path("notifications/new/", v.notification_new, name="notification_new"),
+    path("tickets/", v.tickets, name="tickets"),
+    path("tickets/<int:pk>/", v.ticket_detail, name="ticket_detail"),
+    path("settings/", v.settings_view, name="settings"),
+    path("staff/new/", v.staff_new, name="staff_new"),
+    path("staff-permissions/", v.staff_permissions, name="staff_permissions"),
+    path("audit/", v.audit_log, name="audit"),
+    path("security/", v.security, name="security"),
+    path("impersonate/<int:pk>/", v.impersonate, name="impersonate"),
+    path("stop-impersonate/", v.stop_impersonate, name="stop_impersonate"),
+]
